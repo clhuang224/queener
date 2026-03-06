@@ -36,7 +36,7 @@ Players must find the positions of all queens on an **N × N board** before runn
 
 - Game Board
 - Quit button (returns to Home)
-- Hint button
+- Hint button (reveals one queen's position, can only be used once per game)
 
 ### Game Rules
 
