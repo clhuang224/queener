@@ -1,70 +1,202 @@
-# queen
+# Queener
 
-This template should help get you started developing with Vue 3 in Vite.
+Place the queens. Become the winner.
 
-## Recommended IDE Setup
+## Introduction
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+A puzzle game based on the classic **N-Queens problem**.
 
-## Recommended Browser Setup
+The N-Queens puzzle is a classic chess problem that asks how to place **N queens on an N × N chessboard** so that no two queens threaten each other.
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+Players must find the positions of all queens on an **N × N board** before running out of hearts.
 
-## Type Support for `.vue` Imports in TS
+## Tech Stack
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+- **Framework:** Vue (SPA)
+- **Language:** TypeScript
+- **Routing: Vue** Router
+- **State management:** Pinia
+- **Unit test:** Vitest
+- **E2E test:** Cypress
+- **Linting:** ESLint
+- **Formatting:** oxfmt
+- **Bundler:** Vite
+- **Package Manager:** Bun
 
-## Customize configuration
+## Features
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+### Pages
 
-## Project Setup
+#### Home
 
-```sh
+- Welcome message
+- Start button
+
+#### Game
+
+- Game Board
+- Quit button (returns to Home)
+- Hint button
+
+### Game Rules
+
+The board is an **N × N grid** containing **N queens**.
+
+Each queen must satisfy the following conditions:
+	•	Only one queen **per row**
+	•	Only one queen **per column**
+	•	Only one queen **per region**
+	•	Queens **cannot be adjacent**, including diagonals
+
+The player starts with **3 hearts** and must find all **N queens** before running out of hearts.
+
+### Player Interaction
+
+Users can interact with each square on the board:
+
+- **Single click / drag**
+  - Mark the square with **X** (indicating no queen)
+- **Double click**
+  - Mark the square with **O** (indicating a queen)
+
+If the selected square **does not contain a queen**:
+
+- One heart is deducted
+- If all three hearts are lost, a **Game Over** message is shown
+
+If the selected square is the **final queen**:
+
+- A **Victory** message is displayed
+
+### Question Generation
+
+Puzzle boards are **manually created**.
+
+### Project Status
+
+Work in progress.
+
+## Folder Structure
+
+```
+/
+├── public/                       # Static assets
+├── src/
+│   ├── assets/                   # Images, icons, and styles
+│   │   ├── styles/
+│   │   └── icons/
+│   │
+│   ├── components/               # Reusable UI components
+│   │   ├── common/
+│   │   │   ├── BaseButton.vue
+│   │   │   ├── BaseModal.vue
+│   │   │   └── HeartCounter.vue
+│   │   │
+│   │   ├── home/                 # Home page components
+│   │   │   └── HomeHero.vue
+│   │   │
+│   │   └── game/                 # Game-related components
+│   │       ├── GameBoard.vue
+│   │       ├── GameCell.vue
+│   │       ├── GameToolbar.vue
+│   │       └── HintPanel.vue
+│   │
+│   ├── views/                    # Route-level pages
+│   │   ├── HomeView.vue
+│   │   └── GameView.vue
+│   │
+│   ├── router/                   # Vue Router configuration
+│   │   └── index.ts
+│   │
+│   ├── stores/                   # Pinia stores
+│   │   ├── game.ts
+│   │   └── ui.ts
+│   │
+│   ├── types/                    # TypeScript type definitions
+│   │   ├── board.ts
+│   │   └── game.ts
+│   │
+│   ├── constants/                # Game constants
+│   │   ├── board.ts
+│   │   └── game.ts
+│   │
+│   ├── composables/              # Vue composables
+│   │   ├── useBoardInteraction.ts
+│   │   └── useGameStatus.ts
+│   │
+│   ├── utils/                    # Helper utilities
+│   │   ├── board-validator.ts
+│   │   └── puzzle-loader.ts
+│   │
+│   ├── puzzles/                  # Puzzle definitions
+│   │   ├── n4.ts
+│   │   ├── n6.ts
+│   │   └── n8.ts
+│   │
+│   ├── App.vue
+│   └── main.ts
+│
+├── cypress/                      # End-to-end tests
+│   ├── e2e/
+│   │   ├── home.cy.ts
+│   │   └── game.cy.ts
+│   └── support/
+│
+├── vitest.config.ts
+├── cypress.config.ts
+└── README.md
+```
+
+## How to Run
+
+### Install dependencies
+
+```bash
 bun install
 ```
 
-### Compile and Hot-Reload for Development
+### Start development server
 
-```sh
-bun dev
+```bash
+bun run dev
 ```
 
-### Type-Check, Compile and Minify for Production
+The app will start at:
 
-```sh
+```
+http://localhost:4173
+```
+
+### Run unit tests
+
+```bash
+bun run test:unit
+```
+
+### Run E2E tests
+
+```bash
+bun run test:e2e
+```
+
+### Lint Code
+
+```bash
+bun run lint
+```
+
+### Format Code
+
+```bash
+bun run format
+```
+
+### Build
+
+```bash
 bun run build
 ```
 
-### Run Unit Tests with [Vitest](https://vitest.dev/)
+## License
 
-```sh
-bun test:unit
-```
-
-### Run End-to-End Tests with [Cypress](https://www.cypress.io/)
-
-```sh
-bun test:e2e:dev
-```
-
-This runs the end-to-end tests against the Vite development server.
-It is much faster than the production build.
-
-But it's still recommended to test the production build with `test:e2e` before deploying (e.g. in CI environments):
-
-```sh
-bun run build
-bun test:e2e
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-bun lint
-```
+MIT
