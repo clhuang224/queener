@@ -19,6 +19,7 @@
     "format": "oxfmt src/"
   },
   "dependencies": {
+    "normalize.css": "^8.0.1",
     "pinia": "^3.0.4",
     "vue": "^3.5.29",
     "vue-router": "^5.0.3"
@@ -43,6 +44,7 @@
     "npm-run-all2": "^8.0.4",
     "oxfmt": "^0.35.0",
     "oxlint": "~1.50.0",
+    "sass": "^1.97.3",
     "start-server-and-test": "^2.1.5",
     "typescript": "~5.9.3",
     "vite": "^7.3.1",

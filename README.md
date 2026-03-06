@@ -43,6 +43,7 @@ Players must find the positions of all queens on an **N × N board** before runn
 The board is an **N × N grid** containing **N queens**.
 
 Each queen must satisfy the following conditions:
+
 - Only one queen **per row**
 - Only one queen **per column**
 - Only one queen **per region**
@@ -82,10 +83,6 @@ Work in progress.
 /
 ├── public/                       # Static assets
 ├── src/
-│   ├── assets/                   # Images, icons, and styles
-│   │   ├── styles/
-│   │   └── icons/
-│   │
 │   ├── components/               # Reusable UI components
 │   │   ├── common/
 │   │   │   ├── BaseButton.vue
