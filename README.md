@@ -43,10 +43,10 @@ Players must find the positions of all queens on an **N × N board** before runn
 The board is an **N × N grid** containing **N queens**.
 
 Each queen must satisfy the following conditions:
-	•	Only one queen **per row**
-	•	Only one queen **per column**
-	•	Only one queen **per region**
-	•	Queens **cannot be adjacent**, including diagonals
+- Only one queen **per row**
+- Only one queen **per column**
+- Only one queen **per region**
+- Queens **cannot be adjacent**, including diagonals
 
 The player starts with **3 hearts** and must find all **N queens** before running out of hearts.
 
