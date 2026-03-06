@@ -164,7 +164,7 @@ bun run dev
 The app will start at:
 
 ```
-http://localhost:4173
+http://localhost:5173
 ```
 
 ### Run unit tests
