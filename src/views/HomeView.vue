@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
+import BaseButton from '@/components/common/BaseButton.vue'
 const router = useRouter()
 </script>
 
 <template>
   <main>
     <h2>Place the queens. Become the winner.</h2>
-    <button class="btn" @click="router.push('/game')">Start</button>
+    <base-button class="btn" @click="router.push('/game')">Start</base-button>
   </main>
 </template>
 

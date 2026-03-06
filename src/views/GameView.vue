@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
+import BaseButton from '@/components/common/BaseButton.vue'
 const router = useRouter()
 </script>
 
@@ -7,8 +8,8 @@ const router = useRouter()
   <div class="game">
     <div class="board">board</div>
     <div class="buttons">
-      <button class="quit" @click="router.push('/')">Quit</button>
-      <button class="hint">Hint</button>
+      <base-button class="quit" @click="router.push('/')">Quit</base-button>
+      <base-button class="hint">Hint</base-button>
     </div>
   </div>
 </template>
