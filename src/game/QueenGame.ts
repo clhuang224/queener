@@ -6,7 +6,7 @@ import { randomInteger } from '@/utils/random'
 export default class QueenGame {
   private puzzle: Puzzle
   private hintUsed: boolean
-  private hearts: number
+  public hearts: number
   public board: BoardCell[][]
 
   constructor(puzzle: Puzzle) {
@@ -35,10 +35,6 @@ export default class QueenGame {
 
   public getSize(): number {
     return this.board.length
-  }
-
-  public getHearts(): number {
-    return this.hearts
   }
 
   public markQueen(position: Position) {
