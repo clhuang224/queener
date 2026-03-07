@@ -30,9 +30,9 @@ describe.each([...N_7_PUZZLES, ...N_8_PUZZLES])('QueenGame', (puzzle) => {
       it('should reduce heart when guessing wrong', () => {
         const game = new QueenGame(puzzle)
         const wrongCell = game.board.flat().find((cell) => !cell.isQueen())!
-        const before = game.getHearts()
+        const before = game.hearts
         game.markQueen(wrongCell.getPosition())
-        expect(game.getHearts()).toBe(before - 1)
+        expect(game.hearts).toBe(before - 1)
       })
     })
 
@@ -69,7 +69,7 @@ describe.each([...N_7_PUZZLES, ...N_8_PUZZLES])('QueenGame', (puzzle) => {
         game.markQueen([row, col])
         game.useHint()
         game.resetGame()
-        expect(game.getHearts()).toBe(3)
+        expect(game.hearts).toBe(3)
         expect(game.board[row]![col]!.isFound()).toBe(false)
       })
     })
