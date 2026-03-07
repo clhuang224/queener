@@ -6,11 +6,7 @@ Place the queens. Become the winner.
 
 A puzzle game based on the classic **N-Queens problem**.
 
-The N-Queens puzzle is a classic chess problem that asks how to place **N queens on an N × N chessboard** so that no two queens threaten each other.
-
-Players must find the positions of all queens on an **N × N board** before running out of hearts.
-
-Inspired by logic puzzles such as Star Battle and the classic N-Queens problem.
+The goal is to place **N queens on an N × N board** so that no two queens threaten each other.
 
 ## Tech Stack
 
