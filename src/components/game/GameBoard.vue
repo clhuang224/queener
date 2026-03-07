@@ -33,7 +33,7 @@ watch(
   <div
     class="game-board"
     :class="`cell-${cellSkin} queen-${queenSkin}`"
-    :style="{ width: `${game.getSize() * 50}px` }"
+    :style="{ width: `${game.getSize() * 62}px` }"
     @pointerup="isDragging = false"
     @pointercancel="isDragging = false"
     @mouseleave="isDragging = false"
@@ -58,12 +58,14 @@ watch(
 .game-board {
   touch-action: manipulation;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
   flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  padding: 12px;
   box-sizing: border-box;
 }
-$rainbow-colors: red, orange, yellow, green, blue, indigo, purple, black;
+$rainbow-colors: #ff6b6b, #ffa94d, #ffd43b, #69db7c, #4dabf7, #748ffc, #b197fc, #343a40;
 $gray-colors: #000, #222, #444, #666, #888, #aaa, #ccc, #eee;
 $skins: (rainbow, grayscale);
 @each $skin in $skins {

@@ -46,26 +46,38 @@ const cellColor = computed(() => `var(--cell-color-${props.cell.getRegion()})`)
   user-select: none;
   width: 50px;
   height: 50px;
-  font-size: 30px;
+  font-size: 26px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  box-sizing: border-box;
-}
-.queen {
-  width: 40px;
-  height: 40px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 30px;
-  color: #fff;
-  background-image: var(--queen-color);
-  border-radius: 50%;
-}
-.wrong {
-  color: red;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  transition:
+    transform 0.05s ease,
+    box-shadow 0.1s ease;
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  }
+  .queen {
+    width: 36px;
+    height: 36px;
+    font-size: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    background-image: var(--queen-color);
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  }
+  .wrong {
+    color: red;
+  }
 }
 </style>
