@@ -40,12 +40,14 @@ describe.each([...N_7_PUZZLES, ...N_8_PUZZLES])('QueenGame', (puzzle) => {
       it('should reveal a queen', () => {
         const game = new QueenGame(puzzle)
         const [row, col] = game.useHint()!
+        expect(game.isHintUsed()).toBe(true)
         expect(game.board[row]![col]!.isFound()).toBe(true)
       })
       it('hint should be null after being used', () => {
         const game = new QueenGame(puzzle)
         game.useHint()
         const hint = game.useHint()
+        expect(game.isHintUsed()).toBe(true)
         expect(hint).toBeNull()
       })
     })

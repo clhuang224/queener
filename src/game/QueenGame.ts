@@ -61,6 +61,10 @@ export default class QueenGame {
     return position
   }
 
+  public isHintUsed(): boolean {
+    return this.hintUsed
+  }
+
   public isWin(): boolean {
     return this.puzzle.queens.every(([row, column]) => this.board[row]![column]!.isFound())
   }
