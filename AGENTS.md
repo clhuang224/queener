@@ -295,7 +295,7 @@ Avoid brittle assertions against:
 - incidental styling details
 - framework internals
 
-Use consistent naming for new tests. The current repository contains `*.spec.ts`; keep the existing style consistent unless the project deliberately migrates test naming as a separate cleanup.
+Use consistent naming for new tests. Prefer `*.test.ts` and `*.test.tsx` across the repository instead of `*.spec.*`.
 
 ## 7. Commit Rules
 
