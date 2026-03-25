@@ -6,6 +6,8 @@ Use this as the default guide for new work. When a change touches multiple areas
 
 Keep `README.md` focused on product overview, setup, usage, and high-level architecture. Small implementation conventions and team-facing coding notes should live in `AGENTS.md` or code-local comments instead of being added to the README.
 
+For detailed state machines and transition tables, use [docs/state.md](./docs/state.md). Keep `AGENTS.md` focused on rules, placement guidance, and the shorter architectural summary.
+
 When updating `README.md`, prioritize:
 
 - game rules and player-facing behavior
@@ -248,6 +250,52 @@ This rule is especially important for:
 - wrong guesses and heart deduction
 - hint consumption
 - win / lose transitions
+
+### Cell Interaction State Machine
+
+The current board interaction model is easiest to reason about as a small state machine coordinated by `GameBoard`.
+
+Use transition tables as the primary documentation format for stateful UI behavior. Mermaid diagrams are helpful as visual aids, but the table should remain the source of truth because it is easier to diff, review, and maintain in Git.
+
+When a feature gains meaningful state complexity, prefer documenting it in [docs/state.md](./docs/state.md) instead of overloading `README.md` or scattering the rules across comments.
+
+| Current State | Event | Next State | Action |
+| --- | --- | --- | --- |
+| `Idle` | `pointerdown(cell)` | `Pressed` | start pointer session |
+| `Pressed` | `click(cell)` | `PendingSingleClick` | schedule note toggle |
+| `Pressed` | `pointerenter(other cell)` | `Dragging` | begin drag selection |
+| `Pressed` | `pointerup` / `pointercancel` / `mouseleave` | `Idle` | end pointer session |
+| `PendingSingleClick` | `dblclick(cell)` | `Idle` | cancel pending note, mark queen |
+| `PendingSingleClick` | click timeout | `Idle` | `QueenGame.toggleNote(position)` |
+| `PendingSingleClick` | `pointerenter(other cell)` | `Dragging` | cancel pending click, begin drag selection |
+| `Dragging` | `pointerenter(new cell)` | `Dragging` | toggle note once per cell |
+| `Dragging` | `pointerup` / `pointercancel` / `mouseleave` | `Idle` | end drag session |
+
+```mermaid
+stateDiagram-v2
+  [*] --> Idle
+
+  Idle --> Pressed: pointerdown(cell)
+  Pressed --> PendingSingleClick: click(cell)
+  Pressed --> Dragging: pointerenter(other cell)
+  Pressed --> Idle: pointerup / pointercancel / mouseleave
+
+  PendingSingleClick --> Idle: double click timeout expires / QueenGame.toggleNote(position)
+  PendingSingleClick --> Idle: dblclick(cell) / cancel pending click + QueenGame.markQueen(position)
+  PendingSingleClick --> Dragging: pointerenter(other cell) / cancel pending click
+
+  Dragging --> Dragging: pointerenter(new cell) / QueenGame.toggleNote(new position once)
+  Dragging --> Idle: pointerup / pointercancel / mouseleave
+```
+
+Notes:
+
+- `GameCell` emits raw interaction events and does not mutate board state directly.
+- `GameBoard` resolves whether a gesture is a single click, a double click, or a drag session.
+- single click is intentionally delayed slightly so a following `dblclick` can cancel it cleanly
+- drag sessions suppress the trailing click that browsers often emit on release
+- note toggling and queen marking should flow through `QueenGame`, not through direct `BoardCell` mutation from the component
+- when a state machine becomes central to feature behavior, add both a transition table and a compact Mermaid diagram to `docs/state.md`
 
 User-facing copy should stay consistent across the app. When the project eventually adds localization, prefer centralizing translatable strings rather than hard-coding the same message in multiple components.
 
