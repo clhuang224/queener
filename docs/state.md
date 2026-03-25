@@ -2,21 +2,9 @@
 
 This document collects the main state transitions used in the project.
 
-Use transition tables as the primary format. Mermaid diagrams are included as compact visual aids, but the tables should remain the authoritative version because they are easier to review and update alongside code changes.
-
-The project currently uses a mix of:
-
-- finite state machines for discrete UI or object states
-- orthogonal state dimensions for independent concerns such as hint usage
-- derived state for conditions computed from existing values rather than stored as a dedicated enum
-
-When documenting a stateful behavior, explicitly note which of those categories it belongs to.
-
-Notation guidance:
-
-- if a value is itself a discrete state, put it in the node
-- if multiple concerns evolve independently, model them as separate or orthogonal state machines instead of collapsing everything into one large combined graph
-- if a value is derived from other values, document the derivation and keep exact value changes in the transition table
+> Transition tables are the primary source of truth. Mermaid diagrams are included as compact visual aids.
+>
+> To keep diagrams renderable on GitHub, Mermaid labels in this document stay conservative. Prefer simplified labels such as `toggleNote` in diagrams, and keep exact method-style names in tables or prose when needed. Also avoid Mermaid reserved words such as `note` as raw state node names.
 
 ## 1. Cell Interaction Session
 
@@ -34,17 +22,17 @@ Implementation:
 
 ### Transition Table
 
-| Current State | Event | Next State | Action |
-| --- | --- | --- | --- |
-| `Idle` | `pointerdown(cell)` | `Pressed` | start pointer session and store start position |
-| `Pressed` | `click(cell)` | `PendingSingleClick` | schedule delayed note toggle |
-| `Pressed` | `pointerenter(other cell)` | `Dragging` | begin drag selection |
-| `Pressed` | `pointerup` / `pointercancel` / `mouseleave` | `Idle` | end pointer session |
-| `PendingSingleClick` | `dblclick(cell)` | `Idle` | cancel pending note and mark queen |
-| `PendingSingleClick` | click timeout | `Idle` | call `QueenGame.toggleNote(position)` |
-| `PendingSingleClick` | `pointerenter(other cell)` | `Dragging` | cancel pending click and begin drag selection |
-| `Dragging` | `pointerenter(new cell)` | `Dragging` | toggle note once for each newly entered cell |
-| `Dragging` | `pointerup` / `pointercancel` / `mouseleave` | `Idle` | end drag session |
+| Current State        | Event                                        | Next State           | Action                                         |
+| -------------------- | -------------------------------------------- | -------------------- | ---------------------------------------------- |
+| `Idle`               | `pointerdown(cell)`                          | `Pressed`            | start pointer session and store start position |
+| `Pressed`            | `click(cell)`                                | `PendingSingleClick` | schedule delayed note toggle                   |
+| `Pressed`            | `pointerenter(other cell)`                   | `Dragging`           | begin drag selection                           |
+| `Pressed`            | `pointerup` / `pointercancel` / `mouseleave` | `Idle`               | end pointer session                            |
+| `PendingSingleClick` | `dblclick(cell)`                             | `Idle`               | cancel pending note and mark queen             |
+| `PendingSingleClick` | click timeout                                | `Idle`               | call `QueenGame.toggleNote(position)`          |
+| `PendingSingleClick` | `pointerenter(other cell)`                   | `Dragging`           | cancel pending click and begin drag selection  |
+| `Dragging`           | `pointerenter(new cell)`                     | `Dragging`           | toggle note once for each newly entered cell   |
+| `Dragging`           | `pointerup` / `pointercancel` / `mouseleave` | `Idle`               | end drag session                               |
 
 ### Mermaid
 
@@ -88,18 +76,18 @@ Implementation:
 
 ### Transition Table
 
-| Current State | Event | Next State | Action |
-| --- | --- | --- | --- |
-| `empty` | `toggleNote()` | `note` | show an `X` note |
-| `note` | `toggleNote()` | `empty` | remove the note |
-| `empty` | `markQueen()` on a queen cell | `found` | reveal the queen |
-| `note` | `markQueen()` on a queen cell | `found` | replace note with a found queen |
-| `empty` | `markQueen()` on a non-queen cell | `wrong` | mark the guess as wrong |
-| `note` | `markQueen()` on a non-queen cell | `wrong` | replace note with wrong state |
-| `found` | `markQueen()` | `found` | no-op |
-| `wrong` | `markQueen()` | `wrong` | no-op |
-| `found` | `toggleNote()` | `found` | no-op |
-| `wrong` | `toggleNote()` | `wrong` | no-op |
+| Current State | Event                             | Next State | Action                          |
+| ------------- | --------------------------------- | ---------- | ------------------------------- |
+| `empty`       | `toggleNote()`                    | `note`     | show an `X` note                |
+| `note`        | `toggleNote()`                    | `empty`    | remove the note                 |
+| `empty`       | `markQueen()` on a queen cell     | `found`    | reveal the queen                |
+| `note`        | `markQueen()` on a queen cell     | `found`    | replace note with a found queen |
+| `empty`       | `markQueen()` on a non-queen cell | `wrong`    | mark the guess as wrong         |
+| `note`        | `markQueen()` on a non-queen cell | `wrong`    | replace note with wrong state   |
+| `found`       | `markQueen()`                     | `found`    | no-op                           |
+| `wrong`       | `markQueen()`                     | `wrong`    | no-op                           |
+| `found`       | `toggleNote()`                    | `found`    | no-op                           |
+| `wrong`       | `toggleNote()`                    | `wrong`    | no-op                           |
 
 ### Mermaid
 
@@ -107,19 +95,19 @@ Implementation:
 stateDiagram-v2
   [*] --> empty
 
-  empty --> note: toggleNote()
-  note --> empty: toggleNote()
+  empty --> noted: toggleNote
+  noted --> empty: toggleNote
 
-  empty --> found: markQueen() on queen cell
-  note --> found: markQueen() on queen cell
+  empty --> found: markQueen success
+  noted --> found: markQueen success
 
-  empty --> wrong: markQueen() on non-queen cell
-  note --> wrong: markQueen() on non-queen cell
+  empty --> wrong: markQueen failed
+  noted --> wrong: markQueen failed
 
-  found --> found: markQueen()
-  found --> found: toggleNote()
-  wrong --> wrong: markQueen()
-  wrong --> wrong: toggleNote()
+  found --> found: markQueen
+  found --> found: toggleNote
+  wrong --> wrong: markQueen
+  wrong --> wrong: toggleNote
 ```
 
 ### Notes
@@ -157,24 +145,24 @@ Modeling note:
 
 ### Derived Conditions
 
-| Derived State | Condition |
-| --- | --- |
-| `Playing` | `hearts > 0` and not all queens are found |
-| `Won` | all queens are found |
-| `Lost` | `hearts <= 0` |
+| Derived State | Condition                                 |
+| ------------- | ----------------------------------------- |
+| `Playing`     | `hearts > 0` and not all queens are found |
+| `Won`         | all queens are found                      |
+| `Lost`        | `hearts <= 0`                             |
 
 ### Transition Table
 
-| Current State | Event | Next State | Context Change | Action |
-| --- | --- | --- | --- | --- |
-| `Playing` | `markQueen(correct cell)` and not all queens found | `Playing` | found queens `n -> n + 1` | reveal queen |
-| `Playing` | `markQueen(correct final queen)` | `Won` | found queens `N - 1 -> N` | reveal final queen |
-| `Playing` | `markQueen(wrong cell)` and hearts remain | `Playing` | hearts `n -> n - 1` | decrement hearts |
-| `Playing` | `markQueen(wrong cell)` and hearts reach `0` | `Lost` | hearts `1 -> 0` | decrement hearts and trigger loss UI flow |
-| `Playing` | `useHint()` with hint available | `Playing` | hint state `Available -> Used`; found queens `n -> n + 1` | reveal one queen and mark hint as used |
-| `Playing` | `resetGame()` | `Playing` | hearts `current -> 3`; hint state `current -> Available`; found queens `current -> 0` | rebuild board, reset session values |
-| `Won` | `resetGame()` | `Playing` | hearts `current -> 3`; hint state `current -> Available`; found queens `current -> 0` | start a fresh game |
-| `Lost` | `resetGame()` | `Playing` | hearts `current -> 3`; hint state `current -> Available`; found queens `current -> 0` | start a fresh game |
+| Current State | Event                                              | Next State | Context Change                                                                        | Action                                    |
+| ------------- | -------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------- | ----------------------------------------- |
+| `Playing`     | `markQueen(correct cell)` and not all queens found | `Playing`  | found queens `n -> n + 1`                                                             | reveal queen                              |
+| `Playing`     | `markQueen(correct final queen)`                   | `Won`      | found queens `N - 1 -> N`                                                             | reveal final queen                        |
+| `Playing`     | `markQueen(wrong cell)` and hearts remain          | `Playing`  | hearts `n -> n - 1`                                                                   | decrement hearts                          |
+| `Playing`     | `markQueen(wrong cell)` and hearts reach `0`       | `Lost`     | hearts `1 -> 0`                                                                       | decrement hearts and trigger loss UI flow |
+| `Playing`     | `useHint()` with hint available                    | `Playing`  | hint state `Available -> Used`; found queens `n -> n + 1`                             | reveal one queen and mark hint as used    |
+| `Playing`     | `resetGame()`                                      | `Playing`  | hearts `current -> 3`; hint state `current -> Available`; found queens `current -> 0` | rebuild board, reset session values       |
+| `Won`         | `resetGame()`                                      | `Playing`  | hearts `current -> 3`; hint state `current -> Available`; found queens `current -> 0` | start a fresh game                        |
+| `Lost`        | `resetGame()`                                      | `Playing`  | hearts `current -> 3`; hint state `current -> Available`; found queens `current -> 0` | start a fresh game                        |
 
 ### Mermaid
 
@@ -182,14 +170,14 @@ Modeling note:
 stateDiagram-v2
   [*] --> Playing
 
-  Playing --> Playing: markQueen(correct) / foundQueens++
-  Playing --> Playing: markQueen(wrong) [hearts > 1] / hearts--
-  Playing --> Playing: useHint() [hint available]
-  Playing --> Won: markQueen(final queen)
-  Playing --> Lost: markQueen(wrong) [hearts == 1] / hearts=0
+  Playing --> Playing: markQueen success / foundQueens++
+  Playing --> Playing: markQueen failed [hearts > 1] / hearts--
+  Playing --> Playing: useHint [hint available]
+  Playing --> Won: markQueen final success
+  Playing --> Lost: markQueen failed [hearts == 1] / hearts=0
 
-  Won --> Playing: resetGame()
-  Lost --> Playing: resetGame()
+  Won --> Playing: resetGame
+  Lost --> Playing: resetGame
 ```
 
 ### Notes
@@ -214,24 +202,24 @@ Implementation:
 
 ### Transition Table
 
-| Current State | Event | Next State | Value Change | Action |
-| --- | --- | --- | --- | --- |
-| `Available` | `useHint()` with unfound queens remaining | `Used` | `hintUsed: false -> true` | reveal one queen |
-| `Available` | `useHint()` with no remaining queens | `Available` | `hintUsed: false -> false` | return `null` |
-| `Used` | `useHint()` | `Used` | `hintUsed: true -> true` | return `null` |
-| `Available` | `resetGame()` | `Available` | `hintUsed: false -> false` | no change from fresh state |
-| `Used` | `resetGame()` | `Available` | `hintUsed: true -> false` | restore hint availability |
+| Current State | Event                                     | Next State  | Value Change               | Action                     |
+| ------------- | ----------------------------------------- | ----------- | -------------------------- | -------------------------- |
+| `Available`   | `useHint()` with unfound queens remaining | `Used`      | `hintUsed: false -> true`  | reveal one queen           |
+| `Available`   | `useHint()` with no remaining queens      | `Available` | `hintUsed: false -> false` | return `null`              |
+| `Used`        | `useHint()`                               | `Used`      | `hintUsed: true -> true`   | return `null`              |
+| `Available`   | `resetGame()`                             | `Available` | `hintUsed: false -> false` | no change from fresh state |
+| `Used`        | `resetGame()`                             | `Available` | `hintUsed: true -> false`  | restore hint availability  |
 
 ### Mermaid
 
 ```mermaid
 stateDiagram-v2
   [*] --> Available
-  Available --> Used: useHint() reveals a queen
-  Available --> Available: useHint() with no remaining queens
-  Used --> Used: useHint()
-  Used --> Available: resetGame()
-  Available --> Available: resetGame()
+  Available --> Used: useHint success
+  Available --> Available: useHint no-op
+  Used --> Used: useHint no-op
+  Used --> Available: resetGame
+  Available --> Available: resetGame
 ```
 
 ### Notes
@@ -277,16 +265,16 @@ Implementation:
 
 ### Transition Table
 
-| Current State | Event | Next State | Value Change | Action |
-| --- | --- | --- | --- | --- |
-| `3 Hearts` | `markQueen(wrong cell)` | `2 Hearts` | `3 -> 2` | decrement hearts |
-| `2 Hearts` | `markQueen(wrong cell)` | `1 Heart` | `2 -> 1` | decrement hearts |
-| `1 Heart` | `markQueen(wrong cell)` | `0 Hearts` | `1 -> 0` | decrement hearts and enter loss condition |
-| `0 Hearts` | `markQueen(wrong cell)` | `0 Hearts` | `0 -> 0` | remain at zero |
-| `3 Hearts` | `resetGame()` | `3 Hearts` | `3 -> 3` | restore fresh state |
-| `2 Hearts` | `resetGame()` | `3 Hearts` | `2 -> 3` | restore fresh state |
-| `1 Heart` | `resetGame()` | `3 Hearts` | `1 -> 3` | restore fresh state |
-| `0 Hearts` | `resetGame()` | `3 Hearts` | `0 -> 3` | restore fresh state |
+| Current State | Event                   | Next State | Value Change | Action                                    |
+| ------------- | ----------------------- | ---------- | ------------ | ----------------------------------------- |
+| `3 Hearts`    | `markQueen(wrong cell)` | `2 Hearts` | `3 -> 2`     | decrement hearts                          |
+| `2 Hearts`    | `markQueen(wrong cell)` | `1 Heart`  | `2 -> 1`     | decrement hearts                          |
+| `1 Heart`     | `markQueen(wrong cell)` | `0 Hearts` | `1 -> 0`     | decrement hearts and enter loss condition |
+| `0 Hearts`    | `markQueen(wrong cell)` | `0 Hearts` | `0 -> 0`     | remain at zero                            |
+| `3 Hearts`    | `resetGame()`           | `3 Hearts` | `3 -> 3`     | restore fresh state                       |
+| `2 Hearts`    | `resetGame()`           | `3 Hearts` | `2 -> 3`     | restore fresh state                       |
+| `1 Heart`     | `resetGame()`           | `3 Hearts` | `1 -> 3`     | restore fresh state                       |
+| `0 Hearts`    | `resetGame()`           | `3 Hearts` | `0 -> 3`     | restore fresh state                       |
 
 ### Mermaid
 
@@ -294,16 +282,16 @@ Implementation:
 stateDiagram-v2
   [*] --> Hearts3
 
-  Hearts3 --> Hearts2: wrong guess / hearts=2
-  Hearts2 --> Hearts1: wrong guess / hearts=1
-  Hearts1 --> Hearts0: wrong guess / hearts=0
+  Hearts3 --> Hearts2: markQueen failed / hearts=2
+  Hearts2 --> Hearts1: markQueen failed / hearts=1
+  Hearts1 --> Hearts0: markQueen failed / hearts=0
 
-  Hearts0 --> Hearts0: wrong guess / hearts=0
+  Hearts0 --> Hearts0: markQueen failed / hearts=0
 
-  Hearts3 --> Hearts3: resetGame()
-  Hearts2 --> Hearts3: resetGame()
-  Hearts1 --> Hearts3: resetGame()
-  Hearts0 --> Hearts3: resetGame()
+  Hearts3 --> Hearts3: resetGame
+  Hearts2 --> Hearts3: resetGame
+  Hearts1 --> Hearts3: resetGame
+  Hearts0 --> Hearts3: resetGame
 ```
 
 ### Notes

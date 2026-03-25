@@ -257,6 +257,8 @@ The current board interaction model is easiest to reason about as a small state 
 
 Use transition tables as the primary documentation format for stateful UI behavior. Mermaid diagrams are helpful as visual aids, but the table should remain the source of truth because it is easier to diff, review, and maintain in Git.
 
+When writing Mermaid diagrams for this repository, prefer GitHub-safe labels. Avoid function-call notation such as `toggleNote()` inside Mermaid transition text; use simplified labels such as `toggleNote` and keep the exact method-style names in tables or prose.
+
 When a feature gains meaningful state complexity, prefer documenting it in [docs/state.md](./docs/state.md) instead of overloading `README.md` or scattering the rules across comments.
 
 | Current State | Event | Next State | Action |
