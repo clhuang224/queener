@@ -38,27 +38,17 @@ Players currently solve the board by marking notes on cells and confirming queen
 - A handcrafted `7 x 7` puzzle is currently used in the main game flow
 - An `8 x 8` puzzle definition already exists in the repository and is covered by engine tests
 
-## Project Direction
+## Current Focus
 
-The project is currently at the stage of shaping its product direction and deciding what to build next around the core puzzle loop.
+The project is currently focused on turning the existing prototype into a complete and polished single-player experience.
 
-The current implementation proves out:
+Current priorities include:
 
-- the core board interaction model
-- the engine-driven rule system
-- the basic game flow from home screen to playable puzzle
-
-The next phase will likely focus on turning that solid core into a fuller game experience.
-
-## Future Plans
-
-The following areas are not fully implemented yet and are better treated as roadmap items rather than current features:
-
-- Replace temporary browser alerts with proper in-app feedback for hints, game over, and victory
-- Add a clearer restart flow after losing or finishing a puzzle
-- Expose more built-in puzzles and puzzle selection in the UI
-- Improve the overall game progression and presentation around winning and losing
-- Continue refining pointer, drag, and input behavior on the board
+- completing the win and loss flow
+- improving restart, hint, and result feedback
+- expanding the built-in puzzle set
+- defining a stronger UI and visual design direction
+- refining the overall feel of the board and player interaction
 
 ## Tech Stack
 
