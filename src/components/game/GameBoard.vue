@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import GameCell from '@/components/game/GameCell.vue'
 import QueenGame from '@/game/QueenGame'
-import { ref, watch } from 'vue'
+import { onBeforeUnmount, ref, watch } from 'vue'
 import HeartCounter from '../common/HeartCounter.vue'
 import { useRouter } from 'vue-router'
+import type { Position } from '@/types/board'
 
 const props = defineProps<{
   queenSkin: 'rainbow' | 'grayscale'
@@ -13,7 +14,105 @@ const props = defineProps<{
 
 const router = useRouter()
 
+const DOUBLE_CLICK_DELAY_MS = 250
+
 const isDragging = ref(false)
+const isPointerDown = ref(false)
+const suppressNextClick = ref(false)
+
+let dragStartPosition: Position | null = null
+let draggedPositions = new Set<string>()
+let pendingNoteTimer: ReturnType<typeof setTimeout> | null = null
+let pendingNotePosition: Position | null = null
+
+const getPositionKey = ([row, column]: Position) => `${row}-${column}`
+
+const clearPendingNote = () => {
+  if (pendingNoteTimer !== null) {
+    clearTimeout(pendingNoteTimer)
+    pendingNoteTimer = null
+  }
+  pendingNotePosition = null
+}
+
+const flushPendingNote = () => {
+  if (pendingNotePosition !== null) {
+    props.game.toggleNote(pendingNotePosition)
+  }
+  clearPendingNote()
+}
+
+const toggleDraggedPosition = (position: Position) => {
+  const key = getPositionKey(position)
+  if (draggedPositions.has(key)) return
+  props.game.toggleNote(position)
+  draggedPositions.add(key)
+}
+
+const resetPointerSession = () => {
+  isPointerDown.value = false
+  dragStartPosition = null
+  draggedPositions = new Set<string>()
+}
+
+const handlePointerDown = (position: Position) => {
+  isPointerDown.value = true
+  isDragging.value = false
+  suppressNextClick.value = false
+  dragStartPosition = position
+  draggedPositions = new Set<string>()
+}
+
+const handlePointerEnter = (position: Position) => {
+  if (!isPointerDown.value || dragStartPosition === null) return
+
+  const startKey = getPositionKey(dragStartPosition)
+  const currentKey = getPositionKey(position)
+
+  if (!isDragging.value && currentKey === startKey) return
+
+  clearPendingNote()
+
+  if (!isDragging.value) {
+    isDragging.value = true
+    suppressNextClick.value = true
+    toggleDraggedPosition(dragStartPosition)
+  }
+
+  toggleDraggedPosition(position)
+}
+
+const handleNoteClick = (position: Position) => {
+  if (suppressNextClick.value) {
+    suppressNextClick.value = false
+    return
+  }
+
+  if (pendingNotePosition !== null && getPositionKey(pendingNotePosition) !== getPositionKey(position)) {
+    flushPendingNote()
+  }
+
+  clearPendingNote()
+  pendingNotePosition = position
+  pendingNoteTimer = setTimeout(() => {
+    props.game.toggleNote(position)
+    clearPendingNote()
+  }, DOUBLE_CLICK_DELAY_MS)
+}
+
+const handleMarkQueen = (position: Position) => {
+  clearPendingNote()
+  props.game.markQueen(position)
+}
+
+const handlePointerEnd = () => {
+  isDragging.value = false
+  resetPointerSession()
+}
+
+onBeforeUnmount(() => {
+  clearPendingNote()
+})
 
 watch(
   () => props.game.hearts,
@@ -34,9 +133,9 @@ watch(
     class="game-board"
     :class="`cell-${cellSkin} queen-${queenSkin}`"
     :style="{ width: `${game.getSize() * 62}px` }"
-    @pointerup="isDragging = false"
-    @pointercancel="isDragging = false"
-    @mouseleave="isDragging = false"
+    @pointerup="handlePointerEnd"
+    @pointercancel="handlePointerEnd"
+    @mouseleave="handlePointerEnd"
   >
     <heart-counter :hearts="game.hearts" />
     <template v-for="(row, rowIndex) in game.board" :key="rowIndex">
@@ -44,9 +143,10 @@ watch(
         v-for="(cell, columnIndex) in row"
         :key="cell.getPosition().join('-')"
         :cell="cell"
-        :is-dragging="isDragging"
-        @startDrag="isDragging = true"
-        @mark-queen="game.markQueen([rowIndex, columnIndex])"
+        @pointer-down="handlePointerDown"
+        @pointer-enter="handlePointerEnter"
+        @note-click="handleNoteClick"
+        @mark-queen="handleMarkQueen"
       />
     </template>
   </div>

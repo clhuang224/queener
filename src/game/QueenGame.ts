@@ -37,6 +37,10 @@ export default class QueenGame {
     return this.board.length
   }
 
+  public toggleNote(position: Position): void {
+    this.board[position[0]]![position[1]]!.toggleNote()
+  }
+
   public markQueen(position: Position) {
     const hasQueen = this.board[position[0]]![position[1]]!.markQueen()
     if (!hasQueen) {

@@ -1,34 +1,31 @@
 <script setup lang="ts">
 import type BoardCell from '@/game/BoardCell'
 import { computed } from 'vue'
+import type { Position } from '@/types/board'
 
 const props = defineProps<{
   cell: BoardCell
-  isDragging: boolean
 }>()
 
 const emit = defineEmits<{
-  startDrag: []
-  markQueen: []
+  pointerDown: [position: Position]
+  pointerEnter: [position: Position]
+  noteClick: [position: Position]
+  markQueen: [position: Position]
 }>()
 
-const onPointerEnter = () => {
-  if (!props.isDragging) return
-  props.cell.toggleNote()
-}
-
 const cellColor = computed(() => `var(--cell-color-${props.cell.getRegion()})`)
+const position = computed(() => props.cell.getPosition())
 </script>
 
 <template>
-  <!-- FIXME: event order -->
   <div
     class="game-cell"
     :style="{ backgroundColor: cellColor }"
-    @dblclick="emit('markQueen')"
-    @pointerdown="[emit('startDrag'), props.cell.toggleNote()]"
-    @pointerenter="onPointerEnter"
-    @click="props.cell.toggleNote()"
+    @dblclick="emit('markQueen', position)"
+    @pointerdown="emit('pointerDown', position)"
+    @pointerenter="emit('pointerEnter', position)"
+    @click="emit('noteClick', position)"
   >
     <template v-if="props.cell.isQueen() && props.cell.status === 'found'">
       <div class="queen">👸</div>
