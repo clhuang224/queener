@@ -88,7 +88,10 @@ const handleNoteClick = (position: Position) => {
     return
   }
 
-  if (pendingNotePosition !== null && getPositionKey(pendingNotePosition) !== getPositionKey(position)) {
+  if (
+    pendingNotePosition !== null &&
+    getPositionKey(pendingNotePosition) !== getPositionKey(position)
+  ) {
     flushPendingNote()
   }
 
@@ -140,7 +143,7 @@ watch(
     <heart-counter :hearts="game.hearts" />
     <template v-for="(row, rowIndex) in game.board" :key="rowIndex">
       <game-cell
-        v-for="(cell, columnIndex) in row"
+        v-for="cell in row"
         :key="cell.getPosition().join('-')"
         :cell="cell"
         @pointer-down="handlePointerDown"
