@@ -5,20 +5,58 @@ import GameBoard from '@/components/game/GameBoard.vue'
 import QueenGame from '@/game/QueenGame'
 import { N_7_PUZZLES } from '@/puzzles/n7'
 import { computed, ref, type Ref } from 'vue'
+import { useGlobalModalStore } from '@/stores/globalModal'
 
 const router = useRouter()
+
+const { openAlertModal, openConfirmModal } = useGlobalModalStore()
 
 // XXX: unwrapRef<QueenGame>
 const game = ref(new QueenGame(N_7_PUZZLES[0]!)) as Ref<QueenGame>
 
-const clickHint = () => {
+const clickHint = async () => {
   const position = game.value.useHint()
-  // TODO: better hint UI instead of alert
+
   if (position) {
-    alert(`Hint: Place a queen at (${position[0] + 1}, ${position[1] + 1})`)
-  } else {
-    alert('No hints available!')
+    await openAlertModal({
+      title: 'Hint',
+      content: `Place a queen at (${position[0] + 1}, ${position[1] + 1})`,
+    })
+    return
   }
+
+  await openAlertModal({
+    title: 'Hint',
+    content: 'No hints available!',
+  })
+}
+
+const clickQuit = async () => {
+  try {
+    await openConfirmModal({
+      title: 'Quit Game',
+      content: 'Are you sure you want to leave this puzzle?',
+    })
+    await router.push('/')
+  } catch {
+    return
+  }
+}
+
+const handleWin = async () => {
+  await openAlertModal({
+    title: 'Congratulations!',
+    content: 'You solved the puzzle!',
+  })
+  await router.push('/')
+}
+
+const handleLose = async () => {
+  await openAlertModal({
+    title: 'Game Over',
+    content: 'You lost! Try again.',
+  })
+  game.value.resetGame()
 }
 
 const isHintUsed = computed(() => game.value.isHintUsed())
@@ -26,9 +64,15 @@ const isHintUsed = computed(() => game.value.isHintUsed())
 
 <template>
   <div class="game">
-    <game-board :game="game" queen-skin="grayscale" cell-skin="rainbow" />
+    <game-board
+      :game="game"
+      queen-skin="grayscale"
+      cell-skin="rainbow"
+      @win="handleWin"
+      @lose="handleLose"
+    />
     <div class="buttons">
-      <base-button class="quit" @click="router.push('/')">Quit</base-button>
+      <base-button class="quit" @click="clickQuit">Quit</base-button>
       <base-button class="hint" @click="clickHint" :disabled="isHintUsed">Hint</base-button>
     </div>
   </div>

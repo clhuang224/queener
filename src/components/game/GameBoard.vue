@@ -3,7 +3,6 @@ import GameCell from '@/components/game/GameCell.vue'
 import QueenGame from '@/game/QueenGame'
 import { onBeforeUnmount, ref, watch } from 'vue'
 import HeartCounter from '../common/HeartCounter.vue'
-import { useRouter } from 'vue-router'
 import type { Position } from '@/types/board'
 
 const props = defineProps<{
@@ -12,7 +11,10 @@ const props = defineProps<{
   game: QueenGame
 }>()
 
-const router = useRouter()
+const emits = defineEmits<{
+  win: []
+  lose: []
+}>()
 
 const DOUBLE_CLICK_DELAY_MS = 250
 
@@ -118,15 +120,16 @@ onBeforeUnmount(() => {
 })
 
 watch(
-  () => props.game.hearts,
-  (newHearts) => {
-    if (newHearts === 0) {
-      // TODO: panel with "Game Over" message and "Restart" button
-      alert('Game Over! You have run out of hearts.')
-      setTimeout(() => {
-        router.push('/')
-      }, 3000)
-    }
+  () => props.game.isGameOver(),
+  (gameOver) => {
+    if (gameOver) emits('lose')
+  },
+)
+
+watch(
+  () => props.game.isWin(),
+  (win) => {
+    if (win) emits('win')
   },
 )
 </script>
