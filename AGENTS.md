@@ -376,6 +376,8 @@ When making changes in this repository:
 - prefer small, named components over long anonymous template blocks
 - keep views focused on screen flow
 - keep game rules centralized in `QueenGame`
+- prefer solving TypeScript typing issues without `as` assertions when practical; use `as` only as a last resort when the type relationship is real but difficult to express cleanly
+- avoid `any`; prefer explicit types, `unknown`, generics, or narrower utility types instead
 - choose readability over clever abstraction
 - avoid duplicating rule logic across multiple files
 

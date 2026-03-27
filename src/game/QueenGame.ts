@@ -79,3 +79,5 @@ export default class QueenGame {
     this.hearts = 3
   }
 }
+
+export type QueenGamePublic = Pick<QueenGame, keyof QueenGame>

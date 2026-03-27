@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import GameCell from '@/components/game/GameCell.vue'
-import QueenGame from '@/game/QueenGame'
+import type { QueenGamePublic } from '@/game/QueenGame'
 import { onBeforeUnmount, ref } from 'vue'
 import HeartCounter from '../common/HeartCounter.vue'
 import type { Position } from '@/types/board'
@@ -8,7 +8,7 @@ import type { Position } from '@/types/board'
 const props = defineProps<{
   queenSkin: 'rainbow' | 'grayscale'
   cellSkin: 'rainbow' | 'grayscale'
-  game: QueenGame
+  game: QueenGamePublic
 }>()
 
 const DOUBLE_CLICK_DELAY_MS = 250
