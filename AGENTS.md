@@ -368,6 +368,14 @@ Keep the subject concise and imperative.
 
 If an AI agent creates the commit, include a body that summarizes the concrete changes.
 
+If an AI agent creates the commit, append a `Co-authored-by` trailer in this format:
+
+`Co-authored-by: <tool> <model> <email>`
+
+Example:
+
+`Co-authored-by: Codex GPT-5.4 <noreply@openai.com>`
+
 ## 8. Working Style Expectations
 
 When making changes in this repository:
