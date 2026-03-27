@@ -3,7 +3,7 @@ import { useRouter } from 'vue-router'
 import BaseButton from '@/components/common/BaseButton.vue'
 import GameBoard from '@/components/game/GameBoard.vue'
 import QueenGame from '@/game/QueenGame'
-import { N_7_PUZZLES } from '@/puzzles/n7'
+import { SIMPLE_PUZZLES } from '@/puzzles/simple'
 import { computed, reactive, watch } from 'vue'
 import { useGlobalModalStore } from '@/stores/globalModal'
 
@@ -11,7 +11,7 @@ const router = useRouter()
 
 const { openAlertModal, openConfirmModal } = useGlobalModalStore()
 
-const game = reactive(new QueenGame(N_7_PUZZLES[0]!))
+const game = reactive(new QueenGame(SIMPLE_PUZZLES[0]!))
 
 const clickHint = async () => {
   const position = game.useHint()

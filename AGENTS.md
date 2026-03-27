@@ -137,9 +137,17 @@ Responsibilities:
 
 - define board regions
 - define queen positions
+- define per-puzzle rule flags when the puzzle variant needs them
 - group puzzle sets by board size or difficulty when useful
 
 Keep puzzle data declarative. Validation or gameplay logic should not live inside puzzle definition files.
+
+Current puzzle shape notes:
+
+- puzzle size should live in `puzzle.rules.size`
+- default campaign puzzles should keep `allowDisconnectedRegions: false`
+- default campaign puzzles should keep `queensPerUnit: 1`
+- if a future puzzle variant changes those flags, update validation and player-facing rule explanations together
 
 ### `src/utils/`
 

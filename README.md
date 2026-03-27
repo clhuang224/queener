@@ -35,8 +35,11 @@ Players currently solve the board by marking notes on cells and confirming queen
 
 ### Built-In Puzzle Data
 
-- A handcrafted `7 x 7` puzzle is currently used in the main game flow
-- An `8 x 8` puzzle definition already exists in the repository and is covered by engine tests
+- Built-in puzzles are defined as static data in the repository
+- Each puzzle includes board regions, queen positions, and per-puzzle rule settings
+- The current puzzle set is intended to support a curated single-player campaign rather than fully dynamic generation
+- The current campaign uses the default rule set: regions stay connected, and each row, column, and region contains exactly one queen
+- The puzzle model already supports future variants such as disconnected regions or rules that require two queens per row, column, and region
 
 ## Current Focus
 

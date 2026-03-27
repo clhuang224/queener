@@ -12,6 +12,11 @@ vi.mock('vue-router', () => ({
 
 const TEST_PUZZLE: Puzzle = {
   id: 'test-puzzle',
+  rules: {
+    size: 2,
+    allowDisconnectedRegions: false,
+    queensPerUnit: 1,
+  },
   regions: [
     [0, 0],
     [1, 1],

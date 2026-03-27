@@ -1,22 +1,21 @@
 import { describe, it, expect } from 'vitest'
 import QueenGame from '../QueenGame.ts'
-import { N_7_PUZZLES } from '../../puzzles/n7.ts'
-import { N_8_PUZZLES } from '../../puzzles/n8.ts'
+import { SIMPLE_PUZZLES } from '../../puzzles/simple.ts'
 
-describe.each([...N_7_PUZZLES, ...N_8_PUZZLES])('QueenGame', (puzzle) => {
+describe.each(SIMPLE_PUZZLES)('QueenGame', (puzzle) => {
   describe(`Puzzle ID: ${puzzle.id}`, () => {
     describe('initialization', () => {
-      it(`size should be ${puzzle.regions.length}`, () => {
+      it(`size should be ${puzzle.rules.size}`, () => {
         const game = new QueenGame(puzzle)
-        expect(game.getSize()).toBe(puzzle.regions.length)
+        expect(game.getSize()).toBe(puzzle.rules.size)
       })
-      it(`should have ${puzzle.regions.length} queens on the board`, () => {
+      it(`should have ${puzzle.rules.size} queens on the board`, () => {
         const game = new QueenGame(puzzle)
         const queenCount = game.board.reduce(
           (count, row) => count + row.filter((square) => square.isQueen()).length,
           0,
         )
-        expect(queenCount).toBe(puzzle.regions.length)
+        expect(queenCount).toBe(puzzle.rules.size)
       })
     })
 
