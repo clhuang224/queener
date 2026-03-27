@@ -4,7 +4,7 @@ import BaseButton from '@/components/common/BaseButton.vue'
 import GameBoard from '@/components/game/GameBoard.vue'
 import QueenGame from '@/game/QueenGame'
 import { N_7_PUZZLES } from '@/puzzles/n7'
-import { computed, ref, type Ref } from 'vue'
+import { computed, ref, type Ref, watch } from 'vue'
 import { useGlobalModalStore } from '@/stores/globalModal'
 
 const router = useRouter()
@@ -43,34 +43,36 @@ const clickQuit = async () => {
   }
 }
 
-const handleWin = async () => {
-  await openAlertModal({
-    title: 'Congratulations!',
-    content: 'You solved the puzzle!',
-  })
-  await router.push('/')
-}
-
-const handleLose = async () => {
-  await openAlertModal({
-    title: 'Game Over',
-    content: 'You lost! Try again.',
-  })
-  game.value.resetGame()
-}
-
 const isHintUsed = computed(() => game.value.isHintUsed())
+
+watch(
+  () => game.value.isGameOver(),
+  async (gameOver) => {
+    if (!gameOver) return
+    await openAlertModal({
+      title: 'Game Over',
+      content: 'You lost! Try again.',
+    })
+    game.value.resetGame()
+  },
+)
+
+watch(
+  () => game.value.isWin(),
+  async (win) => {
+    if (!win) return
+    await openAlertModal({
+      title: 'Congratulations!',
+      content: 'You solved the puzzle!',
+    })
+    await router.push('/')
+  },
+)
 </script>
 
 <template>
   <div class="game">
-    <game-board
-      :game="game"
-      queen-skin="grayscale"
-      cell-skin="rainbow"
-      @win="handleWin"
-      @lose="handleLose"
-    />
+    <game-board :game="game" queen-skin="grayscale" cell-skin="rainbow" />
     <div class="buttons">
       <base-button class="quit" @click="clickQuit">Quit</base-button>
       <base-button class="hint" @click="clickHint" :disabled="isHintUsed">Hint</base-button>

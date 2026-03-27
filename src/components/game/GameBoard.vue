@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import GameCell from '@/components/game/GameCell.vue'
 import QueenGame from '@/game/QueenGame'
-import { onBeforeUnmount, ref, watch } from 'vue'
+import { onBeforeUnmount, ref } from 'vue'
 import HeartCounter from '../common/HeartCounter.vue'
 import type { Position } from '@/types/board'
 
@@ -9,11 +9,6 @@ const props = defineProps<{
   queenSkin: 'rainbow' | 'grayscale'
   cellSkin: 'rainbow' | 'grayscale'
   game: QueenGame
-}>()
-
-const emits = defineEmits<{
-  win: []
-  lose: []
 }>()
 
 const DOUBLE_CLICK_DELAY_MS = 250
@@ -118,20 +113,6 @@ const handlePointerEnd = () => {
 onBeforeUnmount(() => {
   clearPendingNote()
 })
-
-watch(
-  () => props.game.isGameOver(),
-  (gameOver) => {
-    if (gameOver) emits('lose')
-  },
-)
-
-watch(
-  () => props.game.isWin(),
-  (win) => {
-    if (win) emits('win')
-  },
-)
 </script>
 
 <template>
