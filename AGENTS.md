@@ -332,6 +332,20 @@ Current testing setup includes:
 - Vitest for unit tests
 - Cypress for end-to-end tests
 
+Prefer a layered testing strategy:
+
+- use unit tests for game rules, puzzle validation, and other pure logic
+- use component tests for UI interaction contracts and state coordination inside a component boundary
+- use Cypress sparingly for a small number of high-value player flows
+
+In this project, end-to-end tests are most valuable when they protect interaction contracts that are easy to break through event wiring changes, such as:
+
+- starting a game from the home screen
+- desktop board interactions such as single click, double click, and drag
+- a few critical player-visible flows such as hint usage, win, or game over
+
+Do not try to exhaustively test all gameplay rule combinations through Cypress. Prefer covering those combinations in `QueenGame` and other focused Vitest suites, where failures are faster, more precise, and easier to maintain.
+
 Testing priorities:
 
 - `QueenGame` rule correctness
@@ -347,6 +361,12 @@ For Vue components, prefer testing:
 - prop-driven rendering
 - visible behavior after interaction
 
+For board interactions specifically:
+
+- keep most gesture and interaction edge cases in Vitest component tests around `GameBoard`
+- use Cypress to confirm a smaller set of real browser flows still works end-to-end
+- avoid overloading Cypress with every timing edge case unless the bug only reproduces in a real browser
+
 Avoid brittle assertions against:
 
 - generated DOM structure that is not part of the feature contract
@@ -354,6 +374,8 @@ Avoid brittle assertions against:
 - framework internals
 
 Use consistent naming for new tests. Prefer `*.test.ts` and `*.test.tsx` across the repository instead of `*.spec.*`.
+
+Prefer colocated tests when practical. Put a test file next to the source file it covers rather than inside a separate `__tests__` directory unless there is a strong reason not to.
 
 ## 7. Commit Rules
 

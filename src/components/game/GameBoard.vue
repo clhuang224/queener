@@ -118,6 +118,7 @@ onBeforeUnmount(() => {
 <template>
   <div
     class="game-board"
+    data-test="game-board"
     :class="`cell-${cellSkin} queen-${queenSkin}`"
     :style="{ width: `${game.getSize() * 62}px` }"
     @pointerup="handlePointerEnd"

@@ -22,6 +22,9 @@ const position = computed(() => props.cell.getPosition())
   <div
     class="game-cell"
     :style="{ backgroundColor: cellColor }"
+    :data-row="position[0]"
+    :data-column="position[1]"
+    :data-test="`cell-${position[0]}-${position[1]}`"
     @dblclick="emit('markQueen', position)"
     @pointerdown="emit('pointerDown', position)"
     @pointerenter="emit('pointerEnter', position)"
