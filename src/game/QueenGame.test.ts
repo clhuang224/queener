@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import QueenGame from '../QueenGame.ts'
-import { SIMPLE_PUZZLES } from '../../puzzles/simple.ts'
+import QueenGame from './QueenGame.ts'
+import { SIMPLE_PUZZLES } from '../puzzles/simple.ts'
 
 describe.each(SIMPLE_PUZZLES)('QueenGame', (puzzle) => {
   describe(`Puzzle ID: ${puzzle.id}`, () => {

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import BoardCell from '../BoardCell.ts'
+import BoardCell from './BoardCell.ts'
 
 const ROW = 1
 const COLUMN = 2
