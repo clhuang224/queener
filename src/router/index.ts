@@ -10,7 +10,10 @@ const router = createRouter({
       component: HomeView,
     },
     {
-      path: '/game',
+      path: '/game/:level',
+      props: (route) => ({
+        level: parseInt(route.params.level as string, 10),
+      }),
       name: 'game',
       component: () => import('../views/GameView.vue'),
     },

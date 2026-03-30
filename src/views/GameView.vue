@@ -1,17 +1,43 @@
 <script setup lang="ts">
+import { computed, reactive, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import BaseButton from '@/components/common/BaseButton.vue'
 import GameBoard from '@/components/game/GameBoard.vue'
 import QueenGame from '@/game/QueenGame'
-import { SIMPLE_PUZZLES } from '@/puzzles/simple'
-import { computed, reactive, watch } from 'vue'
+import { getPuzzleByLevel } from '@/puzzles/simple'
 import { useGlobalModalStore } from '@/stores/globalModal'
+import { useLevelStore } from '@/stores/level'
+
+const props = defineProps<{
+  level: number
+}>()
 
 const router = useRouter()
+const levelStore = useLevelStore()
 
 const { openAlertModal, openConfirmModal } = useGlobalModalStore()
 
-const game = reactive(new QueenGame(SIMPLE_PUZZLES[0]!))
+const { activeLevel, isUnlocked } = levelStore.resolvePlayableLevel(props.level)
+levelStore.setSelectedLevel(activeLevel)
+let puzzle
+
+try {
+  puzzle = getPuzzleByLevel(activeLevel)
+} catch (error) {
+  void router.replace({
+    name: 'home',
+  })
+
+  throw error
+}
+
+if (!isUnlocked) {
+  void router.replace({
+    name: 'home',
+  })
+}
+
+const game = reactive(new QueenGame(puzzle))
 
 const clickHint = async () => {
   const position = game.useHint()
@@ -60,17 +86,23 @@ watch(
   () => game.isWin(),
   async (win) => {
     if (!win) return
+
+    levelStore.completeLevel(activeLevel)
+
     await openAlertModal({
       title: 'Congratulations!',
       content: 'You solved the puzzle!',
     })
-    await router.push('/')
+    await router.push({
+      name: 'home',
+    })
   },
 )
 </script>
 
 <template>
   <div class="game">
+    <p class="level-title">Level {{ activeLevel }}</p>
     <game-board :game="game" queen-skin="grayscale" cell-skin="rainbow" />
     <div class="buttons">
       <base-button class="quit" @click="clickQuit">Quit</base-button>
@@ -91,5 +123,12 @@ watch(
     display: flex;
     gap: 10px;
   }
+}
+
+.level-title {
+  margin: 0 0 16px;
+  font-size: 24px;
+  font-weight: 700;
+  color: #1f3c88;
 }
 </style>

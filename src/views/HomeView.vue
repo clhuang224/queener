@@ -1,13 +1,40 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
+import { onMounted } from 'vue'
 import BaseButton from '@/components/common/BaseButton.vue'
+import LevelPicker from '@/components/home/LevelPicker.vue'
+import { useLevelStore } from '@/stores/level'
+import { storeToRefs } from 'pinia'
+
 const router = useRouter()
+const levelStore = useLevelStore()
+const { initializeSelectedLevel, selectPreviousLevel, selectNextLevel } = levelStore
+const { selectedLevel, highestUnlockedLevel } = storeToRefs(levelStore)
+
+onMounted(() => {
+  initializeSelectedLevel()
+})
+
+const startLevel = async () => {
+  await router.push({
+    name: 'game',
+    params: {
+      level: String(selectedLevel.value),
+    },
+  })
+}
 </script>
 
 <template>
   <main>
     <h2>Place the queens. Become the winner.</h2>
-    <base-button class="btn" @click="router.push('/game')">Start</base-button>
+    <level-picker
+      :selected-level="selectedLevel"
+      :highest-unlocked-level="highestUnlockedLevel"
+      @previous="selectPreviousLevel"
+      @next="selectNextLevel"
+    />
+    <base-button class="btn" @click="startLevel">Start</base-button>
   </main>
 </template>
 
@@ -17,6 +44,7 @@ main {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 24px;
   height: 100%;
 }
 </style>
