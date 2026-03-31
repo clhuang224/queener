@@ -1,11 +1,11 @@
-export interface StorageMock {
+interface StorageMock {
   getItem: (key: string) => string | null
   setItem: (key: string, value: string) => void
   removeItem: (key: string) => void
   clear: () => void
 }
 
-export const createStorageMock = (): StorageMock => {
+const createStorageMock = (): StorageMock => {
   const storage = new Map<string, string>()
 
   return {
@@ -20,4 +20,16 @@ export const createStorageMock = (): StorageMock => {
       storage.clear()
     },
   }
+}
+
+export const installStorageMock = () => {
+  const storageMock = createStorageMock()
+  Object.defineProperty(window, 'localStorage', {
+    value: storageMock,
+    configurable: true,
+  })
+
+  storageMock.clear()
+
+  return storageMock
 }

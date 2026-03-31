@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
-import { createPinia } from 'pinia'
-import { createStorageMock } from '@/test/storageMock'
+import { installStorageMock } from '@/test/localStorage'
+import { createTestingPinia } from '@/test/pinia'
 import HomeView from './HomeView.vue'
 
 const push = vi.fn()
@@ -14,18 +14,14 @@ vi.mock('vue-router', () => ({
 
 describe('HomeView', () => {
   beforeEach(() => {
-    Object.defineProperty(window, 'localStorage', {
-      value: createStorageMock(),
-      configurable: true,
-    })
+    installStorageMock()
     push.mockReset()
-    window.localStorage.clear()
   })
 
   it('starts at level 1 and keeps the next arrow locked before level 1 is cleared', () => {
     const wrapper = mount(HomeView, {
       global: {
-        plugins: [createPinia()],
+        plugins: [createTestingPinia()],
       },
     })
     const buttons = wrapper.findAll('button')
@@ -40,7 +36,7 @@ describe('HomeView', () => {
 
     const wrapper = mount(HomeView, {
       global: {
-        plugins: [createPinia()],
+        plugins: [createTestingPinia()],
       },
     })
     const buttons = wrapper.findAll('button')

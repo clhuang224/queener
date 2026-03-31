@@ -68,6 +68,18 @@ const clickQuit = async () => {
   }
 }
 
+const clickRestart = async () => {
+  try {
+    await openConfirmModal({
+      title: 'Restart Level',
+      content: 'Are you sure you want to restart this puzzle?',
+    })
+    game.resetGame()
+  } catch {
+    return
+  }
+}
+
 const isHintUsed = computed(() => game.isHintUsed())
 
 watch(
@@ -105,6 +117,7 @@ watch(
     <p class="level-title">Level {{ activeLevel }}</p>
     <game-board :game="game" queen-skin="grayscale" cell-skin="rainbow" />
     <div class="buttons">
+      <base-button class="restart" @click="clickRestart">Restart</base-button>
       <base-button class="quit" @click="clickQuit">Quit</base-button>
       <base-button class="hint" @click="clickHint" :disabled="isHintUsed">Hint</base-button>
     </div>

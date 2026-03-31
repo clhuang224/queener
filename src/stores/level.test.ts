@@ -1,15 +1,12 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { createPinia, setActivePinia } from 'pinia'
 import { useLevelStore } from './level'
-import { createStorageMock } from '@/test/storageMock'
+import { installStorageMock } from '@/test/localStorage'
+import { createTestingPinia } from '@/test/pinia'
 
 describe('level store', () => {
   beforeEach(() => {
-    setActivePinia(createPinia())
-    Object.defineProperty(window, 'localStorage', {
-      value: createStorageMock(),
-      configurable: true,
-    })
+    createTestingPinia()
+    installStorageMock()
   })
 
   it('starts with only level 1 unlocked', () => {
