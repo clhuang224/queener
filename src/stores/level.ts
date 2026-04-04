@@ -47,7 +47,7 @@ export const useLevelStore = defineStore('level', () => {
     return Math.min(Math.max(level, 1), TOTAL_LEVELS)
   }
 
-  const hydrateProgress = () => {
+  const loadProgress = () => {
     highestCompletedLevel.value = getStoredHighestCompletedLevel()
   }
 
@@ -56,7 +56,7 @@ export const useLevelStore = defineStore('level', () => {
   }
 
   const initializeSelectedLevel = () => {
-    hydrateProgress()
+    loadProgress()
 
     if (!hasInitializedSelectedLevel.value) {
       selectedLevel.value = highestUnlockedLevel.value
@@ -68,7 +68,7 @@ export const useLevelStore = defineStore('level', () => {
   }
 
   const setSelectedLevel = (level: number) => {
-    hydrateProgress()
+    loadProgress()
     selectedLevel.value = clampUnlockedLevel(level)
     hasInitializedSelectedLevel.value = true
   }
@@ -88,7 +88,7 @@ export const useLevelStore = defineStore('level', () => {
   }
 
   const resolvePlayableLevel = (level: number) => {
-    hydrateProgress()
+    loadProgress()
 
     const fallbackLevel = highestUnlockedLevel.value
     const normalizedLevel = clampLevel(level)
@@ -101,7 +101,7 @@ export const useLevelStore = defineStore('level', () => {
   }
 
   const completeLevel = (level: number) => {
-    hydrateProgress()
+    loadProgress()
 
     const normalizedLevel = clampLevel(level)
     highestCompletedLevel.value = Math.max(highestCompletedLevel.value, normalizedLevel)
@@ -123,7 +123,7 @@ export const useLevelStore = defineStore('level', () => {
     highestCompletedLevel,
     highestUnlockedLevel,
     selectedLevel,
-    hydrateProgress,
+    loadProgress,
     initializeSelectedLevel,
     setSelectedLevel,
     selectPreviousLevel,

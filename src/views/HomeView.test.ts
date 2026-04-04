@@ -25,10 +25,12 @@ describe('HomeView', () => {
       },
     })
     const buttons = wrapper.findAll('button')
+    const previousButton = buttons.find((button) => button.text() === '←')
+    const nextButton = buttons.find((button) => button.text() === '→')
 
     expect(wrapper.find('.level-number').text()).toBe('1')
-    expect(buttons[0]!.attributes('disabled')).toBeDefined()
-    expect(buttons[1]!.attributes('disabled')).toBeDefined()
+    expect(previousButton!.attributes('disabled')).toBeDefined()
+    expect(nextButton!.attributes('disabled')).toBeDefined()
   })
 
   it('allows selecting only unlocked levels and starts the selected level', async () => {
@@ -40,20 +42,38 @@ describe('HomeView', () => {
       },
     })
     const buttons = wrapper.findAll('button')
+    const nextButton = buttons.find((button) => button.text() === '→')
+    const previousButton = buttons.find((button) => button.text() === '←')
+    const startButton = buttons.find((button) => button.text() === 'Start')
 
-    await buttons[1]!.trigger('click')
+    await nextButton!.trigger('click')
     expect(wrapper.find('.level-number').text()).toBe('3')
 
-    expect(buttons[0]!.attributes('disabled')).toBeUndefined()
-    expect(buttons[1]!.attributes('disabled')).toBeDefined()
+    expect(previousButton!.attributes('disabled')).toBeUndefined()
+    expect(nextButton!.attributes('disabled')).toBeDefined()
 
-    await buttons[2]!.trigger('click')
+    await startButton!.trigger('click')
 
     expect(push).toHaveBeenCalledWith({
       name: 'game',
       params: {
         level: '3',
       },
+    })
+  })
+
+  it('opens the setting page', async () => {
+    const wrapper = mount(HomeView, {
+      global: {
+        plugins: [createTestingPinia()],
+      },
+    })
+
+    const settingButton = wrapper.findAll('button').find((button) => button.text() === '⚙️')
+    await settingButton!.trigger('click')
+
+    expect(push).toHaveBeenCalledWith({
+      name: 'setting',
     })
   })
 })

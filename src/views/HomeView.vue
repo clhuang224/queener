@@ -23,10 +23,19 @@ const startLevel = async () => {
     },
   })
 }
+
+const openSetting = async () => {
+  await router.push({
+    name: 'setting',
+  })
+}
 </script>
 
 <template>
   <main>
+    <header>
+      <base-button @click="openSetting">⚙️</base-button>
+    </header>
     <h2>Place the queens. Become the winner.</h2>
     <level-picker
       :selected-level="selectedLevel"
@@ -46,5 +55,13 @@ main {
   justify-content: center;
   gap: 24px;
   height: 100%;
+  margin: 0 auto;
+  max-width: 480px;
+  header {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
 }
 </style>

@@ -34,8 +34,10 @@ const mountGameView = () => {
 
   return {
     wrapper,
-    queenCell: wrapper.find('[data-test="cell-0-2"]'),
-    restartButton: wrapper.findAll('button')[0]!,
+    queenCell: wrapper.findAll('.game-cell').find((cell) => {
+      return cell.attributes('data-row') === '0' && cell.attributes('data-column') === '2'
+    })!,
+    restartButton: wrapper.findAll('button').find((button) => button.text() === 'Restart')!,
   }
 }
 
@@ -77,5 +79,16 @@ describe('GameView', () => {
     await wrapper.vm.$nextTick()
 
     expect(queenCell.text()).toContain('👸')
+  })
+
+  it('uses the saved skin settings for the board', () => {
+    window.localStorage.setItem('queen-game-cell-skin', 'grayscale')
+    window.localStorage.setItem('queen-game-queen-skin', 'rainbow')
+
+    const { wrapper } = mountGameView()
+    const board = wrapper.find('[data-test="game-board"]')
+
+    expect(board.classes()).toContain('cell-grayscale')
+    expect(board.classes()).toContain('queen-rainbow')
   })
 })

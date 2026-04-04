@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { computed, reactive, watch } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import BaseButton from '@/components/common/BaseButton.vue'
 import GameBoard from '@/components/game/GameBoard.vue'
 import QueenGame from '@/game/QueenGame'
 import { getPuzzleByLevel } from '@/puzzles/simple'
+import { useSkinStore } from '@/stores/skin'
 import { useGlobalModalStore } from '@/stores/globalModal'
 import { useLevelStore } from '@/stores/level'
 
@@ -13,7 +15,9 @@ const props = defineProps<{
 }>()
 
 const router = useRouter()
+const skinStore = useSkinStore()
 const levelStore = useLevelStore()
+const { cellSkin, queenSkin } = storeToRefs(skinStore)
 
 const { openAlertModal, openConfirmModal } = useGlobalModalStore()
 
@@ -36,6 +40,8 @@ if (!isUnlocked) {
     name: 'home',
   })
 }
+
+skinStore.load()
 
 const game = reactive(new QueenGame(puzzle))
 
@@ -115,7 +121,7 @@ watch(
 <template>
   <div class="game">
     <p class="level-title">Level {{ activeLevel }}</p>
-    <game-board :game="game" queen-skin="grayscale" cell-skin="rainbow" />
+    <game-board :game="game" :queen-skin="queenSkin" :cell-skin="cellSkin" />
     <div class="buttons">
       <base-button class="restart" @click="clickRestart">Restart</base-button>
       <base-button class="quit" @click="clickQuit">Quit</base-button>

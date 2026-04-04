@@ -12,7 +12,7 @@ describe('level store', () => {
   it('starts with only level 1 unlocked', () => {
     const levelStore = useLevelStore()
 
-    levelStore.hydrateProgress()
+    levelStore.loadProgress()
     levelStore.initializeSelectedLevel()
 
     expect(levelStore.highestCompletedLevel).toBe(0)

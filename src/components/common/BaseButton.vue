@@ -5,13 +5,13 @@ defineProps<{
 </script>
 
 <template>
-  <button class="base" :disabled="disabled">
+  <button class="base-button" :disabled="disabled">
     <slot />
   </button>
 </template>
 
 <style scoped lang="scss">
-.base {
+.base-button {
   padding: 10px 20px;
   font-size: 16px;
   background-color: #007bff;

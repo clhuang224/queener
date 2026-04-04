@@ -360,6 +360,9 @@ For Vue components, prefer testing:
 - emitted events
 - prop-driven rendering
 - visible behavior after interaction
+- existing semantic hooks such as text, roles, labels, stable classes, or existing attributes before adding new `data-*` test selectors
+
+When writing tests, avoid adding new `data-*` / dataset hooks unless the component does not already expose a stable selector through its existing API or markup. Reuse the selectors the component already has when practical.
 
 For board interactions specifically:
 
