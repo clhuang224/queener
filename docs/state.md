@@ -2,13 +2,13 @@
 
 This document collects the main state transitions used in the project.
 
-> Transition tables are the primary source of truth. Mermaid diagrams are included as compact visual aids.
+> Transition tables are the primary source of truth. State flowcharts are included as compact visual aids.
 >
-> To keep diagrams renderable on GitHub, Mermaid labels in this document stay conservative. Prefer simplified labels such as `toggleNote` in diagrams, and keep exact method-style names in tables or prose when needed. Also avoid Mermaid reserved words such as `note` as raw state node names.
+> To keep these flowcharts renderable on GitHub, labels in this document stay conservative. Prefer simplified labels such as `toggleNote` in diagrams, and keep exact method-style names in tables or prose when needed. Also avoid reserved words such as `note` as raw state node names.
 
 ## 1. Cell Interaction Session
 
-This state machine describes how `GameBoard` interprets low-level pointer and click events coming from `GameCell`.
+This state machine describes how `GameBoard` interprets low-level desktop and mobile interaction events coming from `GameCell` and the board container.
 
 Type:
 
@@ -22,43 +22,81 @@ Implementation:
 
 ### Transition Table
 
-| Current State        | Event                                        | Next State           | Action                                         |
-| -------------------- | -------------------------------------------- | -------------------- | ---------------------------------------------- |
-| `Idle`               | `pointerdown(cell)`                          | `Pressed`            | start pointer session and store start position |
-| `Pressed`            | `click(cell)`                                | `PendingSingleClick` | schedule delayed note toggle                   |
-| `Pressed`            | `pointerenter(other cell)`                   | `Dragging`           | begin drag selection                           |
-| `Pressed`            | `pointerup` / `pointercancel` / `mouseleave` | `Idle`               | end pointer session                            |
-| `PendingSingleClick` | `dblclick(cell)`                             | `Idle`               | cancel pending note and mark queen             |
-| `PendingSingleClick` | click timeout                                | `Idle`               | call `QueenGame.toggleNote(position)`          |
-| `PendingSingleClick` | `pointerenter(other cell)`                   | `Dragging`           | cancel pending click and begin drag selection  |
-| `Dragging`           | `pointerenter(new cell)`                     | `Dragging`           | toggle note once for each newly entered cell   |
-| `Dragging`           | `pointerup` / `pointercancel` / `mouseleave` | `Idle`               | end drag session                               |
+| Current State        | Platform    | Event                                                   | Next State           | Action                                                          |
+| -------------------- | ----------- | ------------------------------------------------------- | -------------------- | --------------------------------------------------------------- |
+| `Idle`               | desktop+mobile | `pointerdown(cell)`                                  | `Pressed`            | start pointer session and store start position                  |
+| `Pressed`            | desktop+mobile | `click(cell)`                                        | `PendingSingleClick` | schedule delayed note toggle                                    |
+| `Pressed`            | desktop     | `pointerenter(other cell)`                              | `Dragging`           | cancel pending note if needed and begin drag selection          |
+| `Pressed`            | mobile      | `touchmove(over other cell)`                            | `Dragging`           | resolve touched cell from coordinates and begin drag selection  |
+| `Pressed`            | desktop     | `pointerup` / `pointercancel` / `mouseleave`            | `Idle`               | end pointer session                                             |
+| `Pressed`            | mobile      | `touchend` / `touchcancel` / `pointercancel`            | `Idle`               | end pointer session                                             |
+| `PendingSingleClick` | desktop+mobile | `dblclick(cell)`                                     | `Idle`               | cancel pending note and mark queen                              |
+| `PendingSingleClick` | desktop+mobile | click timeout                                         | `Idle`               | call `QueenGame.toggleNote(position)`                           |
+| `PendingSingleClick` | desktop     | `pointerenter(other cell)`                              | `Dragging`           | cancel pending click and begin drag selection                   |
+| `PendingSingleClick` | mobile      | `touchmove(over other cell)`                            | `Dragging`           | cancel pending click and begin drag selection                   |
+| `Dragging`           | desktop     | `pointerenter(new cell)`                                | `Dragging`           | toggle note once for each newly entered cell                    |
+| `Dragging`           | mobile      | `touchmove(over new cell)`                              | `Dragging`           | toggle note once for each newly touched cell from screen point  |
+| `Dragging`           | desktop     | `pointerup` / `pointercancel` / `mouseleave`            | `Idle`               | end drag session                                                |
+| `Dragging`           | mobile      | `touchend` / `touchcancel` / `pointercancel`            | `Idle`               | end drag session                                                |
 
-### Mermaid
+### Desktop Flowchart
 
 ```mermaid
 stateDiagram-v2
   [*] --> Idle
 
-  Idle --> Pressed: pointerdown(cell)
-  Pressed --> PendingSingleClick: click(cell)
-  Pressed --> Dragging: pointerenter(other cell)
-  Pressed --> Idle: pointerup / pointercancel / mouseleave
+  Idle --> Pressed: GameCell.pointerdown -> handlePointerDown
+  Pressed --> PendingSingleClick: GameCell.click -> handleNoteClick
+  Pressed --> Dragging: GameCell.pointerenter(other cell) -> handlePointerEnter
+  Pressed --> Idle: board.pointerup or mouseleave -> handlePointerEnd
 
-  PendingSingleClick --> Idle: dblclick(cell) / cancel pending note + mark queen
-  PendingSingleClick --> Idle: click timeout / toggle note
-  PendingSingleClick --> Dragging: pointerenter(other cell) / cancel pending note
+  PendingSingleClick --> Idle: GameCell.dblclick -> handleMarkQueen
+  PendingSingleClick --> Idle: note timer fires -> QueenGame.toggleNote
+  PendingSingleClick --> Dragging: GameCell.pointerenter(other cell) -> handlePointerEnter
 
-  Dragging --> Dragging: pointerenter(new cell) / toggle note once
-  Dragging --> Idle: pointerup / pointercancel / mouseleave
+  Dragging --> Dragging: GameCell.pointerenter(new cell) -> handlePointerEnter
+  Dragging --> Idle: board.pointerup or mouseleave -> handlePointerEnd
 ```
+
+### Mobile Flowchart
+
+```mermaid
+stateDiagram-v2
+  [*] --> Idle
+
+  Idle --> Pressed: GameCell.pointerdown -> handlePointerDown
+  Pressed --> PendingSingleClick: GameCell.click -> handleNoteClick
+  Pressed --> Dragging: board.touchmove -> handleTouchMove -> handlePointerEnter
+  Pressed --> Idle: board.touchend or touchcancel -> handlePointerEnd
+
+  PendingSingleClick --> Idle: GameCell.dblclick -> handleMarkQueen
+  PendingSingleClick --> Idle: note timer fires -> QueenGame.toggleNote
+  PendingSingleClick --> Dragging: board.touchmove -> handleTouchMove -> handlePointerEnter
+
+  Dragging --> Dragging: board.touchmove -> handleTouchMove -> handlePointerEnter
+  Dragging --> Idle: board.touchend or touchcancel -> handlePointerEnd
+```
+
+### Function Mapping
+
+| Source | Event | Handler / Function Chain | Responsibility |
+| ------ | ----- | ------------------------ | -------------- |
+| `GameCell` | `pointerdown` | `handlePointerDown(position)` | start a pointer session and remember the drag start cell |
+| `GameCell` | `click` | `handleNoteClick(position)` | schedule the delayed single-click note toggle |
+| `GameCell` | `dblclick` | `handleMarkQueen(position)` -> `QueenGame.markQueen(position)` | cancel pending note and mark a queen |
+| `GameCell` | `pointerenter` | `handlePointerEnter(position)` | drive desktop drag progression |
+| `.game-board` | `touchmove` | `handleTouchMove(event)` -> `getPositionFromPoint(...)` -> `handlePointerEnter(position)` | drive mobile drag progression by resolving the touched cell from screen coordinates |
+| `.game-board` | `pointerup` / `pointercancel` / `mouseleave` / `touchend` / `touchcancel` | `handlePointerEnd()` -> `resetPointerSession()` | finish the current press or drag session |
 
 ### Notes
 
-- `GameCell` emits interaction intent only.
-- `GameBoard` owns gesture interpretation.
+- `GameCell` emits cell-level interaction intent only.
+- `GameBoard` owns gesture interpretation for both desktop and mobile.
 - `QueenGame` performs the actual note and queen updates.
 - The delayed single-click branch exists so a `dblclick` can cancel it cleanly.
+- On desktop, drag progression is driven by `pointerenter`.
+- On mobile, drag progression is driven by `touchmove`, and `GameBoard` resolves the active cell with `document.elementFromPoint(...)` before reusing the same drag-selection logic.
+- The shared `Dragging` state intentionally hides the input-source difference so note marking rules stay identical across devices.
 
 ## 2. BoardCell Status
 
@@ -89,7 +127,7 @@ Implementation:
 | `found`       | `toggleNote()`                    | `found`    | no-op                           |
 | `wrong`       | `toggleNote()`                    | `wrong`    | no-op                           |
 
-### Mermaid
+### State Flowchart
 
 ```mermaid
 stateDiagram-v2
@@ -141,7 +179,7 @@ Modeling note:
 
 - `Playing`, `Won`, and `Lost` are the high-level session states
 - hint availability is a separate orthogonal state machine documented below
-- exact value updates such as heart loss or revealed queen count stay in the transition table instead of being expanded into many combined Mermaid nodes
+- exact value updates such as heart loss or revealed queen count stay in the transition table instead of being expanded into many combined flowchart nodes
 
 ### Derived Conditions
 
@@ -164,7 +202,7 @@ Modeling note:
 | `Won`         | `resetGame()`                                      | `Playing`  | hearts `current -> 3`; hint state `current -> Available`; found queens `current -> 0` | start a fresh game                        |
 | `Lost`        | `resetGame()`                                      | `Playing`  | hearts `current -> 3`; hint state `current -> Available`; found queens `current -> 0` | start a fresh game                        |
 
-### Mermaid
+### State Flowchart
 
 ```mermaid
 stateDiagram-v2
@@ -210,7 +248,7 @@ Implementation:
 | `Available`   | `resetGame()`                             | `Available` | `hintUsed: false -> false` | no change from fresh state |
 | `Used`        | `resetGame()`                             | `Available` | `hintUsed: true -> false`  | restore hint availability  |
 
-### Mermaid
+### State Flowchart
 
 ```mermaid
 stateDiagram-v2
@@ -276,7 +314,7 @@ Implementation:
 | `1 Heart`     | `resetGame()`           | `3 Hearts` | `1 -> 3`     | restore fresh state                       |
 | `0 Hearts`    | `resetGame()`           | `3 Hearts` | `0 -> 3`     | restore fresh state                       |
 
-### Mermaid
+### State Flowchart
 
 ```mermaid
 stateDiagram-v2

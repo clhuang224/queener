@@ -24,6 +24,21 @@ let pendingNotePosition: Position | null = null
 
 const getPositionKey = ([row, column]: Position) => `${row}-${column}`
 
+const getPositionFromCellElement = (element: Element | null): Position | null => {
+  const cell = element?.closest('.game-cell')
+  if (!(cell instanceof HTMLElement)) return null
+
+  const row = Number(cell.dataset.row)
+  const column = Number(cell.dataset.column)
+
+  if (Number.isNaN(row) || Number.isNaN(column)) return null
+
+  return [row, column]
+}
+
+const getPositionFromPoint = (clientX: number, clientY: number): Position | null =>
+  getPositionFromCellElement(document.elementFromPoint(clientX, clientY))
+
 const clearPendingNote = () => {
   if (pendingNoteTimer !== null) {
     clearTimeout(pendingNoteTimer)
@@ -79,6 +94,19 @@ const handlePointerEnter = (position: Position) => {
   toggleDraggedPosition(position)
 }
 
+const handleTouchMove = (event: TouchEvent) => {
+  if (!isPointerDown.value || dragStartPosition === null) return
+
+  const touch = event.touches[0]
+  if (!touch) return
+
+  const position = getPositionFromPoint(touch.clientX, touch.clientY)
+  if (position === null) return
+
+  event.preventDefault()
+  handlePointerEnter(position)
+}
+
 const handleNoteClick = (position: Position) => {
   if (suppressNextClick.value) {
     suppressNextClick.value = false
@@ -124,6 +152,9 @@ onBeforeUnmount(() => {
     @pointerup="handlePointerEnd"
     @pointercancel="handlePointerEnd"
     @mouseleave="handlePointerEnd"
+    @touchmove="handleTouchMove"
+    @touchend="handlePointerEnd"
+    @touchcancel="handlePointerEnd"
   >
     <heart-counter :hearts="game.hearts" />
     <template v-for="(row, rowIndex) in game.board" :key="rowIndex">

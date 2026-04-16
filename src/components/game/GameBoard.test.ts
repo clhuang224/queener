@@ -88,4 +88,27 @@ describe('GameBoard', () => {
     expect(game.board[0]![0]!.status).toBe('note')
     expect(game.board[0]![1]!.status).toBe('note')
   })
+
+  it('marks touched cells while sliding on mobile', async () => {
+    const { game, wrapper, cells } = mountBoard()
+    const originalElementFromPoint = document.elementFromPoint
+    Object.defineProperty(document, 'elementFromPoint', {
+      configurable: true,
+      value: vi.fn(() => cells[1]!.element),
+    })
+
+    await cells[0]!.trigger('pointerdown')
+    await wrapper.trigger('touchmove', {
+      touches: [{ clientX: 30, clientY: 30 }],
+    })
+    await wrapper.trigger('touchend')
+
+    Object.defineProperty(document, 'elementFromPoint', {
+      configurable: true,
+      value: originalElementFromPoint,
+    })
+
+    expect(game.board[0]![0]!.status).toBe('note')
+    expect(game.board[0]![1]!.status).toBe('note')
+  })
 })

@@ -269,17 +269,22 @@ When writing Mermaid diagrams for this repository, prefer GitHub-safe labels. Av
 
 When a feature gains meaningful state complexity, prefer documenting it in [docs/state.md](./docs/state.md) instead of overloading `README.md` or scattering the rules across comments.
 
-| Current State | Event | Next State | Action |
-| --- | --- | --- | --- |
-| `Idle` | `pointerdown(cell)` | `Pressed` | start pointer session |
-| `Pressed` | `click(cell)` | `PendingSingleClick` | schedule note toggle |
-| `Pressed` | `pointerenter(other cell)` | `Dragging` | begin drag selection |
-| `Pressed` | `pointerup` / `pointercancel` / `mouseleave` | `Idle` | end pointer session |
-| `PendingSingleClick` | `dblclick(cell)` | `Idle` | cancel pending note, mark queen |
-| `PendingSingleClick` | click timeout | `Idle` | `QueenGame.toggleNote(position)` |
-| `PendingSingleClick` | `pointerenter(other cell)` | `Dragging` | cancel pending click, begin drag selection |
-| `Dragging` | `pointerenter(new cell)` | `Dragging` | toggle note once per cell |
-| `Dragging` | `pointerup` / `pointercancel` / `mouseleave` | `Idle` | end drag session |
+| Current State | Platform | Event | Next State | Action |
+| --- | --- | --- | --- | --- |
+| `Idle` | desktop+mobile | `pointerdown(cell)` | `Pressed` | start pointer session and store start position |
+| `Pressed` | desktop+mobile | `click(cell)` | `PendingSingleClick` | schedule delayed note toggle |
+| `Pressed` | desktop | `pointerenter(other cell)` | `Dragging` | cancel pending note if needed and begin drag selection |
+| `Pressed` | mobile | `touchmove(over other cell)` | `Dragging` | resolve touched cell from coordinates and begin drag selection |
+| `Pressed` | desktop | `pointerup` / `pointercancel` / `mouseleave` | `Idle` | end pointer session |
+| `Pressed` | mobile | `touchend` / `touchcancel` / `pointercancel` | `Idle` | end pointer session |
+| `PendingSingleClick` | desktop+mobile | `dblclick(cell)` | `Idle` | cancel pending note and mark queen |
+| `PendingSingleClick` | desktop+mobile | click timeout | `Idle` | `QueenGame.toggleNote(position)` |
+| `PendingSingleClick` | desktop | `pointerenter(other cell)` | `Dragging` | cancel pending click and begin drag selection |
+| `PendingSingleClick` | mobile | `touchmove(over other cell)` | `Dragging` | cancel pending click and begin drag selection |
+| `Dragging` | desktop | `pointerenter(new cell)` | `Dragging` | toggle note once per newly entered cell |
+| `Dragging` | mobile | `touchmove(over new cell)` | `Dragging` | toggle note once per newly touched cell from screen point |
+| `Dragging` | desktop | `pointerup` / `pointercancel` / `mouseleave` | `Idle` | end drag session |
+| `Dragging` | mobile | `touchend` / `touchcancel` / `pointercancel` | `Idle` | end drag session |
 
 ```mermaid
 stateDiagram-v2
@@ -287,22 +292,24 @@ stateDiagram-v2
 
   Idle --> Pressed: pointerdown(cell)
   Pressed --> PendingSingleClick: click(cell)
-  Pressed --> Dragging: pointerenter(other cell)
-  Pressed --> Idle: pointerup / pointercancel / mouseleave
+  Pressed --> Dragging: dragMove(other cell)
+  Pressed --> Idle: pressEnd
 
-  PendingSingleClick --> Idle: double click timeout expires / QueenGame.toggleNote(position)
+  PendingSingleClick --> Idle: click timeout / QueenGame.toggleNote(position)
   PendingSingleClick --> Idle: dblclick(cell) / cancel pending click + QueenGame.markQueen(position)
-  PendingSingleClick --> Dragging: pointerenter(other cell) / cancel pending click
+  PendingSingleClick --> Dragging: dragMove(other cell) / cancel pending click
 
-  Dragging --> Dragging: pointerenter(new cell) / QueenGame.toggleNote(new position once)
-  Dragging --> Idle: pointerup / pointercancel / mouseleave
+  Dragging --> Dragging: dragMove(new cell) / QueenGame.toggleNote(new position once)
+  Dragging --> Idle: pressEnd
 ```
 
 Notes:
 
 - `GameCell` emits raw interaction events and does not mutate board state directly.
-- `GameBoard` resolves whether a gesture is a single click, a double click, or a drag session.
+- `GameBoard` resolves whether a gesture is a single click, a double click, or a drag session across desktop and mobile input.
 - single click is intentionally delayed slightly so a following `dblclick` can cancel it cleanly
+- on desktop, drag progression is driven by `pointerenter`
+- on mobile, drag progression is driven by `touchmove`, and `GameBoard` resolves the touched cell from screen coordinates before reusing the same drag-selection logic
 - drag sessions suppress the trailing click that browsers often emit on release
 - note toggling and queen marking should flow through `QueenGame`, not through direct `BoardCell` mutation from the component
 - when a state machine becomes central to feature behavior, add both a transition table and a compact Mermaid diagram to `docs/state.md`
