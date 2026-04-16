@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import GameCell from '@/components/game/GameCell.vue'
 import type { QueenGamePublic } from '@/game/QueenGame'
-import { onBeforeUnmount, ref } from 'vue'
 import HeartCounter from '../common/HeartCounter.vue'
-import type { Position } from '@/types/board'
+import { useGameBoardGestures } from './useGameBoardGestures'
+import { ref } from 'vue'
 
 const props = defineProps<{
   queenSkin: 'rainbow' | 'grayscale'
@@ -11,140 +11,32 @@ const props = defineProps<{
   game: QueenGamePublic
 }>()
 
-const DOUBLE_CLICK_DELAY_MS = 250
+const boardRef = ref<HTMLDivElement | null>(null)
 
-const isDragging = ref(false)
-const isPointerDown = ref(false)
-const suppressNextClick = ref(false)
-
-let dragStartPosition: Position | null = null
-let draggedPositions = new Set<string>()
-let pendingNoteTimer: ReturnType<typeof setTimeout> | null = null
-let pendingNotePosition: Position | null = null
-
-const getPositionKey = ([row, column]: Position) => `${row}-${column}`
-
-const getPositionFromCellElement = (element: Element | null): Position | null => {
-  const cell = element?.closest('.game-cell')
-  if (!(cell instanceof HTMLElement)) return null
-
-  const row = Number(cell.dataset.row)
-  const column = Number(cell.dataset.column)
-
-  if (Number.isNaN(row) || Number.isNaN(column)) return null
-
-  return [row, column]
+const getBoardElementFromPoint = (clientX: number, clientY: number) => {
+  const element = document.elementFromPoint(clientX, clientY)
+  if (!(element instanceof Element)) return null
+  if (!boardRef.value?.contains(element)) return null
+  return element
 }
 
-const getPositionFromPoint = (clientX: number, clientY: number): Position | null =>
-  getPositionFromCellElement(document.elementFromPoint(clientX, clientY))
-
-const clearPendingNote = () => {
-  if (pendingNoteTimer !== null) {
-    clearTimeout(pendingNoteTimer)
-    pendingNoteTimer = null
-  }
-  pendingNotePosition = null
-}
-
-const flushPendingNote = () => {
-  if (pendingNotePosition !== null) {
-    props.game.toggleNote(pendingNotePosition)
-  }
-  clearPendingNote()
-}
-
-const toggleDraggedPosition = (position: Position) => {
-  const key = getPositionKey(position)
-  if (draggedPositions.has(key)) return
-  props.game.toggleNote(position)
-  draggedPositions.add(key)
-}
-
-const resetPointerSession = () => {
-  isPointerDown.value = false
-  dragStartPosition = null
-  draggedPositions = new Set<string>()
-}
-
-const handlePointerDown = (position: Position) => {
-  isPointerDown.value = true
-  isDragging.value = false
-  suppressNextClick.value = false
-  dragStartPosition = position
-  draggedPositions = new Set<string>()
-}
-
-const handlePointerEnter = (position: Position) => {
-  if (!isPointerDown.value || dragStartPosition === null) return
-
-  const startKey = getPositionKey(dragStartPosition)
-  const currentKey = getPositionKey(position)
-
-  if (!isDragging.value && currentKey === startKey) return
-
-  clearPendingNote()
-
-  if (!isDragging.value) {
-    isDragging.value = true
-    suppressNextClick.value = true
-    toggleDraggedPosition(dragStartPosition)
-  }
-
-  toggleDraggedPosition(position)
-}
-
-const handleTouchMove = (event: TouchEvent) => {
-  if (!isPointerDown.value || dragStartPosition === null) return
-
-  const touch = event.touches[0]
-  if (!touch) return
-
-  const position = getPositionFromPoint(touch.clientX, touch.clientY)
-  if (position === null) return
-
-  event.preventDefault()
-  handlePointerEnter(position)
-}
-
-const handleNoteClick = (position: Position) => {
-  if (suppressNextClick.value) {
-    suppressNextClick.value = false
-    return
-  }
-
-  if (
-    pendingNotePosition !== null &&
-    getPositionKey(pendingNotePosition) !== getPositionKey(position)
-  ) {
-    flushPendingNote()
-  }
-
-  clearPendingNote()
-  pendingNotePosition = position
-  pendingNoteTimer = setTimeout(() => {
-    props.game.toggleNote(position)
-    clearPendingNote()
-  }, DOUBLE_CLICK_DELAY_MS)
-}
-
-const handleMarkQueen = (position: Position) => {
-  clearPendingNote()
-  props.game.markQueen(position)
-}
-
-const handlePointerEnd = () => {
-  isDragging.value = false
-  resetPointerSession()
-}
-
-onBeforeUnmount(() => {
-  clearPendingNote()
+const {
+  handleMarkQueen,
+  handleNoteClick,
+  handlePointerDown,
+  handlePointerEnd,
+  handlePointerEnter,
+  handleTouchMove,
+} = useGameBoardGestures({
+  getElementFromPoint: getBoardElementFromPoint,
+  markQueen: (position) => props.game.markQueen(position),
+  toggleNote: (position) => props.game.toggleNote(position),
 })
 </script>
 
 <template>
   <div
+    ref="boardRef"
     class="game-board"
     data-test="game-board"
     :class="`cell-${cellSkin} queen-${queenSkin}`"
