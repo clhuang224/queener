@@ -1,20 +1,17 @@
 <script setup lang="ts">
+import type { ModalAction } from '@/types/modal'
+
 defineProps<{
   title: string
   content: string
-  type: 'alert' | 'confirm'
+  actions: ModalAction[]
 }>()
 const emit = defineEmits<{
-  (event: 'confirm'): void
-  (event: 'cancel'): void
+  (event: 'select', action: ModalAction): void
 }>()
 
-const handleConfirm = () => {
-  emit('confirm')
-}
-
-const handleCancel = () => {
-  emit('cancel')
+const handleSelect = (action: ModalAction) => {
+  emit('select', action)
 }
 </script>
 
@@ -23,8 +20,13 @@ const handleCancel = () => {
     <h2>{{ title }}</h2>
     <p>{{ content }}</p>
     <div class="actions">
-      <button @click="handleConfirm">確定</button>
-      <button v-if="type === 'confirm'" @click="handleCancel">取消</button>
+      <button
+        v-for="(action, index) in actions"
+        :key="`${action.label}-${index}`"
+        @click="handleSelect(action)"
+      >
+        {{ action.label }}
+      </button>
     </div>
   </div>
 </template>
@@ -36,7 +38,5 @@ const handleCancel = () => {
   background-color: white;
   border-radius: var(--border-radius);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  .actions {
-  }
 }
 </style>

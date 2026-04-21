@@ -3,7 +3,7 @@ import { useGlobalModalStore } from '@/stores/globalModal'
 import { storeToRefs } from 'pinia'
 import BaseModal from './common/BaseModal.vue'
 const { globalModal } = storeToRefs(useGlobalModalStore())
-const { cancelGlobalModal, confirmGlobalModal } = useGlobalModalStore()
+const { selectGlobalModalAction } = useGlobalModalStore()
 </script>
 
 <template>
@@ -11,9 +11,8 @@ const { cancelGlobalModal, confirmGlobalModal } = useGlobalModalStore()
     <base-modal
       :title="globalModal.title"
       :content="globalModal.content"
-      :type="globalModal.type"
-      @confirm="confirmGlobalModal"
-      @cancel="cancelGlobalModal"
+      :actions="globalModal.actions"
+      @select="selectGlobalModalAction"
     />
   </div>
 </template>

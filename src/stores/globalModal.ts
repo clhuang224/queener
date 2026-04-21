@@ -1,19 +1,18 @@
 import { reactive, ref } from 'vue'
 import { defineStore } from 'pinia'
+import type { ModalAction } from '@/types/modal'
 
-type GlobalModalType = 'alert' | 'confirm'
-
-interface GlobalModalOptions {
+interface GlobalResultModalOptions {
   title: string
   content: string
-  type?: GlobalModalType
+  actions: ModalAction[]
 }
 
 interface GlobalModalState {
   title: string
   content: string
   isOpen: boolean
-  type: GlobalModalType
+  actions: ModalAction[]
 }
 
 export const useGlobalModalStore = defineStore('global-modal', () => {
@@ -21,54 +20,65 @@ export const useGlobalModalStore = defineStore('global-modal', () => {
     title: '',
     content: '',
     isOpen: false,
-    type: 'alert',
+    actions: [],
   })
 
   const resetGlobalModal = () => {
     globalModal.title = ''
     globalModal.content = ''
-    globalModal.type = 'alert'
+    globalModal.actions = []
     globalModal.isOpen = false
   }
 
-  const resolver = ref<(() => void) | null>(null)
-  const rejecter = ref<((reason?: unknown) => void) | null>(null)
+  const actionResolver = ref<((value: unknown) => void) | null>(null)
+  const actionRejecter = ref<((reason?: unknown) => void) | null>(null)
 
-  const openGlobalModal = ({ title, content, type = 'alert' }: GlobalModalOptions) => {
+  const openResultModal = ({ title, content, actions }: GlobalResultModalOptions) => {
     globalModal.title = title
     globalModal.content = content
-    globalModal.type = type
+    globalModal.actions = actions
     globalModal.isOpen = true
 
-    return new Promise<void>((resolve, reject) => {
-      resolver.value = resolve
-      rejecter.value = reject
+    return new Promise<unknown>((resolve, reject) => {
+      actionResolver.value = resolve
+      actionRejecter.value = reject
     })
   }
 
-  const cancelGlobalModal = () => {
-    rejecter.value?.()
+  const selectGlobalModalAction = (action: ModalAction) => {
+    if (action.settle === 'reject') {
+      actionRejecter.value?.(action.payload)
+    } else {
+      actionResolver.value?.(action.payload)
+    }
+
     resetGlobalModal()
   }
 
-  const confirmGlobalModal = () => {
-    resolver.value?.()
-    resetGlobalModal()
+  const openAlertModal = async ({ title, content }: Omit<GlobalResultModalOptions, 'actions'>) => {
+    await openResultModal({
+      title,
+      content,
+      actions: [{ label: '確定', payload: undefined }],
+    })
   }
 
-  const openAlertModal = async (options: Omit<GlobalModalOptions, 'type'>) => {
-    return await openGlobalModal({ ...options, type: 'alert' })
-  }
-
-  const openConfirmModal = async (options: Omit<GlobalModalOptions, 'type'>) => {
-    return await openGlobalModal({ ...options, type: 'confirm' })
+  const openConfirmModal = async ({ title, content }: Omit<GlobalResultModalOptions, 'actions'>) => {
+    await openResultModal({
+      title,
+      content,
+      actions: [
+        { label: '確定', payload: undefined, settle: 'resolve' },
+        { label: '取消', payload: new Error('cancelled'), settle: 'reject' },
+      ],
+    })
   }
 
   return {
     globalModal,
-    cancelGlobalModal,
-    confirmGlobalModal,
+    selectGlobalModalAction,
     openAlertModal,
     openConfirmModal,
+    openResultModal,
   }
 })

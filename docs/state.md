@@ -221,7 +221,7 @@ stateDiagram-v2
 ### Notes
 
 - `Won` and `Lost` are currently derived from `QueenGame.isWin()` and `QueenGame.isGameOver()`.
-- The current UI only partially expresses these states. Loss has an alert-based flow today, while win-state presentation is still incomplete.
+- The current UI resolves both `Won` and `Lost` through the global modal flow with explicit next actions.
 - If the project adds richer overlays, restart flow, score tracking, or progression, consider introducing an explicit game-session state enum or a fuller extended state machine.
 
 ## 4. Hint Availability

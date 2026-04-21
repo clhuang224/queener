@@ -3,10 +3,12 @@ import { mount } from '@vue/test-utils'
 import GameView from './GameView.vue'
 import { installStorageMock } from '@/test/localStorage'
 import { createTestingPinia } from '@/test/pinia'
+import { SIMPLE_PUZZLES } from '@/puzzles/simple'
 
 const push = vi.fn()
 const openAlertModal = vi.fn()
 const openConfirmModal = vi.fn()
+const openResultModal = vi.fn()
 
 vi.mock('vue-router', () => ({
   useRouter: () => ({
@@ -19,6 +21,7 @@ vi.mock('@/stores/globalModal', () => ({
   useGlobalModalStore: () => ({
     openAlertModal,
     openConfirmModal,
+    openResultModal,
   }),
 }))
 
@@ -41,12 +44,21 @@ const mountGameView = () => {
   }
 }
 
+const findCell = (wrapper: ReturnType<typeof mount>, row: number, column: number) => {
+  return wrapper
+    .findAll('.game-cell')
+    .find(
+      (cell) => cell.attributes('data-row') === String(row) && cell.attributes('data-column') === String(column),
+    )
+}
+
 describe('GameView', () => {
   beforeEach(() => {
     installStorageMock()
     push.mockReset()
     openAlertModal.mockReset()
     openConfirmModal.mockReset()
+    openResultModal.mockReset()
   })
 
   it('restarts the current level after confirmation', async () => {
@@ -90,5 +102,58 @@ describe('GameView', () => {
 
     expect(board.classes()).toContain('cell-grayscale')
     expect(board.classes()).toContain('queen-rainbow')
+  })
+
+  it('shows win result actions and navigates to next level', async () => {
+    openResultModal.mockResolvedValue('next')
+
+    const { wrapper } = mountGameView()
+    const levelOnePuzzle = SIMPLE_PUZZLES[0]!
+
+    for (const [row, column] of levelOnePuzzle.queens) {
+      await findCell(wrapper, row, column)!.trigger('dblclick')
+    }
+    await wrapper.vm.$nextTick()
+    await Promise.resolve()
+
+    expect(openResultModal).toHaveBeenCalledWith({
+      title: 'Congratulations!',
+      content: 'You solved the puzzle. What would you like to do next?',
+      actions: [
+        { label: 'Next Level', payload: 'next' },
+        { label: 'Play Again', payload: 'retry' },
+        { label: 'Home', payload: 'home' },
+      ],
+    })
+
+    expect(push).toHaveBeenCalledWith({
+      name: 'game',
+      params: {
+        level: '2',
+      },
+    })
+  })
+
+  it('shows loss result actions and allows replay', async () => {
+    openResultModal.mockResolvedValue('retry')
+
+    const { wrapper } = mountGameView()
+    const wrongCell = findCell(wrapper, 0, 0)!
+
+    await wrongCell.trigger('dblclick')
+    await findCell(wrapper, 0, 1)!.trigger('dblclick')
+    await wrapper.vm.$nextTick()
+    await Promise.resolve()
+    await wrapper.vm.$nextTick()
+
+    expect(openResultModal).toHaveBeenCalledWith({
+      title: 'Game Over',
+      content: 'Out of hearts. What would you like to do?',
+      actions: [
+        { label: 'Play Again', payload: 'retry' },
+        { label: 'Home', payload: 'home' },
+      ],
+    })
+    expect(wrongCell.text()).toBe('')
   })
 })
