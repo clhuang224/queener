@@ -48,7 +48,7 @@ const {
     @touchend="handlePointerEnd"
     @touchcancel="handlePointerEnd"
   >
-    <heart-counter :hearts="game.hearts" />
+    <heart-counter :hearts="game.hearts" :max-hearts="game.maxHearts" />
     <template v-for="(row, rowIndex) in game.board" :key="rowIndex">
       <game-cell
         v-for="cell in row"

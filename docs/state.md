@@ -198,9 +198,9 @@ Modeling note:
 | `Playing`     | `markQueen(wrong cell)` and hearts remain          | `Playing`  | hearts `n -> n - 1`                                                                   | decrement hearts                          |
 | `Playing`     | `markQueen(wrong cell)` and hearts reach `0`       | `Lost`     | hearts `1 -> 0`                                                                       | decrement hearts and trigger loss UI flow |
 | `Playing`     | `useHint()` with hint available                    | `Playing`  | hint state `Available -> Used`; found queens `n -> n + 1`                             | reveal one queen and mark hint as used    |
-| `Playing`     | `resetGame()`                                      | `Playing`  | hearts `current -> 3`; hint state `current -> Available`; found queens `current -> 0` | rebuild board, reset session values       |
-| `Won`         | `resetGame()`                                      | `Playing`  | hearts `current -> 3`; hint state `current -> Available`; found queens `current -> 0` | start a fresh game                        |
-| `Lost`        | `resetGame()`                                      | `Playing`  | hearts `current -> 3`; hint state `current -> Available`; found queens `current -> 0` | start a fresh game                        |
+| `Playing`     | `resetGame()`                                      | `Playing`  | hearts `current -> maxHearts`; hint state `current -> Available`; found queens `current -> 0` | rebuild board, reset session values       |
+| `Won`         | `resetGame()`                                      | `Playing`  | hearts `current -> maxHearts`; hint state `current -> Available`; found queens `current -> 0` | start a fresh game                        |
+| `Lost`        | `resetGame()`                                      | `Playing`  | hearts `current -> maxHearts`; hint state `current -> Available`; found queens `current -> 0` | start a fresh game                        |
 
 ### State Flowchart
 
@@ -288,7 +288,12 @@ Those combinations are real runtime situations, but they are better represented 
 
 ## 6. Hearts Counter
 
-Hearts are currently modeled as a bounded value rather than a named enum, but they still behave like a small finite state machine.
+Hearts are modeled as a bounded value rather than a named enum, and the maximum depends on board size:
+
+- `N = 5..7` uses `2` hearts
+- `N = 8..10` uses `3` hearts
+
+They still behave like a small finite state machine.
 
 Type:
 
@@ -303,37 +308,28 @@ Implementation:
 
 ### Transition Table
 
-| Current State | Event                   | Next State | Value Change | Action                                    |
-| ------------- | ----------------------- | ---------- | ------------ | ----------------------------------------- |
-| `3 Hearts`    | `markQueen(wrong cell)` | `2 Hearts` | `3 -> 2`     | decrement hearts                          |
-| `2 Hearts`    | `markQueen(wrong cell)` | `1 Heart`  | `2 -> 1`     | decrement hearts                          |
-| `1 Heart`     | `markQueen(wrong cell)` | `0 Hearts` | `1 -> 0`     | decrement hearts and enter loss condition |
-| `0 Hearts`    | `markQueen(wrong cell)` | `0 Hearts` | `0 -> 0`     | remain at zero                            |
-| `3 Hearts`    | `resetGame()`           | `3 Hearts` | `3 -> 3`     | restore fresh state                       |
-| `2 Hearts`    | `resetGame()`           | `3 Hearts` | `2 -> 3`     | restore fresh state                       |
-| `1 Heart`     | `resetGame()`           | `3 Hearts` | `1 -> 3`     | restore fresh state                       |
-| `0 Hearts`    | `resetGame()`           | `3 Hearts` | `0 -> 3`     | restore fresh state                       |
+| Current State | Event                   | Next State | Value Change          | Action                                    |
+| ------------- | ----------------------- | ---------- | --------------------- | ----------------------------------------- |
+| `H > 0`       | `markQueen(wrong cell)` | `H - 1`    | `H -> H - 1`          | decrement hearts                          |
+| `0 Hearts`    | `markQueen(wrong cell)` | `0 Hearts` | `0 -> 0`              | remain at zero                            |
+| `Any Hearts`  | `resetGame()`           | `maxHearts`| `current -> maxHearts`| restore fresh state                       |
 
 ### State Flowchart
 
 ```mermaid
 stateDiagram-v2
-  [*] --> Hearts3
-
-  Hearts3 --> Hearts2: markQueen failed / hearts=2
-  Hearts2 --> Hearts1: markQueen failed / hearts=1
-  Hearts1 --> Hearts0: markQueen failed / hearts=0
-
+  [*] --> HeartsMax
+  HeartsMax --> HeartsN: markQueen failed / hearts--
+  HeartsN --> HeartsN: markQueen failed / hearts--
+  HeartsN --> Hearts0: markQueen failed when hearts==1 / hearts=0
   Hearts0 --> Hearts0: markQueen failed / hearts=0
-
-  Hearts3 --> Hearts3: resetGame
-  Hearts2 --> Hearts3: resetGame
-  Hearts1 --> Hearts3: resetGame
-  Hearts0 --> Hearts3: resetGame
+  HeartsMax --> HeartsMax: resetGame
+  HeartsN --> HeartsMax: resetGame
+  Hearts0 --> HeartsMax: resetGame
 ```
 
 ### Notes
 
-- Hearts are currently stored as a number on `QueenGame`, but the reachable values are bounded and discrete in normal gameplay.
+- Hearts are stored as numbers on `QueenGame`; reachable values are bounded and discrete in normal gameplay.
 - `0 Hearts` is the value-level condition that drives the higher-level `Lost` derived state.
 - If the game later adds healing, extra lives, difficulty settings, or different heart caps, this section should be updated first.

@@ -6,14 +6,22 @@ import { randomInteger } from '@/utils/random'
 export default class QueenGame {
   private puzzle: Puzzle
   private hintUsed: boolean
+  public maxHearts: number
   public hearts: number
   public board: BoardCell[][]
 
   constructor(puzzle: Puzzle) {
     this.puzzle = puzzle
     this.hintUsed = false
-    this.hearts = 3
+    this.maxHearts = QueenGame.resolveHeartsBySize(puzzle.rules.size)
+    this.hearts = this.maxHearts
     this.board = this.createBoard(puzzle)
+  }
+
+  public static resolveHeartsBySize(size: number): number {
+    if (size <= 7) return 2
+    if (size <= 10) return 3
+    return Math.max(3, Math.ceil(size / 3))
   }
 
   private createBoard(puzzle: Puzzle): BoardCell[][] {
@@ -76,7 +84,7 @@ export default class QueenGame {
   public resetGame(): void {
     this.board = this.createBoard(this.puzzle)
     this.hintUsed = false
-    this.hearts = 3
+    this.hearts = this.maxHearts
   }
 }
 

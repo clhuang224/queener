@@ -2,8 +2,24 @@ import { describe, it, expect } from 'vitest'
 import QueenGame from './QueenGame.ts'
 import { SIMPLE_PUZZLES } from '../puzzles/simple.ts'
 
+describe('QueenGame.resolveHeartsBySize', () => {
+  it('returns 2 hearts for size 5 to 7', () => {
+    expect(QueenGame.resolveHeartsBySize(5)).toBe(2)
+    expect(QueenGame.resolveHeartsBySize(6)).toBe(2)
+    expect(QueenGame.resolveHeartsBySize(7)).toBe(2)
+  })
+
+  it('returns 3 hearts for size 8 to 10', () => {
+    expect(QueenGame.resolveHeartsBySize(8)).toBe(3)
+    expect(QueenGame.resolveHeartsBySize(9)).toBe(3)
+    expect(QueenGame.resolveHeartsBySize(10)).toBe(3)
+  })
+})
+
 describe.each(SIMPLE_PUZZLES)('QueenGame', (puzzle) => {
   describe(`Puzzle ID: ${puzzle.id}`, () => {
+    const expectedHearts = QueenGame.resolveHeartsBySize(puzzle.rules.size)
+
     describe('initialization', () => {
       it(`size should be ${puzzle.rules.size}`, () => {
         const game = new QueenGame(puzzle)
@@ -16,6 +32,11 @@ describe.each(SIMPLE_PUZZLES)('QueenGame', (puzzle) => {
           0,
         )
         expect(queenCount).toBe(puzzle.rules.size)
+      })
+      it(`should initialize hearts based on size ${puzzle.rules.size}`, () => {
+        const game = new QueenGame(puzzle)
+        expect(game.hearts).toBe(expectedHearts)
+        expect(game.maxHearts).toBe(expectedHearts)
       })
     })
 
@@ -68,7 +89,7 @@ describe.each(SIMPLE_PUZZLES)('QueenGame', (puzzle) => {
         game.markQueen([row, col])
         game.useHint()
         game.resetGame()
-        expect(game.hearts).toBe(3)
+        expect(game.hearts).toBe(expectedHearts)
         expect(game.board[row]![col]!.isFound()).toBe(false)
       })
     })
@@ -78,7 +99,7 @@ describe.each(SIMPLE_PUZZLES)('QueenGame', (puzzle) => {
         const game = new QueenGame(puzzle)
 
         const wrongCells = game.board.flat().filter((cell) => !cell.isQueen())
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < expectedHearts; i++) {
           game.markQueen(wrongCells[i]!.getPosition())
         }
         expect(game.isGameOver()).toBe(true)

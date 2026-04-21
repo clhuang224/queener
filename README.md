@@ -29,7 +29,7 @@ Players currently solve the board by marking notes on cells and confirming queen
 - Playable board rendered from predefined puzzle data
 - Click or drag to mark cells with `X` notes
 - Double click to mark a queen
-- Heart-based mistake system with `3` total hearts
+- Heart-based mistake system where hearts scale by board size (`N=5-7 => 2`, `N=8-10 => 3`)
 - One-time hint button that reveals a valid queen position
 - Quit button that returns to the home screen
 
