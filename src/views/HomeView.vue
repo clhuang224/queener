@@ -1,15 +1,20 @@
 <script setup lang="ts">
+import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { onMounted } from 'vue'
 import BaseButton from '@/components/common/BaseButton.vue'
 import LevelPicker from '@/components/home/LevelPicker.vue'
 import { useLevelStore } from '@/stores/level'
 import { storeToRefs } from 'pinia'
+import QueenGame from '@/game/QueenGame'
+import { getPuzzleByLevel } from '@/puzzles/simple'
 
 const router = useRouter()
 const levelStore = useLevelStore()
 const { initializeSelectedLevel, selectPreviousLevel, selectNextLevel } = levelStore
 const { selectedLevel, highestUnlockedLevel } = storeToRefs(levelStore)
+const selectedPuzzle = computed(() => getPuzzleByLevel(selectedLevel.value))
+const selectedBoardSize = computed(() => selectedPuzzle.value.rules.size)
+const selectedMaxHearts = computed(() => QueenGame.resolveHeartsBySize(selectedBoardSize.value))
 
 onMounted(() => {
   initializeSelectedLevel()
@@ -40,6 +45,8 @@ const openSetting = async () => {
     <level-picker
       :selected-level="selectedLevel"
       :highest-unlocked-level="highestUnlockedLevel"
+      :board-size="selectedBoardSize"
+      :max-hearts="selectedMaxHearts"
       @previous="selectPreviousLevel"
       @next="selectNextLevel"
     />

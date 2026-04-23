@@ -76,4 +76,22 @@ describe('HomeView', () => {
       name: 'setting',
     })
   })
+
+  it('shows board size and hearts for the selected level', async () => {
+    window.localStorage.setItem('queen-game-highest-completed-level', '6')
+
+    const wrapper = mount(HomeView, {
+      global: {
+        plugins: [createTestingPinia()],
+      },
+    })
+    await wrapper.vm.$nextTick()
+    const previousButton = wrapper.findAll('button').find((button) => button.text() === '←')
+
+    expect(wrapper.text()).toContain('Board: 8x8 · Hearts: 3')
+
+    await previousButton!.trigger('click')
+
+    expect(wrapper.text()).toContain('Board: 7x7 · Hearts: 2')
+  })
 })

@@ -4,6 +4,8 @@ import BaseButton from '@/components/common/BaseButton.vue'
 defineProps<{
   selectedLevel: number
   highestUnlockedLevel: number
+  boardSize: number
+  maxHearts: number
 }>()
 
 const emit = defineEmits<{
@@ -21,6 +23,7 @@ const emit = defineEmits<{
       <p class="label">Level</p>
       <strong class="level-number">{{ selectedLevel }}</strong>
       <p class="progress">Unlocked: 1 - {{ highestUnlockedLevel }}</p>
+      <p class="rules">Board: {{ boardSize }}x{{ boardSize }} · Hearts: {{ maxHearts }}</p>
     </div>
     <base-button
       class="arrow-button"
@@ -49,7 +52,8 @@ const emit = defineEmits<{
 }
 
 .label,
-.progress {
+.progress,
+.rules {
   margin: 0;
 }
 
@@ -69,6 +73,12 @@ const emit = defineEmits<{
 .progress {
   font-size: 13px;
   color: #6c757d;
+}
+
+.rules {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #4d5a74;
 }
 
 .arrow-button {
