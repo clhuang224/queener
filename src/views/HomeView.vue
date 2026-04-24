@@ -15,6 +15,7 @@ const { selectedLevel, highestUnlockedLevel } = storeToRefs(levelStore)
 const selectedPuzzle = computed(() => getPuzzleByLevel(selectedLevel.value))
 const selectedBoardSize = computed(() => selectedPuzzle.value.rules.size)
 const selectedMaxHearts = computed(() => QueenGame.resolveHeartsBySize(selectedBoardSize.value))
+const canGoNextLevel = computed(() => selectedLevel.value < highestUnlockedLevel.value)
 
 onMounted(() => {
   initializeSelectedLevel()
@@ -44,7 +45,7 @@ const openSetting = async () => {
     <h2>Place the queens. Become the winner.</h2>
     <level-picker
       :selected-level="selectedLevel"
-      :highest-unlocked-level="highestUnlockedLevel"
+      :can-go-next="canGoNextLevel"
       :board-size="selectedBoardSize"
       :max-hearts="selectedMaxHearts"
       @previous="selectPreviousLevel"

@@ -3,7 +3,7 @@ import BaseButton from '@/components/common/BaseButton.vue'
 
 defineProps<{
   selectedLevel: number
-  highestUnlockedLevel: number
+  canGoNext: boolean
   boardSize: number
   maxHearts: number
 }>()
@@ -22,14 +22,9 @@ const emit = defineEmits<{
     <div class="level-card">
       <p class="label">Level</p>
       <strong class="level-number">{{ selectedLevel }}</strong>
-      <p class="progress">Unlocked: 1 - {{ highestUnlockedLevel }}</p>
       <p class="rules">Board: {{ boardSize }}x{{ boardSize }} · Hearts: {{ maxHearts }}</p>
     </div>
-    <base-button
-      class="arrow-button"
-      :disabled="selectedLevel >= highestUnlockedLevel"
-      @click="emit('next')"
-    >
+    <base-button class="arrow-button" :disabled="!canGoNext" @click="emit('next')">
       →
     </base-button>
   </div>
@@ -52,7 +47,6 @@ const emit = defineEmits<{
 }
 
 .label,
-.progress,
 .rules {
   margin: 0;
 }
@@ -68,11 +62,6 @@ const emit = defineEmits<{
   font-size: 42px;
   line-height: 1;
   color: #1f3c88;
-}
-
-.progress {
-  font-size: 13px;
-  color: #6c757d;
 }
 
 .rules {

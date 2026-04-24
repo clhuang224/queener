@@ -29,6 +29,7 @@ describe('HomeView', () => {
     const nextButton = buttons.find((button) => button.text() === '→')
 
     expect(wrapper.find('.level-number').text()).toBe('1')
+    expect(wrapper.text()).not.toContain('Unlocked:')
     expect(previousButton!.attributes('disabled')).toBeDefined()
     expect(nextButton!.attributes('disabled')).toBeDefined()
   })
