@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import BaseButton from '@/components/common/BaseButton.vue'
@@ -21,34 +21,35 @@ const { cellSkin, queenSkin } = storeToRefs(skinStore)
 
 const { openAlertModal, openConfirmModal, openResultModal } = useGlobalModalStore()
 
-const { activeLevel, isUnlocked } = levelStore.resolvePlayableLevel(props.level)
-levelStore.setSelectedLevel(activeLevel)
-let puzzle
-
-try {
-  puzzle = getPuzzleByLevel(activeLevel)
-} catch (error) {
-  void router.replace({
-    name: 'home',
-  })
-
-  throw error
-}
-
-if (!isUnlocked) {
-  void router.replace({
-    name: 'home',
-  })
-}
-
 skinStore.load()
 
-const game = reactive(new QueenGame(puzzle))
-const hasNextLevel = computed(() => activeLevel < TOTAL_LEVELS)
+const activeLevel = ref(1)
+const game = ref(new QueenGame(getPuzzleByLevel(activeLevel.value)))
+const hasNextLevel = computed(() => activeLevel.value < TOTAL_LEVELS)
 const isResolvingResult = ref(false)
 
+watch(
+  () => props.level,
+  (level) => {
+    const playableLevel = levelStore.resolvePlayableLevel(level)
+
+    if (!playableLevel.isUnlocked) {
+      void router.replace({
+        name: 'home',
+      })
+      return
+    }
+
+    activeLevel.value = playableLevel.activeLevel
+    levelStore.setSelectedLevel(playableLevel.activeLevel)
+    game.value = new QueenGame(getPuzzleByLevel(playableLevel.activeLevel))
+    isResolvingResult.value = false
+  },
+  { immediate: true },
+)
+
 const clickHint = async () => {
-  const position = game.useHint()
+  const position = game.value.useHint()
 
   if (position) {
     await openAlertModal({
@@ -82,14 +83,14 @@ const clickRestart = async () => {
       title: 'Restart Level',
       content: 'Are you sure you want to restart this puzzle?',
     })
-    game.resetGame()
+    game.value.resetGame()
   } catch {
     return
   }
 }
 
 const restartAfterResult = () => {
-  game.resetGame()
+  game.value.resetGame()
 }
 
 const goHome = async () => {
@@ -104,15 +105,15 @@ const goToNextLevel = async () => {
   await router.push({
     name: 'game',
     params: {
-      level: String(activeLevel + 1),
+      level: String(activeLevel.value + 1),
     },
   })
 }
 
-const isHintUsed = computed(() => game.isHintUsed())
+const isHintUsed = computed(() => game.value.isHintUsed())
 
 watch(
-  () => game.isGameOver(),
+  () => game.value.isGameOver(),
   async (gameOver) => {
     if (!gameOver || isResolvingResult.value) return
 
@@ -137,12 +138,12 @@ watch(
 )
 
 watch(
-  () => game.isWin(),
+  () => game.value.isWin(),
   async (win) => {
     if (!win || isResolvingResult.value) return
 
     isResolvingResult.value = true
-    levelStore.completeLevel(activeLevel)
+    levelStore.completeLevel(activeLevel.value)
 
     const actions = [{ label: 'Play Again', payload: 'retry' }, { label: 'Home', payload: 'home' }]
     if (hasNextLevel.value) {

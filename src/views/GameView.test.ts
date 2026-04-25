@@ -26,6 +26,8 @@ vi.mock('@/stores/globalModal', () => ({
 }))
 
 const mountGameView = () => {
+  const levelOnePuzzle = SIMPLE_PUZZLES[0]!
+  const [queenRow, queenColumn] = levelOnePuzzle.queens[0]!
   const wrapper = mount(GameView, {
     props: {
       level: 1,
@@ -38,7 +40,10 @@ const mountGameView = () => {
   return {
     wrapper,
     queenCell: wrapper.findAll('.game-cell').find((cell) => {
-      return cell.attributes('data-row') === '0' && cell.attributes('data-column') === '2'
+      return (
+        cell.attributes('data-row') === String(queenRow) &&
+        cell.attributes('data-column') === String(queenColumn)
+      )
     })!,
     restartButton: wrapper.findAll('button').find((button) => button.text() === 'Restart')!,
   }
@@ -48,7 +53,9 @@ const findCell = (wrapper: ReturnType<typeof mount>, row: number, column: number
   return wrapper
     .findAll('.game-cell')
     .find(
-      (cell) => cell.attributes('data-row') === String(row) && cell.attributes('data-column') === String(column),
+      (cell) =>
+        cell.attributes('data-row') === String(row) &&
+        cell.attributes('data-column') === String(column),
     )
 }
 
@@ -134,14 +141,35 @@ describe('GameView', () => {
     })
   })
 
+  it('loads the next puzzle when the route level changes', async () => {
+    window.localStorage.setItem('queen-game-highest-completed-level', '1')
+
+    const { wrapper } = mountGameView()
+    const levelTwoPuzzle = SIMPLE_PUZZLES[1]!
+    const [row, column] = levelTwoPuzzle.queens[0]!
+
+    await wrapper.setProps({ level: 2 })
+    await findCell(wrapper, row, column)!.trigger('dblclick')
+
+    expect(wrapper.find('.level-title').text()).toBe('Level 2')
+    expect(findCell(wrapper, row, column)!.text()).toContain('👸')
+  })
+
   it('shows loss result actions and allows replay', async () => {
     openResultModal.mockResolvedValue('retry')
 
     const { wrapper } = mountGameView()
-    const wrongCell = findCell(wrapper, 0, 0)!
+    const levelOnePuzzle = SIMPLE_PUZZLES[0]!
+    const queenPositions = new Set(levelOnePuzzle.queens.map(([row, column]) => `${row},${column}`))
+    const wrongPositions = levelOnePuzzle.regions
+      .flatMap((row, rowIndex) => row.map((_, columnIndex) => [rowIndex, columnIndex] as const))
+      .filter(([row, column]) => !queenPositions.has(`${row},${column}`))
+      .slice(0, 2)
+    const wrongCell = findCell(wrapper, ...wrongPositions[0]!)!
 
-    await wrongCell.trigger('dblclick')
-    await findCell(wrapper, 0, 1)!.trigger('dblclick')
+    for (const [row, column] of wrongPositions) {
+      await findCell(wrapper, row, column)!.trigger('dblclick')
+    }
     await wrapper.vm.$nextTick()
     await Promise.resolve()
     await wrapper.vm.$nextTick()
