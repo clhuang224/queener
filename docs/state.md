@@ -4,7 +4,7 @@ This document collects the main state transitions used in the project.
 
 > Transition tables are the primary source of truth. State flowcharts are included as compact visual aids.
 >
-> To keep these flowcharts renderable on GitHub, labels in this document stay conservative. Prefer simplified labels such as `toggleNote` in diagrams, and keep exact method-style names in tables or prose when needed. Also avoid reserved words such as `note` as raw state node names.
+> To keep these flowcharts renderable on GitHub, labels in this document stay conservative. Prefer simplified labels such as `markNote` in diagrams, and keep exact method-style names in tables or prose when needed. Also avoid reserved words such as `note` as raw state node names.
 
 ## 1. Cell Interaction Session
 
@@ -25,17 +25,17 @@ Implementation:
 | Current State        | Platform    | Event                                                   | Next State           | Action                                                          |
 | -------------------- | ----------- | ------------------------------------------------------- | -------------------- | --------------------------------------------------------------- |
 | `Idle`               | desktop+mobile | `pointerdown(cell)`                                  | `Pressed`            | start pointer session and store start position                  |
-| `Pressed`            | desktop+mobile | `click(cell)`                                        | `PendingSingleClick` | schedule delayed note toggle                                    |
+| `Pressed`            | desktop+mobile | `click(cell)`                                        | `PendingSingleClick` | schedule delayed single-click note action                       |
 | `Pressed`            | desktop     | `pointerenter(other cell)`                              | `Dragging`           | cancel pending note if needed and begin drag selection          |
 | `Pressed`            | mobile      | `touchmove(over other cell)`                            | `Dragging`           | resolve touched cell from coordinates and begin drag selection  |
 | `Pressed`            | desktop     | `pointerup` / `pointercancel` / `mouseleave`            | `Idle`               | end pointer session                                             |
 | `Pressed`            | mobile      | `touchend` / `touchcancel` / `pointercancel`            | `Idle`               | end pointer session                                             |
 | `PendingSingleClick` | desktop+mobile | `dblclick(cell)`                                     | `Idle`               | cancel pending note and mark queen                              |
-| `PendingSingleClick` | desktop+mobile | click timeout                                         | `Idle`               | call `QueenGame.toggleNote(position)`                           |
+| `PendingSingleClick` | desktop+mobile | click timeout                                         | `Idle`               | call `QueenGame.removeNote(position)` if noted, otherwise `QueenGame.markNote(position)` |
 | `PendingSingleClick` | desktop     | `pointerenter(other cell)`                              | `Dragging`           | cancel pending click and begin drag selection                   |
 | `PendingSingleClick` | mobile      | `touchmove(over other cell)`                            | `Dragging`           | cancel pending click and begin drag selection                   |
-| `Dragging`           | desktop     | `pointerenter(new cell)`                                | `Dragging`           | toggle note once for each newly entered cell                    |
-| `Dragging`           | mobile      | `touchmove(over new cell)`                              | `Dragging`           | toggle note once for each newly touched cell from screen point  |
+| `Dragging`           | desktop     | `pointerenter(new cell)`                                | `Dragging`           | mark note once for each newly entered cell                      |
+| `Dragging`           | mobile      | `touchmove(over new cell)`                              | `Dragging`           | mark note once for each newly touched cell from screen point    |
 | `Dragging`           | desktop     | `pointerup` / `pointercancel` / `mouseleave`            | `Idle`               | end drag session                                                |
 | `Dragging`           | mobile      | `touchend` / `touchcancel` / `pointercancel`            | `Idle`               | end drag session                                                |
 
@@ -51,7 +51,7 @@ stateDiagram-v2
   Pressed --> Idle: board.pointerup or mouseleave -> handlePointerEnd
 
   PendingSingleClick --> Idle: GameCell.dblclick -> handleMarkQueen
-  PendingSingleClick --> Idle: note timer fires -> QueenGame.toggleNote
+  PendingSingleClick --> Idle: note timer fires -> apply single-click note action
   PendingSingleClick --> Dragging: GameCell.pointerenter(other cell) -> handlePointerEnter
 
   Dragging --> Dragging: GameCell.pointerenter(new cell) -> handlePointerEnter
@@ -70,7 +70,7 @@ stateDiagram-v2
   Pressed --> Idle: board.touchend or touchcancel -> handlePointerEnd
 
   PendingSingleClick --> Idle: GameCell.dblclick -> handleMarkQueen
-  PendingSingleClick --> Idle: note timer fires -> QueenGame.toggleNote
+  PendingSingleClick --> Idle: note timer fires -> apply single-click note action
   PendingSingleClick --> Dragging: board.touchmove -> handleTouchMove -> handlePointerEnter
 
   Dragging --> Dragging: board.touchmove -> handleTouchMove -> handlePointerEnter
@@ -82,7 +82,7 @@ stateDiagram-v2
 | Source | Event | Handler / Function Chain | Responsibility |
 | ------ | ----- | ------------------------ | -------------- |
 | `GameCell` | `pointerdown` | `handlePointerDown(position)` | start a pointer session and remember the drag start cell |
-| `GameCell` | `click` | `handleNoteClick(position)` | schedule the delayed single-click note toggle |
+| `GameCell` | `click` | `handleNoteClick(position)` | schedule the delayed single-click note action |
 | `GameCell` | `dblclick` | `handleMarkQueen(position)` -> `QueenGame.markQueen(position)` | cancel pending note and mark a queen |
 | `GameCell` | `pointerenter` | `handlePointerEnter(position)` | drive desktop drag progression |
 | `.game-board` | `touchmove` | `handleTouchMove(event)` -> `getPositionFromPoint(...)` -> `handlePointerEnter(position)` | drive mobile drag progression by resolving the touched cell from screen coordinates |
@@ -93,6 +93,8 @@ stateDiagram-v2
 - `GameCell` emits cell-level interaction intent only.
 - `GameBoard` owns gesture interpretation for both desktop and mobile.
 - `QueenGame` performs the actual note and queen updates.
+- Single click uses `QueenGame.isNote(position)` to choose `removeNote(position)` or `markNote(position)`.
+- Dragging only calls `QueenGame.markNote(position)`, so existing notes are not removed while sliding across them.
 - The delayed single-click branch exists so a `dblclick` can cancel it cleanly.
 - On desktop, drag progression is driven by `pointerenter`.
 - On mobile, drag progression is driven by `touchmove`, and `GameBoard` resolves the active cell with `document.elementFromPoint(...)` before reusing the same drag-selection logic.
@@ -116,16 +118,16 @@ Implementation:
 
 | Current State | Event                             | Next State | Action                          |
 | ------------- | --------------------------------- | ---------- | ------------------------------- |
-| `empty`       | `toggleNote()`                    | `note`     | show an `X` note                |
-| `note`        | `toggleNote()`                    | `empty`    | remove the note                 |
+| `empty`       | `markNote()`                      | `note`     | show an `X` note                |
+| `note`        | `removeNote()`                    | `empty`    | remove the note                 |
 | `empty`       | `markQueen()` on a queen cell     | `found`    | reveal the queen                |
 | `note`        | `markQueen()` on a queen cell     | `found`    | replace note with a found queen |
 | `empty`       | `markQueen()` on a non-queen cell | `wrong`    | mark the guess as wrong         |
 | `note`        | `markQueen()` on a non-queen cell | `wrong`    | replace note with wrong state   |
 | `found`       | `markQueen()`                     | `found`    | no-op                           |
 | `wrong`       | `markQueen()`                     | `wrong`    | no-op                           |
-| `found`       | `toggleNote()`                    | `found`    | no-op                           |
-| `wrong`       | `toggleNote()`                    | `wrong`    | no-op                           |
+| `found`       | `markNote()` / `removeNote()`     | `found`    | no-op                           |
+| `wrong`       | `markNote()` / `removeNote()`     | `wrong`    | no-op                           |
 
 ### State Flowchart
 
@@ -133,8 +135,8 @@ Implementation:
 stateDiagram-v2
   [*] --> empty
 
-  empty --> noted: toggleNote
-  noted --> empty: toggleNote
+  empty --> noted: markNote
+  noted --> empty: removeNote
 
   empty --> found: markQueen success
   noted --> found: markQueen success
@@ -143,9 +145,9 @@ stateDiagram-v2
   noted --> wrong: markQueen failed
 
   found --> found: markQueen
-  found --> found: toggleNote
+  found --> found: markNote or removeNote
   wrong --> wrong: markQueen
-  wrong --> wrong: toggleNote
+  wrong --> wrong: markNote or removeNote
 ```
 
 ### Notes

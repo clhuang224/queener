@@ -28,9 +28,16 @@ export default class BoardCell {
     return [this.row, this.column]
   }
 
-  public toggleNote(): void {
+  public markNote(): void {
     if (this.status === 'empty') this.status = 'note'
-    else if (this.status === 'note') this.status = 'empty'
+  }
+
+  public removeNote(): void {
+    if (this.status === 'note') this.status = 'empty'
+  }
+
+  public isNote(): boolean {
+    return this.status === 'note'
   }
 
   public markQueen(): boolean {

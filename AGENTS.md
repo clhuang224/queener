@@ -265,24 +265,24 @@ The current board interaction model is easiest to reason about as a small state 
 
 Use transition tables as the primary documentation format for stateful UI behavior. Mermaid diagrams are helpful as visual aids, but the table should remain the source of truth because it is easier to diff, review, and maintain in Git.
 
-When writing Mermaid diagrams for this repository, prefer GitHub-safe labels. Avoid function-call notation such as `toggleNote()` inside Mermaid transition text; use simplified labels such as `toggleNote` and keep the exact method-style names in tables or prose.
+When writing Mermaid diagrams for this repository, prefer GitHub-safe labels. Avoid function-call notation such as `markNote()` inside Mermaid transition text; use simplified labels such as `markNote` and keep the exact method-style names in tables or prose.
 
 When a feature gains meaningful state complexity, prefer documenting it in [docs/state.md](./docs/state.md) instead of overloading `README.md` or scattering the rules across comments.
 
 | Current State | Platform | Event | Next State | Action |
 | --- | --- | --- | --- | --- |
 | `Idle` | desktop+mobile | `pointerdown(cell)` | `Pressed` | start pointer session and store start position |
-| `Pressed` | desktop+mobile | `click(cell)` | `PendingSingleClick` | schedule delayed note toggle |
+| `Pressed` | desktop+mobile | `click(cell)` | `PendingSingleClick` | schedule delayed single-click note action |
 | `Pressed` | desktop | `pointerenter(other cell)` | `Dragging` | cancel pending note if needed and begin drag selection |
 | `Pressed` | mobile | `touchmove(over other cell)` | `Dragging` | resolve touched cell from coordinates and begin drag selection |
 | `Pressed` | desktop | `pointerup` / `pointercancel` / `mouseleave` | `Idle` | end pointer session |
 | `Pressed` | mobile | `touchend` / `touchcancel` / `pointercancel` | `Idle` | end pointer session |
 | `PendingSingleClick` | desktop+mobile | `dblclick(cell)` | `Idle` | cancel pending note and mark queen |
-| `PendingSingleClick` | desktop+mobile | click timeout | `Idle` | `QueenGame.toggleNote(position)` |
+| `PendingSingleClick` | desktop+mobile | click timeout | `Idle` | `QueenGame.removeNote(position)` if noted, otherwise `QueenGame.markNote(position)` |
 | `PendingSingleClick` | desktop | `pointerenter(other cell)` | `Dragging` | cancel pending click and begin drag selection |
 | `PendingSingleClick` | mobile | `touchmove(over other cell)` | `Dragging` | cancel pending click and begin drag selection |
-| `Dragging` | desktop | `pointerenter(new cell)` | `Dragging` | toggle note once per newly entered cell |
-| `Dragging` | mobile | `touchmove(over new cell)` | `Dragging` | toggle note once per newly touched cell from screen point |
+| `Dragging` | desktop | `pointerenter(new cell)` | `Dragging` | mark note once per newly entered cell |
+| `Dragging` | mobile | `touchmove(over new cell)` | `Dragging` | mark note once per newly touched cell from screen point |
 | `Dragging` | desktop | `pointerup` / `pointercancel` / `mouseleave` | `Idle` | end drag session |
 | `Dragging` | mobile | `touchend` / `touchcancel` / `pointercancel` | `Idle` | end drag session |
 
@@ -295,11 +295,11 @@ stateDiagram-v2
   Pressed --> Dragging: dragMove(other cell)
   Pressed --> Idle: pressEnd
 
-  PendingSingleClick --> Idle: click timeout / QueenGame.toggleNote(position)
+  PendingSingleClick --> Idle: click timeout / apply single-click note action
   PendingSingleClick --> Idle: dblclick(cell) / cancel pending click + QueenGame.markQueen(position)
   PendingSingleClick --> Dragging: dragMove(other cell) / cancel pending click
 
-  Dragging --> Dragging: dragMove(new cell) / QueenGame.toggleNote(new position once)
+  Dragging --> Dragging: dragMove(new cell) / QueenGame.markNote(new position once)
   Dragging --> Idle: pressEnd
 ```
 
@@ -311,7 +311,8 @@ Notes:
 - on desktop, drag progression is driven by `pointerenter`
 - on mobile, drag progression is driven by `touchmove`, and `GameBoard` resolves the touched cell from screen coordinates before reusing the same drag-selection logic
 - drag sessions suppress the trailing click that browsers often emit on release
-- note toggling and queen marking should flow through `QueenGame`, not through direct `BoardCell` mutation from the component
+- note marking, note removal, and queen marking should flow through `QueenGame`, not through direct `BoardCell` mutation from the component
+- single-click note actions may remove an existing note, but drag note marking should only add notes and should not clear existing notes while sliding
 - when a state machine becomes central to feature behavior, add both a transition table and a compact Mermaid diagram to `docs/state.md`
 
 User-facing copy should stay consistent across the app. When the project eventually adds localization, prefer centralizing translatable strings rather than hard-coding the same message in multiple components.

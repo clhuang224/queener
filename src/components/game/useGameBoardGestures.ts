@@ -15,15 +15,19 @@ type TouchMoveEvent = {
 type UseGameBoardGesturesOptions = {
   clickDelayMs?: number
   getElementFromPoint: ElementFromPoint
+  isNote: (position: Position) => boolean
+  markNote: (position: Position) => void
   markQueen: (position: Position) => void
-  toggleNote: (position: Position) => void
+  removeNote: (position: Position) => void
 }
 
 export const useGameBoardGestures = ({
   clickDelayMs = 250,
   getElementFromPoint,
+  isNote,
+  markNote,
   markQueen,
-  toggleNote,
+  removeNote,
 }: UseGameBoardGesturesOptions) => {
   const isDragging = ref(false)
   const isPointerDown = ref(false)
@@ -56,17 +60,25 @@ export const useGameBoardGestures = ({
     pendingNotePosition = null
   }
 
+  const applySingleClickNoteAction = (position: Position) => {
+    if (isNote(position)) {
+      removeNote(position)
+    } else {
+      markNote(position)
+    }
+  }
+
   const flushPendingNote = () => {
     if (pendingNotePosition !== null) {
-      toggleNote(pendingNotePosition)
+      applySingleClickNoteAction(pendingNotePosition)
     }
     clearPendingNote()
   }
 
-  const toggleDraggedPosition = (position: Position) => {
+  const markDraggedPosition = (position: Position) => {
     const key = getPositionKey(position)
     if (draggedPositions.has(key)) return
-    toggleNote(position)
+    markNote(position)
     draggedPositions.add(key)
   }
 
@@ -97,10 +109,10 @@ export const useGameBoardGestures = ({
     if (!isDragging.value) {
       isDragging.value = true
       suppressNextClick.value = true
-      toggleDraggedPosition(dragStartPosition)
+      markDraggedPosition(dragStartPosition)
     }
 
-    toggleDraggedPosition(position)
+    markDraggedPosition(position)
   }
 
   const handleTouchMove = (event: TouchMoveEvent) => {
@@ -132,7 +144,7 @@ export const useGameBoardGestures = ({
     clearPendingNote()
     pendingNotePosition = position
     pendingNoteTimer = setTimeout(() => {
-      toggleNote(position)
+      applySingleClickNoteAction(position)
       clearPendingNote()
     }, clickDelayMs)
   }

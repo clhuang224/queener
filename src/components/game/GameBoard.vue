@@ -29,8 +29,10 @@ const {
   handleTouchMove,
 } = useGameBoardGestures({
   getElementFromPoint: getBoardElementFromPoint,
+  isNote: (position) => props.game.isNote(position),
+  markNote: (position) => props.game.markNote(position),
   markQueen: (position) => props.game.markQueen(position),
-  toggleNote: (position) => props.game.toggleNote(position),
+  removeNote: (position) => props.game.removeNote(position),
 })
 </script>
 

@@ -45,8 +45,16 @@ export default class QueenGame {
     return this.board.length
   }
 
-  public toggleNote(position: Position): void {
-    this.board[position[0]]![position[1]]!.toggleNote()
+  public markNote(position: Position): void {
+    this.board[position[0]]![position[1]]!.markNote()
+  }
+
+  public removeNote(position: Position): void {
+    this.board[position[0]]![position[1]]!.removeNote()
+  }
+
+  public isNote(position: Position): boolean {
+    return this.board[position[0]]![position[1]]!.isNote()
   }
 
   public markQueen(position: Position) {

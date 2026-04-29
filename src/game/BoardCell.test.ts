@@ -24,21 +24,31 @@ describe('BoardCell', () => {
   })
 
   describe('interaction', () => {
-    it('should change status to "note" after toggling once', () => {
+    it('should change status to "note" after marking a note', () => {
       const cell = new BoardCell(ROW, COLUMN, REGION, IS_QUEEN)
 
-      cell.toggleNote()
+      cell.markNote()
 
       expect(cell.status).toBe('note')
     })
 
-    it('should toggle back to "empty" after toggling twice', () => {
+    it('should change status back to "empty" after removing a note', () => {
       const cell = new BoardCell(ROW, COLUMN, REGION, IS_QUEEN)
 
-      cell.toggleNote()
-      cell.toggleNote()
+      cell.markNote()
+      cell.removeNote()
 
       expect(cell.status).toBe('empty')
+    })
+
+    it('should report whether the cell is a note', () => {
+      const cell = new BoardCell(ROW, COLUMN, REGION, IS_QUEEN)
+
+      expect(cell.isNote()).toBe(false)
+
+      cell.markNote()
+
+      expect(cell.isNote()).toBe(true)
     })
 
     it('should mark the cell as "wrong" when marking but no queen exists', () => {

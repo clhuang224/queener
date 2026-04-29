@@ -34,8 +34,10 @@ const setupGestures = () => {
   const gestures = scope.run(() =>
     useGameBoardGestures({
       getElementFromPoint,
+      isNote: (position) => game.isNote(position),
+      markNote: (position) => game.markNote(position),
       markQueen: (position) => game.markQueen(position),
-      toggleNote: (position) => game.toggleNote(position),
+      removeNote: (position) => game.removeNote(position),
     }),
   )
 
@@ -61,7 +63,7 @@ describe('useGameBoardGestures', () => {
     vi.useRealTimers()
   })
 
-  it('toggles a note after a single click delay', () => {
+  it('marks a note after a single click delay', () => {
     const { game, gestures, stop } = setupGestures()
 
     gestures.handleNoteClick([0, 1])
@@ -70,6 +72,18 @@ describe('useGameBoardGestures', () => {
     vi.advanceTimersByTime(300)
 
     expect(game.board[0]![1]!.status).toBe('note')
+    stop()
+  })
+
+  it('removes an existing note after a single click delay', () => {
+    const { game, gestures, stop } = setupGestures()
+
+    game.markNote([0, 1])
+
+    gestures.handleNoteClick([0, 1])
+    vi.advanceTimersByTime(300)
+
+    expect(game.board[0]![1]!.status).toBe('empty')
     stop()
   })
 
@@ -96,6 +110,20 @@ describe('useGameBoardGestures', () => {
     gestures.handleNoteClick([0, 1])
 
     vi.advanceTimersByTime(300)
+
+    expect(game.board[0]![0]!.status).toBe('note')
+    expect(game.board[0]![1]!.status).toBe('note')
+    stop()
+  })
+
+  it('does not clear existing notes while dragging across them', () => {
+    const { game, gestures, stop } = setupGestures()
+
+    game.markNote([0, 1])
+
+    gestures.handlePointerDown([0, 0])
+    gestures.handlePointerEnter([0, 1])
+    gestures.handlePointerEnd()
 
     expect(game.board[0]![0]!.status).toBe('note')
     expect(game.board[0]![1]!.status).toBe('note')
