@@ -44,9 +44,10 @@ const position = computed(() => props.cell.getPosition())
   touch-action: none;
   cursor: pointer;
   user-select: none;
-  width: 100%;
+  flex: 0 0
+    calc((100% - (var(--board-size) - 1) * var(--board-gap)) / var(--board-size));
   aspect-ratio: 1;
-  font-size: clamp(16px, calc(70vw / var(--board-size)), 26px);
+  font-size: 26px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -67,7 +68,7 @@ const position = computed(() => props.cell.getPosition())
   .queen {
     width: 72%;
     height: 72%;
-    font-size: clamp(15px, calc(65vw / var(--board-size)), 24px);
+    font-size: 24px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -78,6 +79,16 @@ const position = computed(() => props.cell.getPosition())
   }
   .wrong {
     color: red;
+  }
+}
+
+@media (max-width: 480px) {
+  .game-cell {
+    font-size: 18px;
+
+    .queen {
+      font-size: 16px;
+    }
   }
 }
 </style>

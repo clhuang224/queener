@@ -76,22 +76,30 @@ const {
 @use 'sass:list';
 
 .game-board {
-  --board-gap: clamp(3px, 1.4vw, 6px);
-  --board-padding: clamp(8px, 2.5vw, 12px);
+  --board-gap: 6px;
+  --board-padding: 12px;
 
   touch-action: manipulation;
-  width: min(100%, var(--board-max-size));
+  width: 100%;
+  max-width: var(--board-max-size);
   padding: var(--board-padding);
   box-sizing: border-box;
 }
 
 .board-cells {
-  display: grid;
-  grid-template-columns: repeat(var(--board-size), minmax(0, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
   gap: var(--board-gap);
   width: 100%;
+}
+
+@media (max-width: 480px) {
+  .game-board {
+    --board-gap: 4px;
+    --board-padding: 8px;
+  }
 }
 $rainbow-colors: #ff6b6b, #ffa94d, #ffd43b, #69db7c, #4dabf7, #748ffc, #b197fc, #343a40;
 $gray-colors: #000, #222, #444, #666, #888, #aaa, #ccc, #eee;
