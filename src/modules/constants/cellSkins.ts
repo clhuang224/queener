@@ -78,6 +78,18 @@ export const CELL_SKINS: Record<CellSkinType, TenColorPalette> = {
     '#98f5e1',
     '#b9fbc0',
   ],
+  [CellSkinType.EARTH]: [
+    '#a87e69',
+    '#b98b73',
+    '#cb997e',
+    '#ddbea9',
+    '#ffe8d6',
+    '#d4c7b0',
+    '#b7b7a4',
+    '#a5a58d',
+    '#6b705c',
+    '#3f4238',
+  ],
 }
 
 export const cellSkinMapName: Record<CellSkinType, string> = {
@@ -86,4 +98,5 @@ export const cellSkinMapName: Record<CellSkinType, string> = {
   [CellSkinType.RAINBOW]: 'Rainbow',
   [CellSkinType.AUTUMN]: 'Autumn',
   [CellSkinType.COTTON_CANDY]: 'Cotton Candy',
+  [CellSkinType.EARTH]: 'Earth',
 }
