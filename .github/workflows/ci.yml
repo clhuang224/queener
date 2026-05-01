@@ -35,6 +35,7 @@ jobs:
           bun-version: latest
       - run: bun install
       - run: bun run test:unit
+      - run: bun run build
       - run: bun run test:e2e
 
   build:
