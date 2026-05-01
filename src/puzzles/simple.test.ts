@@ -9,6 +9,14 @@ describe('SIMPLE_PUZZLES', () => {
     expect(errors.map((error) => error.message)).toEqual([])
   })
 
+  it('does not exceed the current campaign board size limit', () => {
+    const oversizedPuzzleIds = SIMPLE_PUZZLES.filter((puzzle) => puzzle.rules.size > 10).map(
+      (puzzle) => puzzle.id,
+    )
+
+    expect(oversizedPuzzleIds).toEqual([])
+  })
+
   it('does not use row-only placeholder regions', () => {
     const rowOnlyRegions = SIMPLE_PUZZLES.flatMap((puzzle) => {
       const positionsByRegion = new Map<number, Array<[number, number]>>()

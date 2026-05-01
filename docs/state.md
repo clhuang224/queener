@@ -295,6 +295,8 @@ Hearts are modeled as a bounded value rather than a named enum, and the maximum 
 - `N = 5..7` uses `2` hearts
 - `N = 8..10` uses `3` hearts
 
+The current campaign is designed for `N <= 10`; increasing the maximum board size should be treated as a product and layout change, not only a data update.
+
 They still behave like a small finite state machine.
 
 Type:

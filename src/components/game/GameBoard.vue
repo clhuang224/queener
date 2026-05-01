@@ -3,7 +3,7 @@ import GameCell from '@/components/game/GameCell.vue'
 import type { QueenGamePublic } from '@/game/QueenGame'
 import HeartCounter from '../common/HeartCounter.vue'
 import { useGameBoardGestures } from './useGameBoardGestures'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 const props = defineProps<{
   queenSkin: 'rainbow' | 'grayscale'
@@ -12,6 +12,11 @@ const props = defineProps<{
 }>()
 
 const boardRef = ref<HTMLDivElement | null>(null)
+const boardSize = computed(() => props.game.getSize())
+const boardStyle = computed(() => ({
+  '--board-size': String(boardSize.value),
+  '--board-max-size': `${boardSize.value * 62}px`,
+}))
 
 const getBoardElementFromPoint = (clientX: number, clientY: number) => {
   const element = document.elementFromPoint(clientX, clientY)
@@ -42,7 +47,7 @@ const {
     class="game-board"
     data-test="game-board"
     :class="`cell-${cellSkin} queen-${queenSkin}`"
-    :style="{ width: `${game.getSize() * 62}px` }"
+    :style="boardStyle"
     @pointerup="handlePointerEnd"
     @pointercancel="handlePointerEnd"
     @mouseleave="handlePointerEnd"
@@ -51,17 +56,19 @@ const {
     @touchcancel="handlePointerEnd"
   >
     <heart-counter :hearts="game.hearts" :max-hearts="game.maxHearts" />
-    <template v-for="(row, rowIndex) in game.board" :key="rowIndex">
-      <game-cell
-        v-for="cell in row"
-        :key="cell.getPosition().join('-')"
-        :cell="cell"
-        @pointer-down="handlePointerDown"
-        @pointer-enter="handlePointerEnter"
-        @note-click="handleNoteClick"
-        @mark-queen="handleMarkQueen"
-      />
-    </template>
+    <div class="board-cells">
+      <template v-for="(row, rowIndex) in game.board" :key="rowIndex">
+        <game-cell
+          v-for="cell in row"
+          :key="cell.getPosition().join('-')"
+          :cell="cell"
+          @pointer-down="handlePointerDown"
+          @pointer-enter="handlePointerEnter"
+          @note-click="handleNoteClick"
+          @mark-queen="handleMarkQueen"
+        />
+      </template>
+    </div>
   </div>
 </template>
 
@@ -69,14 +76,22 @@ const {
 @use 'sass:list';
 
 .game-board {
+  --board-gap: clamp(3px, 1.4vw, 6px);
+  --board-padding: clamp(8px, 2.5vw, 12px);
+
   touch-action: manipulation;
-  display: flex;
-  flex-wrap: wrap;
+  width: min(100%, var(--board-max-size));
+  padding: var(--board-padding);
+  box-sizing: border-box;
+}
+
+.board-cells {
+  display: grid;
+  grid-template-columns: repeat(var(--board-size), minmax(0, 1fr));
   justify-content: center;
   align-items: center;
-  gap: 6px;
-  padding: 12px;
-  box-sizing: border-box;
+  gap: var(--board-gap);
+  width: 100%;
 }
 $rainbow-colors: #ff6b6b, #ffa94d, #ffd43b, #69db7c, #4dabf7, #748ffc, #b197fc, #343a40;
 $gray-colors: #000, #222, #444, #666, #888, #aaa, #ccc, #eee;

@@ -44,9 +44,9 @@ const position = computed(() => props.cell.getPosition())
   touch-action: none;
   cursor: pointer;
   user-select: none;
-  width: 50px;
-  height: 50px;
-  font-size: 26px;
+  width: 100%;
+  aspect-ratio: 1;
+  font-size: clamp(16px, calc(70vw / var(--board-size)), 26px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -65,9 +65,9 @@ const position = computed(() => props.cell.getPosition())
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
   }
   .queen {
-    width: 36px;
-    height: 36px;
-    font-size: 24px;
+    width: 72%;
+    height: 72%;
+    font-size: clamp(15px, calc(65vw / var(--board-size)), 24px);
     display: flex;
     justify-content: center;
     align-items: center;

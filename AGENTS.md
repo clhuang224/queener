@@ -145,6 +145,7 @@ Keep puzzle data declarative. Validation or gameplay logic should not live insid
 Current puzzle shape notes:
 
 - puzzle size should live in `puzzle.rules.size`
+- current campaign puzzle size should not exceed `10`
 - default campaign puzzles should keep `allowDisconnectedRegions: false`
 - default campaign puzzles should keep `queensPerUnit: 1`
 - if a future puzzle variant changes those flags, update validation and player-facing rule explanations together
