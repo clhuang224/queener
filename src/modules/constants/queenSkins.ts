@@ -1,56 +1,74 @@
-import { QueenSkinType } from '../enums/QueenSkinType'
-import IconBlackChess from '@/assets/queen-skins/black-chess.png'
-import IconChristmasTree from '@/assets/queen-skins/christmas-tree.png'
-import IconBlackCrown from '@/assets/queen-skins/black-crown.png'
-import IconPinkCrown from '@/assets/queen-skins/pink-crown.png'
-import IconRedFlag from '@/assets/queen-skins/red-flag.png'
-import IconColoredPumpkin from '@/assets/queen-skins/colored-pumpkin.png'
-import IconWhiteGhost from '@/assets/queen-skins/white-ghost.png'
+import { QueenSkinType } from '@/modules/enums/QueenSkinType'
+import {
+  isDateInAnnualRange,
+  type AnnualDateRange,
+} from '@/modules/utils/isDateInAnnualRange'
+
+const queenSkinIconModules = import.meta.glob<string>('../../assets/icons/*.png', {
+  eager: true,
+  import: 'default',
+})
+
+const getQueenSkinIcon = (skin: QueenSkinType) => {
+  const icon = queenSkinIconModules[`../../assets/icons/${skin}.png`]
+
+  if (!icon) {
+    throw new Error(`Missing queen skin icon: ${skin}.png`)
+  }
+
+  return icon
+}
 
 interface QueenSkinData {
   icon: string
-  available: {
-    started_at: Date
-    ended_at: Date
-  } | null
+  available: AnnualDateRange | null
+}
+
+const halloweenAvailability: AnnualDateRange = {
+  startsOn: { month: 10, day: 1 },
+  endsOn: { month: 10, day: 31 },
 }
 
 export const QUEEN_SKINS: Record<QueenSkinType, QueenSkinData> = {
   [QueenSkinType.BLACK_CHESS]: {
-    icon: IconBlackChess,
+    icon: getQueenSkinIcon(QueenSkinType.BLACK_CHESS),
     available: null,
   },
   [QueenSkinType.CHRISTMAS_TREE]: {
-    icon: IconChristmasTree,
+    icon: getQueenSkinIcon(QueenSkinType.CHRISTMAS_TREE),
     available: {
-      started_at: new Date('2026-12-01T00:00:00Z'),
-      ended_at: new Date('2026-12-31T23:59:59Z'),
+      startsOn: { month: 12, day: 1 },
+      endsOn: { month: 12, day: 31 },
     },
   },
   [QueenSkinType.BLACK_CROWN]: {
-    icon: IconBlackCrown,
+    icon: getQueenSkinIcon(QueenSkinType.BLACK_CROWN),
     available: null,
   },
   [QueenSkinType.PINK_CROWN]: {
-    icon: IconPinkCrown,
+    icon: getQueenSkinIcon(QueenSkinType.PINK_CROWN),
     available: null,
   },
   [QueenSkinType.RED_FLAG]: {
-    icon: IconRedFlag,
+    icon: getQueenSkinIcon(QueenSkinType.RED_FLAG),
     available: null,
   },
-  [QueenSkinType.COLORED_PUMPKIN]: {
-    icon: IconColoredPumpkin,
-    available: {
-      started_at: new Date('2026-10-01T00:00:00Z'),
-      ended_at: new Date('2026-10-31T23:59:59Z'),
-    },
+  [QueenSkinType.ORANGE_PUMPKIN]: {
+    icon: getQueenSkinIcon(QueenSkinType.ORANGE_PUMPKIN),
+    available: halloweenAvailability,
   },
   [QueenSkinType.WHITE_GHOST]: {
-    icon: IconWhiteGhost,
-    available: {
-      started_at: new Date('2026-10-01T00:00:00Z'),
-      ended_at: new Date('2026-10-31T23:59:59Z'),
-    },
+    icon: getQueenSkinIcon(QueenSkinType.WHITE_GHOST),
+    available: halloweenAvailability,
   },
+}
+
+export const isQueenSkinAvailable = (skin: QueenSkinType, date = new Date()): boolean => {
+  const availability = QUEEN_SKINS[skin].available
+
+  return availability === null || isDateInAnnualRange(date, availability)
+}
+
+export const getAvailableQueenSkinTypes = (date = new Date()): QueenSkinType[] => {
+  return Object.values(QueenSkinType).filter((skin) => isQueenSkinAvailable(skin, date))
 }
