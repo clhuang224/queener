@@ -1,5 +1,7 @@
 import { CellSkinType } from '@/modules/enums/CellSkinType'
 
+export const CELL_SKIN_COLOR_COUNT = 10
+
 type HexColor = `#${string}`
 
 type TenColorPalette = readonly [

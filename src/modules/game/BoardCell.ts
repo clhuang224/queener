@@ -1,6 +1,6 @@
 import type { Position } from '@/modules/types/board'
 
-type BoardCellStatus = 'empty' | 'note' | 'wrong' | 'found'
+export type BoardCellStatus = 'empty' | 'note' | 'wrong' | 'found'
 
 export default class BoardCell {
   public status: BoardCellStatus = 'empty'

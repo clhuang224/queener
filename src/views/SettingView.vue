@@ -3,6 +3,7 @@ import { onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import BaseButton from '@/components/common/BaseButton.vue'
+import CellSkinPreview from '@/components/setting/CellSkinPreview.vue'
 import SkinFields from '@/components/setting/SkinFields.vue'
 import { useSkinStore } from '@/modules/stores/skin'
 
@@ -26,6 +27,7 @@ const goHome = async () => {
     <section class="setting-card">
       <h1>Setting</h1>
       <p class="setting-copy">Customize your board and queen skins here.</p>
+      <CellSkinPreview class="skin-preview" :cell-skin="cellSkin" :queen-skin="queenSkin" />
       <SkinFields
         :cell-skin="cellSkin"
         :queen-skin="queenSkin"
@@ -67,5 +69,9 @@ h1 {
 
 .back-button {
   margin-top: 20px;
+}
+
+.skin-preview {
+  margin-bottom: 20px;
 }
 </style>
