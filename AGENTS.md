@@ -150,6 +150,20 @@ Current puzzle shape notes:
 - default campaign puzzles should keep `queensPerUnit: 1`
 - if a future puzzle variant changes those flags, update validation and player-facing rule explanations together
 
+### `src/modules/constants/`
+
+Shared runtime constants belong here when they are used across modules or UI surfaces.
+
+Current examples:
+
+- `src/modules/constants/cellSkins.ts`
+
+Cell skin notes:
+
+- cell skins should define `CELL_SKIN_COLOR_COUNT` palette colors
+- `GameBoard` should derive board colors through `pickDistributedColors(...)`
+- boards smaller than the palette size should still use colors spread across the full palette, including the first and last palette colors
+
 ### `src/modules/utils/`
 
 Utilities belong here when they are shared, pure, and not tied to rendering.

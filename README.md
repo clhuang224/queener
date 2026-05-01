@@ -33,6 +33,7 @@ Players currently solve the board by marking notes on cells and confirming queen
 - Heart-based mistake system where hearts scale by board size (`N=5-7 => 2`, `N=8-10 => 3`)
 - One-time hint button that reveals a valid queen position
 - Quit button that returns to the home screen
+- Board skins define ten palette colors; smaller boards sample across the full palette so the first and last colors are always used
 
 ### Built-In Puzzle Data
 

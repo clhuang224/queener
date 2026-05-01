@@ -7,6 +7,7 @@ import { computed, ref } from 'vue'
 import { CELL_SKINS } from '@/modules/constants/cellSkins'
 import type { QueenSkin } from '@/modules/types/skin'
 import type { CellSkinType } from '@/modules/enums/CellSkinType'
+import { pickDistributedColors } from '@/modules/utils/pickDistributedColors'
 
 const props = defineProps<{
   queenSkin: QueenSkin
@@ -20,7 +21,10 @@ const boardStyle = computed(() => ({
   '--board-size': String(boardSize.value),
   '--board-max-size': `${boardSize.value * 62}px`,
   ...Object.fromEntries(
-    CELL_SKINS[props.cellSkin].map((color, index) => [`--cell-color-${index}`, color]),
+    pickDistributedColors(CELL_SKINS[props.cellSkin], boardSize.value).map((color, index) => [
+      `--cell-color-${index}`,
+      color,
+    ]),
   ),
 }))
 
