@@ -3,7 +3,9 @@ import { mount } from '@vue/test-utils'
 import { createTestingPinia } from '@/test/pinia'
 import { installStorageMock } from '@/test/localStorage'
 import { CELL_SKIN_COLOR_COUNT, CELL_SKINS, cellSkinMapName } from '@/modules/constants/cellSkins'
+import { queenSkinMapName } from '@/modules/constants/queenSkins'
 import { CellSkinType } from '@/modules/enums/CellSkinType'
+import { QueenSkinType } from '@/modules/enums/QueenSkinType'
 import SettingView from './SettingView.vue'
 
 const push = vi.fn()
@@ -32,17 +34,15 @@ describe('SettingView', () => {
     }
     const rainbowBoardButton = findOptionButton(cellSkinMapName[CellSkinType.RAINBOW])
     const autumnBoardButton = findOptionButton(cellSkinMapName[CellSkinType.AUTUMN])
-    const rainbowQueenButton = wrapper.findAll('.option-button').filter((button) => {
-      return button.text() === 'Rainbow'
-    })[1]!
+    const pinkCrownButton = findOptionButton(queenSkinMapName[QueenSkinType.PINK_CROWN])
 
     expect(rainbowBoardButton.classes()).toContain('active')
 
     await autumnBoardButton.trigger('click')
-    await rainbowQueenButton!.trigger('click')
+    await pinkCrownButton.trigger('click')
 
     expect(window.localStorage.getItem('queen-game-cell-skin')).toBe(CellSkinType.AUTUMN)
-    expect(window.localStorage.getItem('queen-game-queen-skin')).toBe('rainbow')
+    expect(window.localStorage.getItem('queen-game-queen-skin')).toBe(QueenSkinType.PINK_CROWN)
     expect(wrapper.findAll('.preview-cell')).toHaveLength(CELL_SKIN_COLOR_COUNT * 4)
     expect(wrapper.findAll('[data-state="found"]')).toHaveLength(CELL_SKIN_COLOR_COUNT)
     expect(wrapper.findAll('[data-state="note"]')).toHaveLength(CELL_SKIN_COLOR_COUNT)

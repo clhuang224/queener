@@ -5,7 +5,9 @@ import { installStorageMock } from '@/test/localStorage'
 import { createTestingPinia } from '@/test/pinia'
 import { SIMPLE_PUZZLES } from '@/modules/puzzles/simple'
 import { CELL_SKINS } from '@/modules/constants/cellSkins'
+import { QUEEN_SKINS } from '@/modules/constants/queenSkins'
 import { CellSkinType } from '@/modules/enums/CellSkinType'
+import { QueenSkinType } from '@/modules/enums/QueenSkinType'
 
 const push = vi.fn()
 const openAlertModal = vi.fn()
@@ -76,7 +78,7 @@ describe('GameView', () => {
     const { wrapper, queenCell, restartButton } = mountGameView()
 
     await queenCell.trigger('dblclick')
-    expect(queenCell.text()).toContain('👸')
+    expect(queenCell.attributes('data-status')).toBe('found')
 
     await restartButton!.trigger('click')
     await wrapper.vm.$nextTick()
@@ -85,7 +87,7 @@ describe('GameView', () => {
       title: 'Restart Level',
       content: 'Are you sure you want to restart this puzzle?',
     })
-    expect(queenCell.text()).toBe('')
+    expect(queenCell.attributes('data-status')).toBe('empty')
   })
 
   it('keeps current progress when restart is cancelled', async () => {
@@ -94,24 +96,28 @@ describe('GameView', () => {
     const { wrapper, queenCell, restartButton } = mountGameView()
 
     await queenCell.trigger('dblclick')
-    expect(queenCell.text()).toContain('👸')
+    expect(queenCell.attributes('data-status')).toBe('found')
 
     await restartButton!.trigger('click')
     await wrapper.vm.$nextTick()
 
-    expect(queenCell.text()).toContain('👸')
+    expect(queenCell.attributes('data-status')).toBe('found')
   })
 
-  it('uses the saved skin settings for the board', () => {
+  it('uses the saved skin settings for the board', async () => {
     window.localStorage.setItem('queen-game-cell-skin', CellSkinType.LAKE)
-    window.localStorage.setItem('queen-game-queen-skin', 'rainbow')
+    window.localStorage.setItem('queen-game-queen-skin', QueenSkinType.PINK_CROWN)
 
-    const { wrapper } = mountGameView()
+    const { wrapper, queenCell } = mountGameView()
     const board = wrapper.find('[data-test="game-board"]')
 
-    expect(board.classes()).toContain('queen-rainbow')
     expect(board.attributes('style')).toContain(
       `--cell-color-0: ${CELL_SKINS[CellSkinType.LAKE][0]}`,
+    )
+
+    await queenCell.trigger('dblclick')
+    expect(queenCell.find('.queen').attributes('src')).toBe(
+      QUEEN_SKINS[QueenSkinType.PINK_CROWN].icon,
     )
   })
 
@@ -156,7 +162,7 @@ describe('GameView', () => {
     await findCell(wrapper, row, column)!.trigger('dblclick')
 
     expect(wrapper.find('.level-title').text()).toBe('Level 2')
-    expect(findCell(wrapper, row, column)!.text()).toContain('👸')
+    expect(findCell(wrapper, row, column)!.attributes('data-status')).toBe('found')
   })
 
   it('shows loss result actions and allows replay', async () => {

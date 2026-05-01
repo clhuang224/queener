@@ -5,18 +5,20 @@ import HeartCounter from '../common/HeartCounter.vue'
 import { useGameBoardGestures } from './useGameBoardGestures'
 import { computed, ref } from 'vue'
 import { CELL_SKINS } from '@/modules/constants/cellSkins'
-import type { QueenSkin } from '@/modules/types/skin'
+import { QUEEN_SKINS } from '@/modules/constants/queenSkins'
 import type { CellSkinType } from '@/modules/enums/CellSkinType'
+import type { QueenSkinType } from '@/modules/enums/QueenSkinType'
 import { pickDistributedColors } from '@/modules/utils/pickDistributedColors'
 
 const props = defineProps<{
-  queenSkin: QueenSkin
+  queenSkin: QueenSkinType
   cellSkin: CellSkinType
   game: QueenGamePublic
 }>()
 
 const boardRef = ref<HTMLDivElement | null>(null)
 const boardSize = computed(() => props.game.getSize())
+const queenIcon = computed(() => QUEEN_SKINS[props.queenSkin].icon)
 const boardStyle = computed(() => ({
   '--board-size': String(boardSize.value),
   '--board-max-size': `${boardSize.value * 62}px`,
@@ -56,7 +58,6 @@ const {
     ref="boardRef"
     class="game-board"
     data-test="game-board"
-    :class="`queen-${queenSkin}`"
     :style="boardStyle"
     @pointerup="handlePointerEnd"
     @pointercancel="handlePointerEnd"
@@ -72,6 +73,7 @@ const {
           v-for="cell in row"
           :key="cell.getPosition().join('-')"
           :cell="cell"
+          :queen-icon="queenIcon"
           @pointer-down="handlePointerDown"
           @pointer-enter="handlePointerEnter"
           @note-click="handleNoteClick"
@@ -107,18 +109,6 @@ const {
   .game-board {
     --board-gap: 4px;
     --board-padding: 8px;
-  }
-}
-$rainbow-colors:
-  #f94144, #f3722c, #f8961e, #f9c74f, #90be6d, #43aa8b, #4d908e, #3b89aa, #277da1, #577590;
-$skins: (rainbow, grayscale);
-@each $skin in $skins {
-  .game-board.queen-#{$skin} {
-    @if $skin == rainbow {
-      --queen-color: #{linear-gradient(45deg, $rainbow-colors)};
-    } @else {
-      --queen-color: #{linear-gradient(45deg, #000, #222, #444, #666, #888, #aaa, #ccc, #eee)};
-    }
   }
 }
 </style>

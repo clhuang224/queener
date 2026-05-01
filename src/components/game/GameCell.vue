@@ -5,6 +5,7 @@ import type { Position } from '@/modules/types/board'
 
 const props = defineProps<{
   cell: BoardCell
+  queenIcon: string
 }>()
 
 const emit = defineEmits<{
@@ -24,6 +25,7 @@ const position = computed(() => props.cell.getPosition())
     :style="{ backgroundColor: cellColor }"
     :data-row="position[0]"
     :data-column="position[1]"
+    :data-status="props.cell.status"
     :data-test="`cell-${position[0]}-${position[1]}`"
     @dblclick="emit('markQueen', position)"
     @pointerdown="emit('pointerDown', position)"
@@ -31,7 +33,7 @@ const position = computed(() => props.cell.getPosition())
     @click="emit('noteClick', position)"
   >
     <template v-if="props.cell.isQueen() && props.cell.status === 'found'">
-      <div class="queen">👸</div>
+      <img class="queen" :src="queenIcon" alt="" draggable="false" />
     </template>
     <template v-if="['note', 'wrong'].includes(props.cell.status)">
       <span :class="{ wrong: props.cell.status === 'wrong' }">x</span>
@@ -69,15 +71,11 @@ const position = computed(() => props.cell.getPosition())
   .queen {
     width: 72%;
     height: 72%;
-    font-size: 24px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: white;
-    background-image: var(--queen-color);
-    border-radius: 50%;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+    object-fit: contain;
+    pointer-events: none;
+    user-select: none;
   }
+
   .wrong {
     color: red;
   }
@@ -86,10 +84,6 @@ const position = computed(() => props.cell.getPosition())
 @media (max-width: 480px) {
   .game-cell {
     font-size: 18px;
-
-    .queen {
-      font-size: 16px;
-    }
   }
 }
 </style>

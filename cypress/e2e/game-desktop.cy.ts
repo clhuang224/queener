@@ -25,7 +25,7 @@ describe('desktop board interactions', () => {
     getCell(LEVEL_ONE.noteCell).contains('span', 'x')
 
     getCell(LEVEL_ONE.queenCell).dblclick()
-    getCell(LEVEL_ONE.queenCell).contains('.queen', '👸')
+    getCell(LEVEL_ONE.queenCell).should('have.attr', 'data-status', 'found')
 
     getCell(LEVEL_ONE.dragStartCell).trigger('pointerdown', {
       pointerType: 'mouse',

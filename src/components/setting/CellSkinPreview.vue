@@ -1,17 +1,19 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { CELL_SKIN_COLOR_COUNT, CELL_SKINS } from '@/modules/constants/cellSkins'
-import type { QueenSkin } from '@/modules/types/skin'
+import { QUEEN_SKINS } from '@/modules/constants/queenSkins'
 import type { CellSkinType } from '@/modules/enums/CellSkinType'
+import type { QueenSkinType } from '@/modules/enums/QueenSkinType'
 import type { BoardCellStatus } from '@/modules/game/BoardCell'
 
 const props = defineProps<{
   cellSkin: CellSkinType
-  queenSkin: QueenSkin
+  queenSkin: QueenSkinType
 }>()
 
 const previewStates: BoardCellStatus[] = ['found', 'note', 'wrong', 'empty']
 const palette = computed(() => CELL_SKINS[props.cellSkin])
+const queenIcon = computed(() => QUEEN_SKINS[props.queenSkin].icon)
 const gridStyle = {
   '--preview-column-count': String(CELL_SKIN_COLOR_COUNT),
 }
@@ -20,7 +22,6 @@ const gridStyle = {
 <template>
   <div
     class="cell-skin-preview"
-    :class="`queen-${queenSkin}`"
     :style="gridStyle"
     data-test="cell-skin-preview"
   >
@@ -35,7 +36,7 @@ const gridStyle = {
         :data-state="state"
         :aria-label="`${state} preview color ${colorIndex + 1}`"
       >
-        <div v-if="state === 'found'" class="queen">👸</div>
+        <img v-if="state === 'found'" class="queen" :src="queenIcon" alt="" draggable="false" />
         <span v-else-if="state === 'note' || state === 'wrong'" :class="{ wrong: state === 'wrong' }">
           x
         </span>
@@ -78,34 +79,9 @@ const gridStyle = {
 .queen {
   width: 72%;
   height: 72%;
-  border-radius: 50%;
-  background-image: var(--queen-color);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.24);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-}
-
-.queen-rainbow {
-  --queen-color: linear-gradient(
-    45deg,
-    #f94144,
-    #f3722c,
-    #f8961e,
-    #f9c74f,
-    #90be6d,
-    #43aa8b,
-    #4d908e,
-    #3b89aa,
-    #277da1,
-    #577590
-  );
-}
-
-.queen-grayscale {
-  --queen-color: linear-gradient(45deg, #000, #222, #444, #666, #888, #aaa, #ccc, #eee);
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
 }
 
 @media (max-width: 480px) {
@@ -116,10 +92,6 @@ const gridStyle = {
   .preview-cell {
     border-radius: 6px;
     font-size: 14px;
-  }
-
-  .queen {
-    font-size: 12px;
   }
 }
 </style>

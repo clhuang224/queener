@@ -1,22 +1,24 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import { CELL_SKINS } from '@/modules/constants/cellSkins'
+import { QUEEN_SKINS } from '@/modules/constants/queenSkins'
 import { CellSkinType } from '@/modules/enums/CellSkinType'
-import { QUEEN_SKINS, type QueenSkin, type SkinSettings } from '@/modules/types/skin'
+import { QueenSkinType } from '@/modules/enums/QueenSkinType'
+import type { SkinSettings } from '@/modules/types/skin'
 
 const CELL_SKIN_STORAGE_KEY = 'queen-game-cell-skin'
 const QUEEN_SKIN_STORAGE_KEY = 'queen-game-queen-skin'
 const DEFAULT_SETTINGS: SkinSettings = {
   cellSkin: CellSkinType.RAINBOW,
-  queenSkin: 'grayscale',
+  queenSkin: QueenSkinType.BLACK_CROWN,
 }
 
 const isCellSkin = (value: unknown): value is CellSkinType => {
   return typeof value === 'string' && Object.prototype.hasOwnProperty.call(CELL_SKINS, value)
 }
 
-const isQueenSkin = (value: unknown): value is QueenSkin => {
-  return typeof value === 'string' && QUEEN_SKINS.includes(value as QueenSkin)
+const isQueenSkin = (value: unknown): value is QueenSkinType => {
+  return typeof value === 'string' && Object.prototype.hasOwnProperty.call(QUEEN_SKINS, value)
 }
 
 const getStoredCellSkin = (): CellSkinType => {
@@ -26,7 +28,7 @@ const getStoredCellSkin = (): CellSkinType => {
   return isCellSkin(storedValue) ? storedValue : DEFAULT_SETTINGS.cellSkin
 }
 
-const getStoredQueenSkin = (): QueenSkin => {
+const getStoredQueenSkin = (): QueenSkinType => {
   if (typeof window === 'undefined') return DEFAULT_SETTINGS.queenSkin
 
   const storedValue = window.localStorage.getItem(QUEEN_SKIN_STORAGE_KEY)
@@ -42,7 +44,7 @@ const persistSkinSettings = ({ cellSkin, queenSkin }: SkinSettings) => {
 
 export const useSkinStore = defineStore('skin', () => {
   const cellSkin = ref<CellSkinType>(DEFAULT_SETTINGS.cellSkin)
-  const queenSkin = ref<QueenSkin>(DEFAULT_SETTINGS.queenSkin)
+  const queenSkin = ref<QueenSkinType>(DEFAULT_SETTINGS.queenSkin)
   const hasLoaded = ref(false)
 
   const load = () => {
@@ -66,7 +68,7 @@ export const useSkinStore = defineStore('skin', () => {
     })
   }
 
-  const setQueenSkin = (nextSkin: QueenSkin) => {
+  const setQueenSkin = (nextSkin: QueenSkinType) => {
     ensureLoaded()
     queenSkin.value = nextSkin
     persistSkinSettings({

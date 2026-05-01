@@ -1,17 +1,18 @@
 <script setup lang="ts">
 import { cellSkinMapName } from '@/modules/constants/cellSkins'
+import { getAvailableQueenSkinTypes, queenSkinMapName } from '@/modules/constants/queenSkins'
 import { CellSkinType } from '@/modules/enums/CellSkinType'
-import type { QueenSkin } from '@/modules/types/skin'
+import type { QueenSkinType } from '@/modules/enums/QueenSkinType'
 import { getEnumValues } from '@/modules/utils/getEnumValues'
 
 defineProps<{
   cellSkin: CellSkinType
-  queenSkin: QueenSkin
+  queenSkin: QueenSkinType
 }>()
 
 const emit = defineEmits<{
   'update:cellSkin': [skin: CellSkinType]
-  'update:queenSkin': [skin: QueenSkin]
+  'update:queenSkin': [skin: QueenSkinType]
 }>()
 
 const cellSkinOptions = getEnumValues(CellSkinType).map((type) => ({
@@ -19,10 +20,10 @@ const cellSkinOptions = getEnumValues(CellSkinType).map((type) => ({
   value: type,
 }))
 
-const queenSkinOptions: Array<{ label: string; value: QueenSkin }> = [
-  { label: 'Rainbow', value: 'rainbow' },
-  { label: 'Grayscale', value: 'grayscale' },
-]
+const queenSkinOptions = getAvailableQueenSkinTypes().map((type) => ({
+  label: queenSkinMapName[type],
+  value: type,
+}))
 </script>
 
 <template>
@@ -79,11 +80,12 @@ const queenSkinOptions: Array<{ label: string; value: QueenSkin }> = [
 
 .option-row {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
 }
 
 .option-button {
-  flex: 1;
+  flex: 1 1 130px;
   padding: 10px 12px;
   border: 1px solid #c7d2e4;
   border-radius: 12px;

@@ -1,8 +1,5 @@
 import { QueenSkinType } from '@/modules/enums/QueenSkinType'
-import {
-  isDateInAnnualRange,
-  type AnnualDateRange,
-} from '@/modules/utils/isDateInAnnualRange'
+import { isDateInAnnualRange, type AnnualDateRange } from '@/modules/utils/isDateInAnnualRange'
 
 const queenSkinIconModules = import.meta.glob<string>('../../assets/icons/*.png', {
   eager: true,
@@ -30,6 +27,10 @@ const halloweenAvailability: AnnualDateRange = {
 }
 
 export const QUEEN_SKINS: Record<QueenSkinType, QueenSkinData> = {
+  [QueenSkinType.GROWN_CHESS]: {
+    icon: getQueenSkinIcon(QueenSkinType.GROWN_CHESS),
+    available: null,
+  },
   [QueenSkinType.BLACK_CHESS]: {
     icon: getQueenSkinIcon(QueenSkinType.BLACK_CHESS),
     available: null,
@@ -61,6 +62,27 @@ export const QUEEN_SKINS: Record<QueenSkinType, QueenSkinData> = {
     icon: getQueenSkinIcon(QueenSkinType.WHITE_GHOST),
     available: halloweenAvailability,
   },
+  [QueenSkinType.PURPLE_CANDY]: {
+    icon: getQueenSkinIcon(QueenSkinType.PURPLE_CANDY),
+    available: halloweenAvailability,
+  },
+  [QueenSkinType.GREEN_CAULDRON]: {
+    icon: getQueenSkinIcon(QueenSkinType.GREEN_CAULDRON),
+    available: halloweenAvailability,
+  },
+}
+
+export const queenSkinMapName: Record<QueenSkinType, string> = {
+  [QueenSkinType.GROWN_CHESS]: 'Grown Chess',
+  [QueenSkinType.BLACK_CHESS]: 'Black Chess',
+  [QueenSkinType.CHRISTMAS_TREE]: 'Christmas Tree',
+  [QueenSkinType.BLACK_CROWN]: 'Black Crown',
+  [QueenSkinType.PINK_CROWN]: 'Pink Crown',
+  [QueenSkinType.RED_FLAG]: 'Red Flag',
+  [QueenSkinType.ORANGE_PUMPKIN]: 'Orange Pumpkin',
+  [QueenSkinType.WHITE_GHOST]: 'White Ghost',
+  [QueenSkinType.PURPLE_CANDY]: 'Purple Candy',
+  [QueenSkinType.GREEN_CAULDRON]: 'Green Cauldron',
 }
 
 export const isQueenSkinAvailable = (skin: QueenSkinType, date = new Date()): boolean => {
