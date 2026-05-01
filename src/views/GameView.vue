@@ -4,11 +4,11 @@ import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import BaseButton from '@/components/common/BaseButton.vue'
 import GameBoard from '@/components/game/GameBoard.vue'
-import QueenGame from '@/game/QueenGame'
-import { TOTAL_LEVELS, getPuzzleByLevel } from '@/puzzles/simple'
-import { useSkinStore } from '@/stores/skin'
-import { useGlobalModalStore } from '@/stores/globalModal'
-import { useLevelStore } from '@/stores/level'
+import QueenGame from '@/modules/game/QueenGame'
+import { TOTAL_LEVELS, getPuzzleByLevel } from '@/modules/puzzles/simple'
+import { useSkinStore } from '@/modules/stores/skin'
+import { useGlobalModalStore } from '@/modules/stores/globalModal'
+import { useLevelStore } from '@/modules/stores/level'
 
 const props = defineProps<{
   level: number
@@ -145,7 +145,10 @@ watch(
     isResolvingResult.value = true
     levelStore.completeLevel(activeLevel.value)
 
-    const actions = [{ label: 'Play Again', payload: 'retry' }, { label: 'Home', payload: 'home' }]
+    const actions = [
+      { label: 'Play Again', payload: 'retry' },
+      { label: 'Home', payload: 'home' },
+    ]
     if (hasNextLevel.value) {
       actions.unshift({ label: 'Next Level', payload: 'next' })
     }

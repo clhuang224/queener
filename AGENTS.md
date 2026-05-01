@@ -30,10 +30,10 @@ At a high level, most gameplay follows this flow:
 
 1. A view under `src/views/` owns the screen-level flow.
 2. Reusable UI is extracted into `src/components/`.
-3. Core game rules live in `src/game/`.
-4. Shared type definitions live in `src/types/`.
-5. Puzzle data lives in `src/puzzles/`.
-6. Small cross-cutting helpers live in `src/utils/`.
+3. Core game rules live in `src/modules/game/`.
+4. Shared type definitions live in `src/modules/types/`.
+5. Puzzle data lives in `src/modules/puzzles/`.
+6. Small cross-cutting helpers live in `src/modules/utils/`.
 
 The key architectural rule is:
 
@@ -81,7 +81,7 @@ Component extraction is usually a good idea when:
 - a UI block has its own props and rendering rules
 - a section should read like a named domain concept
 
-### `src/game/`
+### `src/modules/game/`
 
 This folder owns gameplay state and rules.
 
@@ -96,8 +96,8 @@ Keep gameplay rules here rather than spreading them across Vue components.
 
 Current examples:
 
-- `src/game/QueenGame.ts`
-- `src/game/BoardCell.ts`
+- `src/modules/game/QueenGame.ts`
+- `src/modules/game/BoardCell.ts`
 
 `QueenGame` should remain the main entry point for rule changes. `BoardCell` should stay focused on individual cell state and simple cell-level transitions.
 
@@ -112,14 +112,14 @@ Current route structure:
 
 When adding a new page, define the route here and place the route component under `src/views/`.
 
-### `src/types/`
+### `src/modules/types/`
 
 Put reusable TypeScript models and aliases here.
 
 Current examples:
 
-- `src/types/board.ts`
-- `src/types/puzzle.ts`
+- `src/modules/types/board.ts`
+- `src/modules/types/puzzle.ts`
 
 Good fits:
 
@@ -129,7 +129,7 @@ Good fits:
 
 If a type is only used inside one component or one class and is not part of a wider contract, keeping it local is acceptable.
 
-### `src/puzzles/`
+### `src/modules/puzzles/`
 
 Puzzle definitions belong here.
 
@@ -150,17 +150,17 @@ Current puzzle shape notes:
 - default campaign puzzles should keep `queensPerUnit: 1`
 - if a future puzzle variant changes those flags, update validation and player-facing rule explanations together
 
-### `src/utils/`
+### `src/modules/utils/`
 
 Utilities belong here when they are shared, pure, and not tied to rendering.
 
 Current example:
 
-- `src/utils/random.ts`
+- `src/modules/utils/random.ts`
 
 Do not move tiny one-off logic into `utils/` too early. Keep implementation details local until reuse is real.
 
-### `src/stores/`
+### `src/modules/stores/`
 
 This folder is reserved for Pinia stores when shared app state is needed.
 
@@ -324,11 +324,11 @@ When deciding where a new shape or helper should live, use this quick guide:
 
 - Route-level screen: `src/views/`
 - Reusable UI block: `src/components/`
-- Core gameplay rule or engine behavior: `src/game/`
-- Reusable type or interface: `src/types/`
-- Declarative puzzle data: `src/puzzles/`
-- Shared pure helper: `src/utils/`
-- Cross-view shared store: `src/stores/`
+- Core gameplay rule or engine behavior: `src/modules/game/`
+- Reusable type or interface: `src/modules/types/`
+- Declarative puzzle data: `src/modules/puzzles/`
+- Shared pure helper: `src/modules/utils/`
+- Cross-view shared store: `src/modules/stores/`
 
 Keep types or helpers inside a component file only when they are truly private to that file.
 

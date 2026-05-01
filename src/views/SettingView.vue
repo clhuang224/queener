@@ -4,7 +4,7 @@ import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import BaseButton from '@/components/common/BaseButton.vue'
 import SkinFields from '@/components/setting/SkinFields.vue'
-import { useSkinStore } from '@/stores/skin'
+import { useSkinStore } from '@/modules/stores/skin'
 
 const router = useRouter()
 const skinStore = useSkinStore()

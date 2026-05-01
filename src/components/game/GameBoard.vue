@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import GameCell from '@/components/game/GameCell.vue'
-import type { QueenGamePublic } from '@/game/QueenGame'
+import type { QueenGamePublic } from '@/modules/game/QueenGame'
 import HeartCounter from '../common/HeartCounter.vue'
 import { useGameBoardGestures } from './useGameBoardGestures'
 import { computed, ref } from 'vue'
-import { CELL_SKINS } from '@/constants/cellSkins'
-import type { QueenSkin } from '@/types/skin'
-import type { CellSkinType } from '@/enums/CellSkinType'
+import { CELL_SKINS } from '@/modules/constants/cellSkins'
+import type { QueenSkin } from '@/modules/types/skin'
+import type { CellSkinType } from '@/modules/enums/CellSkinType'
 
 const props = defineProps<{
   queenSkin: QueenSkin

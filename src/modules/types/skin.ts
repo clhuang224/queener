@@ -1,4 +1,4 @@
-import type { CellSkinType } from '@/enums/CellSkinType'
+import type { CellSkinType } from '@/modules/enums/CellSkinType'
 
 export const QUEEN_SKINS = ['rainbow', 'grayscale'] as const
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useGlobalModalStore } from '@/stores/globalModal'
+import { useGlobalModalStore } from '@/modules/stores/globalModal'
 import { storeToRefs } from 'pinia'
 import BaseModal from './common/BaseModal.vue'
 const { globalModal } = storeToRefs(useGlobalModalStore())

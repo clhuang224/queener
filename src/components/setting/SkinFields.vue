@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { cellSkinMapName } from '@/constants/cellSkins'
-import { CellSkinType } from '@/enums/CellSkinType'
-import type { QueenSkin } from '@/types/skin'
-import { getEnumValues } from '@/utils/getEnumValues'
+import { cellSkinMapName } from '@/modules/constants/cellSkins'
+import { CellSkinType } from '@/modules/enums/CellSkinType'
+import type { QueenSkin } from '@/modules/types/skin'
+import { getEnumValues } from '@/modules/utils/getEnumValues'
 
 defineProps<{
   cellSkin: CellSkinType

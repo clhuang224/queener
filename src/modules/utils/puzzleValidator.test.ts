@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import type { Puzzle } from '@/types/puzzle'
-import { PuzzleValidationError, validatePuzzle } from '@/utils/puzzleValidator'
+import type { Puzzle } from '@/modules/types/puzzle'
+import { PuzzleValidationError, validatePuzzle } from '@/modules/utils/puzzleValidator'
 
 describe('validatePuzzle', () => {
   it('accepts a valid puzzle', () => {
@@ -52,9 +52,7 @@ describe('validatePuzzle', () => {
 
     const errors = validatePuzzle(puzzle)
 
-    expect(errors).toEqual(
-      expect.arrayContaining([expect.any(PuzzleValidationError)]),
-    )
+    expect(errors).toEqual(expect.arrayContaining([expect.any(PuzzleValidationError)]))
     expect(errors.map((error) => error.message)).toEqual(
       expect.arrayContaining([
         'invalid-1: expected 1 queens in row 0, got 2',

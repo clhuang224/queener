@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { effectScope } from 'vue'
-import QueenGame from '@/game/QueenGame'
-import type { Puzzle } from '@/types/puzzle'
+import QueenGame from '@/modules/game/QueenGame'
+import type { Puzzle } from '@/modules/types/puzzle'
 import { useGameBoardGestures } from './useGameBoardGestures'
 
 const TEST_PUZZLE: Puzzle = {
@@ -15,7 +15,10 @@ const TEST_PUZZLE: Puzzle = {
     [0, 0],
     [1, 1],
   ],
-  queens: [[0, 0], [1, 1]],
+  queens: [
+    [0, 0],
+    [1, 1],
+  ],
 }
 
 const createCellElement = (row: number, column: number) => {

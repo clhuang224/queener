@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type BoardCell from '@/game/BoardCell'
+import type BoardCell from '@/modules/game/BoardCell'
 import { computed } from 'vue'
-import type { Position } from '@/types/board'
+import type { Position } from '@/modules/types/board'
 
 const props = defineProps<{
   cell: BoardCell
@@ -44,8 +44,7 @@ const position = computed(() => props.cell.getPosition())
   touch-action: none;
   cursor: pointer;
   user-select: none;
-  flex: 0 0
-    calc((100% - (var(--board-size) - 1) * var(--board-gap)) / var(--board-size));
+  flex: 0 0 calc((100% - (var(--board-size) - 1) * var(--board-gap)) / var(--board-size));
   box-sizing: border-box;
   min-width: 0;
   aspect-ratio: 1;

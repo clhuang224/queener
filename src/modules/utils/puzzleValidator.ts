@@ -1,4 +1,4 @@
-import type { Puzzle } from '@/types/puzzle'
+import type { Puzzle } from '@/modules/types/puzzle'
 
 export class PuzzleValidationError extends Error {
   public readonly puzzleId: string
@@ -143,7 +143,9 @@ export const validatePuzzle = (puzzle: Puzzle): PuzzleValidationError[] => {
   for (let row = 0; row < size; row += 1) {
     const rowCount = rowCounts.get(row) ?? 0
     if (rowCount !== queensPerUnit) {
-      errors.push(createError(id, `expected ${queensPerUnit} queens in row ${row}, got ${rowCount}`))
+      errors.push(
+        createError(id, `expected ${queensPerUnit} queens in row ${row}, got ${rowCount}`),
+      )
     }
   }
 

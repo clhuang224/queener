@@ -111,8 +111,8 @@ Type:
 
 Implementation:
 
-- [src/game/BoardCell.ts](../src/game/BoardCell.ts)
-- [src/game/QueenGame.ts](../src/game/QueenGame.ts)
+- [src/modules/game/BoardCell.ts](../src/modules/game/BoardCell.ts)
+- [src/modules/game/QueenGame.ts](../src/modules/game/QueenGame.ts)
 
 ### Transition Table
 
@@ -167,7 +167,7 @@ Type:
 
 Implementation:
 
-- [src/game/QueenGame.ts](../src/game/QueenGame.ts)
+- [src/modules/game/QueenGame.ts](../src/modules/game/QueenGame.ts)
 - [src/components/game/GameBoard.vue](../src/components/game/GameBoard.vue)
 - [src/views/GameView.vue](../src/views/GameView.vue)
 
@@ -237,7 +237,7 @@ Type:
 
 Implementation:
 
-- [src/game/QueenGame.ts](../src/game/QueenGame.ts)
+- [src/modules/game/QueenGame.ts](../src/modules/game/QueenGame.ts)
 - [src/views/GameView.vue](../src/views/GameView.vue)
 
 ### Transition Table
@@ -306,7 +306,7 @@ Type:
 
 Implementation:
 
-- [src/game/QueenGame.ts](../src/game/QueenGame.ts)
+- [src/modules/game/QueenGame.ts](../src/modules/game/QueenGame.ts)
 - [src/components/game/GameBoard.vue](../src/components/game/GameBoard.vue)
 - [src/components/common/HeartCounter.vue](../src/components/common/HeartCounter.vue)
 

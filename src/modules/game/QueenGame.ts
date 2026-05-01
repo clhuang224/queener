@@ -1,7 +1,7 @@
-import type { Position } from '@/types/board'
+import type { Position } from '@/modules/types/board'
 import BoardCell from './BoardCell'
-import type { Puzzle } from '@/types/puzzle'
-import { randomInteger } from '@/utils/random'
+import type { Puzzle } from '@/modules/types/puzzle'
+import { randomInteger } from '@/modules/utils/random'
 
 export default class QueenGame {
   private puzzle: Puzzle

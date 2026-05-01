@@ -1,6 +1,6 @@
 import { reactive, ref } from 'vue'
 import { defineStore } from 'pinia'
-import type { ModalAction } from '@/types/modal'
+import type { ModalAction } from '@/modules/types/modal'
 
 interface GlobalResultModalOptions {
   title: string
@@ -63,7 +63,10 @@ export const useGlobalModalStore = defineStore('global-modal', () => {
     })
   }
 
-  const openConfirmModal = async ({ title, content }: Omit<GlobalResultModalOptions, 'actions'>) => {
+  const openConfirmModal = async ({
+    title,
+    content,
+  }: Omit<GlobalResultModalOptions, 'actions'>) => {
     await openResultModal({
       title,
       content,

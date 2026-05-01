@@ -1,8 +1,8 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import { CELL_SKINS } from '@/constants/cellSkins'
-import { CellSkinType } from '@/enums/CellSkinType'
-import { QUEEN_SKINS, type QueenSkin, type SkinSettings } from '@/types/skin'
+import { CELL_SKINS } from '@/modules/constants/cellSkins'
+import { CellSkinType } from '@/modules/enums/CellSkinType'
+import { QUEEN_SKINS, type QueenSkin, type SkinSettings } from '@/modules/types/skin'
 
 const CELL_SKIN_STORAGE_KEY = 'queen-game-cell-skin'
 const QUEEN_SKIN_STORAGE_KEY = 'queen-game-queen-skin'

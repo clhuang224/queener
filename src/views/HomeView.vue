@@ -3,10 +3,10 @@ import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import BaseButton from '@/components/common/BaseButton.vue'
 import LevelPicker from '@/components/home/LevelPicker.vue'
-import { useLevelStore } from '@/stores/level'
+import { useLevelStore } from '@/modules/stores/level'
 import { storeToRefs } from 'pinia'
-import QueenGame from '@/game/QueenGame'
-import { getPuzzleByLevel } from '@/puzzles/simple'
+import QueenGame from '@/modules/game/QueenGame'
+import { getPuzzleByLevel } from '@/modules/puzzles/simple'
 
 const router = useRouter()
 const levelStore = useLevelStore()

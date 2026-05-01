@@ -1,4 +1,4 @@
-import type { Position } from '@/types/board'
+import type { Position } from '@/modules/types/board'
 
 type BoardCellStatus = 'empty' | 'note' | 'wrong' | 'found'
 

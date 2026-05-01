@@ -1,4 +1,4 @@
-import type { Puzzle } from '@/types/puzzle'
+import type { Puzzle } from '@/modules/types/puzzle'
 
 export const SIMPLE_PUZZLES: Puzzle[] = [
   {

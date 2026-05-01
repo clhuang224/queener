@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
-import { TOTAL_LEVELS } from '@/puzzles/simple'
+import { TOTAL_LEVELS } from '@/modules/puzzles/simple'
 
 const STORAGE_KEY = 'queen-game-highest-completed-level'
 

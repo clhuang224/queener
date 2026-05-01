@@ -1,4 +1,4 @@
-import { CellSkinType } from '@/enums/CellSkinType'
+import { CellSkinType } from '@/modules/enums/CellSkinType'
 
 type HexColor = `#${string}`
 

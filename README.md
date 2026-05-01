@@ -91,12 +91,15 @@ src/
 ├── components/
 │   ├── common/          # Shared UI such as buttons and heart display
 │   └── game/            # Board and cell rendering components
-├── game/                # Core gameplay classes such as QueenGame and BoardCell
-├── puzzles/             # Built-in puzzle definitions
+├── modules/             # Non-UI gameplay, data, stores, types, constants, and helpers
+│   ├── constants/       # Shared runtime constants such as skin palettes
+│   ├── enums/           # Shared enum definitions
+│   ├── game/            # Core gameplay classes such as QueenGame and BoardCell
+│   ├── puzzles/         # Built-in puzzle definitions
+│   ├── stores/          # Pinia stores
+│   ├── types/           # Shared TypeScript models and aliases
+│   └── utils/           # Small reusable helpers
 ├── router/              # Vue Router configuration
-├── stores/              # Pinia stores
-├── types/               # Shared TypeScript models and aliases
-├── utils/               # Small reusable helpers
 ├── views/               # Route-level screens
 ├── App.vue              # Root app shell
 └── main.ts              # App bootstrap

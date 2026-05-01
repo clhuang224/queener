@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ModalAction } from '@/types/modal'
+import type { ModalAction } from '@/modules/types/modal'
 
 defineProps<{
   title: string

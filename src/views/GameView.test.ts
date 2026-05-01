@@ -3,9 +3,9 @@ import { mount } from '@vue/test-utils'
 import GameView from './GameView.vue'
 import { installStorageMock } from '@/test/localStorage'
 import { createTestingPinia } from '@/test/pinia'
-import { SIMPLE_PUZZLES } from '@/puzzles/simple'
-import { CELL_SKINS } from '@/constants/cellSkins'
-import { CellSkinType } from '@/enums/CellSkinType'
+import { SIMPLE_PUZZLES } from '@/modules/puzzles/simple'
+import { CELL_SKINS } from '@/modules/constants/cellSkins'
+import { CellSkinType } from '@/modules/enums/CellSkinType'
 
 const push = vi.fn()
 const openAlertModal = vi.fn()
@@ -19,7 +19,7 @@ vi.mock('vue-router', () => ({
   }),
 }))
 
-vi.mock('@/stores/globalModal', () => ({
+vi.mock('@/modules/stores/globalModal', () => ({
   useGlobalModalStore: () => ({
     openAlertModal,
     openConfirmModal,

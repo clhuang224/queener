@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { SIMPLE_PUZZLES } from '@/puzzles/simple'
-import { validatePuzzles } from '@/utils/puzzleValidator'
+import { SIMPLE_PUZZLES } from '@/modules/puzzles/simple'
+import { validatePuzzles } from '@/modules/utils/puzzleValidator'
 
 describe('SIMPLE_PUZZLES', () => {
   it('contains only valid puzzles', () => {

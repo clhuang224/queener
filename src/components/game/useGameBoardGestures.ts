@@ -1,5 +1,5 @@
 import { onScopeDispose, ref } from 'vue'
-import type { Position } from '@/types/board'
+import type { Position } from '@/modules/types/board'
 
 type ElementFromPoint = (clientX: number, clientY: number) => Element | null
 type TouchPoint = {

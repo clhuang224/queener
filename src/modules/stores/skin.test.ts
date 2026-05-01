@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { installStorageMock } from '@/test/localStorage'
 import { useSkinStore } from './skin'
-import { CellSkinType } from '@/enums/CellSkinType'
+import { CellSkinType } from '@/modules/enums/CellSkinType'
 
 describe('skin store', () => {
   beforeEach(() => {

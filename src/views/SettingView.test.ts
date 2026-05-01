@@ -2,8 +2,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { createTestingPinia } from '@/test/pinia'
 import { installStorageMock } from '@/test/localStorage'
-import { cellSkinMapName } from '@/constants/cellSkins'
-import { CellSkinType } from '@/enums/CellSkinType'
+import { cellSkinMapName } from '@/modules/constants/cellSkins'
+import { CellSkinType } from '@/modules/enums/CellSkinType'
 import SettingView from './SettingView.vue'
 
 const push = vi.fn()
