@@ -1,1 +1,2 @@
 bun run test:unit
+bun run test:e2e
