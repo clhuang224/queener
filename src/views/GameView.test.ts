@@ -4,6 +4,8 @@ import GameView from './GameView.vue'
 import { installStorageMock } from '@/test/localStorage'
 import { createTestingPinia } from '@/test/pinia'
 import { SIMPLE_PUZZLES } from '@/puzzles/simple'
+import { CELL_SKINS } from '@/constants/cellSkins'
+import { CellSkinType } from '@/enums/CellSkinType'
 
 const push = vi.fn()
 const openAlertModal = vi.fn()
@@ -101,14 +103,16 @@ describe('GameView', () => {
   })
 
   it('uses the saved skin settings for the board', () => {
-    window.localStorage.setItem('queen-game-cell-skin', 'grayscale')
+    window.localStorage.setItem('queen-game-cell-skin', CellSkinType.LAKE)
     window.localStorage.setItem('queen-game-queen-skin', 'rainbow')
 
     const { wrapper } = mountGameView()
     const board = wrapper.find('[data-test="game-board"]')
 
-    expect(board.classes()).toContain('cell-grayscale')
     expect(board.classes()).toContain('queen-rainbow')
+    expect(board.attributes('style')).toContain(
+      `--cell-color-0: ${CELL_SKINS[CellSkinType.LAKE][0]}`,
+    )
   })
 
   it('shows win result actions and navigates to next level', async () => {

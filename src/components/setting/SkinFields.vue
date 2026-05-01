@@ -1,20 +1,23 @@
 <script setup lang="ts">
-import type { CellSkin, QueenSkin } from '@/types/skin'
+import { cellSkinMapName } from '@/constants/cellSkins'
+import { CellSkinType } from '@/enums/CellSkinType'
+import type { QueenSkin } from '@/types/skin'
+import { getEnumValues } from '@/utils/getEnumValues'
 
 defineProps<{
-  cellSkin: CellSkin
+  cellSkin: CellSkinType
   queenSkin: QueenSkin
 }>()
 
 const emit = defineEmits<{
-  'update:cellSkin': [skin: CellSkin]
+  'update:cellSkin': [skin: CellSkinType]
   'update:queenSkin': [skin: QueenSkin]
 }>()
 
-const cellSkinOptions: Array<{ label: string; value: CellSkin }> = [
-  { label: 'Rainbow', value: 'rainbow' },
-  { label: 'Grayscale', value: 'grayscale' },
-]
+const cellSkinOptions = getEnumValues(CellSkinType).map((type) => ({
+  label: cellSkinMapName[type],
+  value: type,
+}))
 
 const queenSkinOptions: Array<{ label: string; value: QueenSkin }> = [
   { label: 'Rainbow', value: 'rainbow' },

@@ -1,23 +1,25 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import { CELL_SKINS, QUEEN_SKINS, type CellSkin, type QueenSkin, type SkinSettings } from '@/types/skin'
+import { CELL_SKINS } from '@/constants/cellSkins'
+import { CellSkinType } from '@/enums/CellSkinType'
+import { QUEEN_SKINS, type QueenSkin, type SkinSettings } from '@/types/skin'
 
 const CELL_SKIN_STORAGE_KEY = 'queen-game-cell-skin'
 const QUEEN_SKIN_STORAGE_KEY = 'queen-game-queen-skin'
 const DEFAULT_SETTINGS: SkinSettings = {
-  cellSkin: 'rainbow',
+  cellSkin: CellSkinType.RAINBOW,
   queenSkin: 'grayscale',
 }
 
-const isCellSkin = (value: unknown): value is CellSkin => {
-  return typeof value === 'string' && CELL_SKINS.includes(value as CellSkin)
+const isCellSkin = (value: unknown): value is CellSkinType => {
+  return typeof value === 'string' && Object.prototype.hasOwnProperty.call(CELL_SKINS, value)
 }
 
 const isQueenSkin = (value: unknown): value is QueenSkin => {
   return typeof value === 'string' && QUEEN_SKINS.includes(value as QueenSkin)
 }
 
-const getStoredCellSkin = (): CellSkin => {
+const getStoredCellSkin = (): CellSkinType => {
   if (typeof window === 'undefined') return DEFAULT_SETTINGS.cellSkin
 
   const storedValue = window.localStorage.getItem(CELL_SKIN_STORAGE_KEY)
@@ -39,7 +41,7 @@ const persistSkinSettings = ({ cellSkin, queenSkin }: SkinSettings) => {
 }
 
 export const useSkinStore = defineStore('skin', () => {
-  const cellSkin = ref<CellSkin>(DEFAULT_SETTINGS.cellSkin)
+  const cellSkin = ref<CellSkinType>(DEFAULT_SETTINGS.cellSkin)
   const queenSkin = ref<QueenSkin>(DEFAULT_SETTINGS.queenSkin)
   const hasLoaded = ref(false)
 
@@ -55,7 +57,7 @@ export const useSkinStore = defineStore('skin', () => {
     }
   }
 
-  const setCellSkin = (nextSkin: CellSkin) => {
+  const setCellSkin = (nextSkin: CellSkinType) => {
     ensureLoaded()
     cellSkin.value = nextSkin
     persistSkinSettings({

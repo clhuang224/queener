@@ -4,10 +4,13 @@ import type { QueenGamePublic } from '@/game/QueenGame'
 import HeartCounter from '../common/HeartCounter.vue'
 import { useGameBoardGestures } from './useGameBoardGestures'
 import { computed, ref } from 'vue'
+import { CELL_SKINS } from '@/constants/cellSkins'
+import type { QueenSkin } from '@/types/skin'
+import type { CellSkinType } from '@/enums/CellSkinType'
 
 const props = defineProps<{
-  queenSkin: 'rainbow' | 'grayscale'
-  cellSkin: 'rainbow' | 'grayscale'
+  queenSkin: QueenSkin
+  cellSkin: CellSkinType
   game: QueenGamePublic
 }>()
 
@@ -16,6 +19,9 @@ const boardSize = computed(() => props.game.getSize())
 const boardStyle = computed(() => ({
   '--board-size': String(boardSize.value),
   '--board-max-size': `${boardSize.value * 62}px`,
+  ...Object.fromEntries(
+    CELL_SKINS[props.cellSkin].map((color, index) => [`--cell-color-${index}`, color]),
+  ),
 }))
 
 const getBoardElementFromPoint = (clientX: number, clientY: number) => {
@@ -46,7 +52,7 @@ const {
     ref="boardRef"
     class="game-board"
     data-test="game-board"
-    :class="`cell-${cellSkin} queen-${queenSkin}`"
+    :class="`queen-${queenSkin}`"
     :style="boardStyle"
     @pointerup="handlePointerEnd"
     @pointercancel="handlePointerEnd"
@@ -73,8 +79,6 @@ const {
 </template>
 
 <style scoped lang="scss">
-@use 'sass:list';
-
 .game-board {
   --board-gap: 6px;
   --board-padding: 12px;
@@ -101,26 +105,15 @@ const {
     --board-padding: 8px;
   }
 }
-$rainbow-colors: #ff6b6b, #ffa94d, #ffd43b, #69db7c, #4dabf7, #748ffc, #b197fc, #343a40;
-$gray-colors: #000, #222, #444, #666, #888, #aaa, #ccc, #eee;
+$rainbow-colors:
+  #f94144, #f3722c, #f8961e, #f9c74f, #90be6d, #43aa8b, #4d908e, #3b89aa, #277da1, #577590;
 $skins: (rainbow, grayscale);
 @each $skin in $skins {
-  .game-board.cell-#{$skin} {
-    $palette: ();
-    @if $skin == rainbow {
-      $palette: $rainbow-colors;
-    } @else {
-      $palette: $gray-colors;
-    }
-    @for $i from 0 through 7 {
-      --cell-color-#{$i}: #{list.nth($palette, $i + 1)};
-    }
-  }
   .game-board.queen-#{$skin} {
     @if $skin == rainbow {
       --queen-color: #{linear-gradient(45deg, $rainbow-colors)};
     } @else {
-      --queen-color: #{linear-gradient(45deg, $gray-colors)};
+      --queen-color: #{linear-gradient(45deg, #000, #222, #444, #666, #888, #aaa, #ccc, #eee)};
     }
   }
 }
