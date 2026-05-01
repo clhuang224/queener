@@ -58,6 +58,13 @@ Design considerations:
 - the project should define its visual language before committing to a larger UI dependency
 - if a framework is adopted later, it should support the game rather than define the game's personality
 
+Skin direction:
+
+- cell skin palettes should generally start from palettes found on [Coolors](https://coolors.co/) and then be adjusted for board readability
+- queen skins should move toward colorful icon-based assets for marked queens
+- note states should use an outline version of the selected queen icon with a white or black edge treatment for contrast
+- wrong states should use a red-filled version of the selected queen icon so mistakes remain clearly distinguishable from notes and found queens
+
 Evaluation criteria:
 
 - does the approach preserve a distinctive game feel?
