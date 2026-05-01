@@ -3,4 +3,5 @@ export enum CellSkinType {
   DAWN = 'dawn',
   RAINBOW = 'rainbow',
   AUTUMN = 'autumn',
+  COTTON_CANDY = 'cotton-candy',
 }
