@@ -62,6 +62,8 @@ Skin direction:
 
 - cell skin palettes should generally start from palettes found on [Coolors](https://coolors.co/) and then be adjusted for board readability
 - queen skins should move toward colorful icon-based assets for marked queens
+- queen skin sources should primarily use [3D Icons](https://3dicons.co/) or assets with a similar colorful 3D icon style
+- 3D Icons currently describes its icons as CC0 / Creative Commons Zero, with personal and commercial use allowed without attribution
 - note states should use an outline version of the selected queen icon with a white or black edge treatment for contrast
 - wrong states should use a red-filled version of the selected queen icon so mistakes remain clearly distinguishable from notes and found queens
 
