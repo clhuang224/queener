@@ -16,6 +16,9 @@ const emit = defineEmits<{
 }>()
 
 const cellColor = computed(() => `var(--cell-color-${props.cell.getRegion()})`)
+const queenIconMaskStyle = computed(() => ({
+  '--queen-icon-url': `url("${props.queenIcon}")`,
+}))
 const position = computed(() => props.cell.getPosition())
 </script>
 
@@ -35,8 +38,15 @@ const position = computed(() => props.cell.getPosition())
     <template v-if="props.cell.isQueen() && props.cell.status === 'found'">
       <img class="queen" :src="queenIcon" alt="" draggable="false" />
     </template>
-    <template v-if="['note', 'wrong'].includes(props.cell.status)">
-      <span :class="{ wrong: props.cell.status === 'wrong' }">x</span>
+    <template v-if="props.cell.status === 'note'">
+      <span class="queen-note" :style="queenIconMaskStyle">
+        <span class="queen-icon-fill"></span>
+      </span>
+    </template>
+    <template v-if="props.cell.status === 'wrong'">
+      <span class="queen-note queen-note-wrong" :style="queenIconMaskStyle">
+        <span class="queen-icon-fill"></span>
+      </span>
     </template>
   </div>
 </template>
@@ -68,16 +78,50 @@ const position = computed(() => props.cell.getPosition())
     transform: translateY(0);
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
   }
-  .queen {
-    width: 72%;
-    height: 72%;
-    object-fit: contain;
+  .queen,
+  .queen-note {
     pointer-events: none;
     user-select: none;
   }
 
-  .wrong {
-    color: red;
+  .queen {
+    width: 72%;
+    height: 72%;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.22)) drop-shadow(0 4px 5px rgba(0, 0, 0, 0.18));
+  }
+
+  .queen-note {
+    width: 58%;
+    height: 58%;
+    position: relative;
+    background: rgba(80, 80, 80, 0.86);
+    mask-image: var(--queen-icon-url);
+    mask-position: center;
+    mask-repeat: no-repeat;
+    mask-size: contain;
+    -webkit-mask-image: var(--queen-icon-url);
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: contain;
+  }
+
+  .queen-note-wrong {
+    background: #d92d20;
+  }
+
+  .queen-icon-fill {
+    position: absolute;
+    inset: 10%;
+    background: #fff;
+    mask-image: var(--queen-icon-url);
+    mask-position: center;
+    mask-repeat: no-repeat;
+    mask-size: contain;
+    -webkit-mask-image: var(--queen-icon-url);
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: contain;
   }
 }
 

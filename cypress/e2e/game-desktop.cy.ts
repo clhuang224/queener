@@ -22,7 +22,7 @@ describe('desktop board interactions', () => {
     visitGame()
 
     getCell(LEVEL_ONE.noteCell).click()
-    getCell(LEVEL_ONE.noteCell).contains('span', 'x')
+    getCell(LEVEL_ONE.noteCell).should('have.attr', 'data-status', 'note')
 
     getCell(LEVEL_ONE.queenCell).dblclick()
     getCell(LEVEL_ONE.queenCell).should('have.attr', 'data-status', 'found')
@@ -47,7 +47,7 @@ describe('desktop board interactions', () => {
     })
     getCell(LEVEL_ONE.dragEnterCell).click()
 
-    getCell(LEVEL_ONE.dragStartCell).contains('span', 'x')
-    getCell(LEVEL_ONE.dragEnterCell).contains('span', 'x')
+    getCell(LEVEL_ONE.dragStartCell).should('have.attr', 'data-status', 'note')
+    getCell(LEVEL_ONE.dragEnterCell).should('have.attr', 'data-status', 'note')
   })
 })

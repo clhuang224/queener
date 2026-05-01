@@ -66,6 +66,9 @@ Skin direction:
 - 3D Icons currently describes its icons as CC0 / Creative Commons Zero, with personal and commercial use allowed without attribution
 - note states should use an outline version of the selected queen icon with a white or black edge treatment for contrast
 - wrong states should use a red-filled version of the selected queen icon so mistakes remain clearly distinguishable from notes and found queens
+- the current note / wrong rendering is a temporary CSS mask approach: the selected queen icon is used as a white masked shape, with a larger gray or red masked layer behind it to approximate an outline
+- the temporary CSS mask outline may vary slightly by icon because it is based on scaled raster masks rather than a true prepared stroke
+- the long-term queen skin asset set should include prepared variants for found, note, and wrong states so outlines and fills can be tuned directly in the source image files
 
 Evaluation criteria:
 
