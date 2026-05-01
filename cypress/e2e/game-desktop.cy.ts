@@ -1,3 +1,12 @@
+type BoardPosition = readonly [row: number, column: number]
+
+const LEVEL_ONE = {
+  noteCell: [0, 1],
+  queenCell: [1, 3],
+  dragStartCell: [1, 0],
+  dragEnterCell: [1, 1],
+} satisfies Record<string, BoardPosition>
+
 const visitGame = () => {
   cy.viewport(1280, 900)
   cy.visit('/')
@@ -6,25 +15,25 @@ const visitGame = () => {
   cy.get('[data-test="game-board"]').should('be.visible')
 }
 
-const getCell = (row: number, column: number) => cy.get(`[data-test="cell-${row}-${column}"]`)
+const getCell = ([row, column]: BoardPosition) => cy.get(`[data-test="cell-${row}-${column}"]`)
 
 describe('desktop board interactions', () => {
   it('supports single click, double click, and drag note marking', () => {
     visitGame()
 
-    getCell(0, 1).click()
-    getCell(0, 1).contains('span', 'x')
+    getCell(LEVEL_ONE.noteCell).click()
+    getCell(LEVEL_ONE.noteCell).contains('span', 'x')
 
-    getCell(0, 2).dblclick()
-    getCell(0, 2).contains('.queen', '👸')
+    getCell(LEVEL_ONE.queenCell).dblclick()
+    getCell(LEVEL_ONE.queenCell).contains('.queen', '👸')
 
-    getCell(1, 0).trigger('pointerdown', {
+    getCell(LEVEL_ONE.dragStartCell).trigger('pointerdown', {
       pointerType: 'mouse',
       button: 0,
       buttons: 1,
       force: true,
     })
-    getCell(1, 1).trigger('pointerenter', {
+    getCell(LEVEL_ONE.dragEnterCell).trigger('pointerenter', {
       pointerType: 'mouse',
       button: 0,
       buttons: 1,
@@ -36,9 +45,9 @@ describe('desktop board interactions', () => {
       buttons: 0,
       force: true,
     })
-    getCell(1, 1).click()
+    getCell(LEVEL_ONE.dragEnterCell).click()
 
-    getCell(1, 0).contains('span', 'x')
-    getCell(1, 1).contains('span', 'x')
+    getCell(LEVEL_ONE.dragStartCell).contains('span', 'x')
+    getCell(LEVEL_ONE.dragEnterCell).contains('span', 'x')
   })
 })

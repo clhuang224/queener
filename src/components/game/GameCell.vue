@@ -46,6 +46,8 @@ const position = computed(() => props.cell.getPosition())
   user-select: none;
   flex: 0 0
     calc((100% - (var(--board-size) - 1) * var(--board-gap)) / var(--board-size));
+  box-sizing: border-box;
+  min-width: 0;
   aspect-ratio: 1;
   font-size: 26px;
   display: flex;
