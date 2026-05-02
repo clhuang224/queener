@@ -116,7 +116,7 @@ describe('GameView', () => {
     )
 
     await queenCell.trigger('dblclick')
-    expect(queenCell.find('.queen').attributes('src')).toBe(
+    expect(queenCell.find('.queen-icon.found').attributes('src')).toBe(
       QUEEN_SKINS[QueenSkinType.PINK_CROWN].icon,
     )
   })

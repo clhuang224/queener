@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import QueenIcon from '@/components/common/QueenIcon.vue'
 import { CELL_SKIN_COLOR_COUNT, CELL_SKINS } from '@/modules/constants/cellSkins'
 import { QUEEN_SKINS } from '@/modules/constants/queenSkins'
 import type { CellSkinType } from '@/modules/enums/CellSkinType'
@@ -14,9 +15,7 @@ const props = defineProps<{
 const previewStates: BoardCellStatus[] = ['found', 'note', 'wrong', 'empty']
 const palette = computed(() => CELL_SKINS[props.cellSkin])
 const queenIcon = computed(() => QUEEN_SKINS[props.queenSkin].icon)
-const queenIconMaskStyle = computed(() => ({
-  '--queen-icon-url': `url("${queenIcon.value}")`,
-}))
+const queenNoteIcon = computed(() => QUEEN_SKINS[props.queenSkin].noteIcon)
 const gridStyle = {
   '--preview-column-count': String(CELL_SKIN_COLOR_COUNT),
 }
@@ -39,13 +38,12 @@ const gridStyle = {
         :data-state="state"
         :aria-label="`${state} preview color ${colorIndex + 1}`"
       >
-        <img v-if="state === 'found'" class="queen" :src="queenIcon" alt="" draggable="false" />
-        <span v-else-if="state === 'note'" class="queen-note" :style="queenIconMaskStyle">
-          <span class="queen-icon-fill"></span>
-        </span>
-        <span v-else-if="state === 'wrong'" class="queen-note queen-note-wrong" :style="queenIconMaskStyle">
-          <span class="queen-icon-fill"></span>
-        </span>
+        <QueenIcon
+          v-if="state === 'found' || state === 'note' || state === 'wrong'"
+          :status="state"
+          :icon="queenIcon"
+          :note-icon="queenNoteIcon"
+        />
       </div>
     </template>
   </div>
@@ -76,54 +74,6 @@ const gridStyle = {
 
 .preview-cell.state-empty {
   box-shadow: none;
-}
-
-.queen,
-.queen-note {
-  pointer-events: none;
-  user-select: none;
-}
-
-.queen {
-  width: 72%;
-  height: 72%;
-  object-fit: contain;
-  filter:
-    drop-shadow(0 1px 1px rgba(0, 0, 0, 0.22))
-    drop-shadow(0 4px 5px rgba(0, 0, 0, 0.18));
-}
-
-.queen-note {
-  width: 58%;
-  height: 58%;
-  position: relative;
-  background: rgba(80, 80, 80, 0.86);
-  mask-image: var(--queen-icon-url);
-  mask-position: center;
-  mask-repeat: no-repeat;
-  mask-size: contain;
-  -webkit-mask-image: var(--queen-icon-url);
-  -webkit-mask-position: center;
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-size: contain;
-}
-
-.queen-note-wrong {
-  background: #d92d20;
-}
-
-.queen-icon-fill {
-  position: absolute;
-  inset: 10%;
-  background: #fff;
-  mask-image: var(--queen-icon-url);
-  mask-position: center;
-  mask-repeat: no-repeat;
-  mask-size: contain;
-  -webkit-mask-image: var(--queen-icon-url);
-  -webkit-mask-position: center;
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-size: contain;
 }
 
 @media (max-width: 480px) {

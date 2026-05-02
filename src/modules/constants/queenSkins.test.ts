@@ -6,6 +6,7 @@ describe('queenSkins', () => {
   it('loads an icon for every queen skin', () => {
     for (const skin of Object.values(QueenSkinType)) {
       expect(QUEEN_SKINS[skin].icon).toBeTruthy()
+      expect(QUEEN_SKINS[skin].noteIcon).toContain('<svg')
     }
   })
 

@@ -19,6 +19,7 @@ const props = defineProps<{
 const boardRef = ref<HTMLDivElement | null>(null)
 const boardSize = computed(() => props.game.getSize())
 const queenIcon = computed(() => QUEEN_SKINS[props.queenSkin].icon)
+const queenNoteIcon = computed(() => QUEEN_SKINS[props.queenSkin].noteIcon)
 const boardStyle = computed(() => ({
   '--board-size': String(boardSize.value),
   '--board-max-size': `${boardSize.value * 62}px`,
@@ -74,6 +75,7 @@ const {
           :key="cell.getPosition().join('-')"
           :cell="cell"
           :queen-icon="queenIcon"
+          :queen-note-icon="queenNoteIcon"
           @pointer-down="handlePointerDown"
           @pointer-enter="handlePointerEnter"
           @note-click="handleNoteClick"

@@ -1,0 +1,10 @@
+<svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+<circle
+  cx="250"
+  cy="250"
+  r="160"
+  stroke="currentColor"
+  stroke-width="80"
+  fill="none"
+/>
+</svg>

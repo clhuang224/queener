@@ -6,18 +6,30 @@ const queenSkinIconModules = import.meta.glob<string>('../../assets/icons/*.png'
   import: 'default',
 })
 
-const getQueenSkinIcon = (skin: QueenSkinType) => {
+const queenSkinNoteIconModules = import.meta.glob<string>('../../assets/noteIcons/*.svg', {
+  eager: true,
+  query: '?raw',
+  import: 'default',
+})
+
+const getQueenSkinIcons = (skin: QueenSkinType) => {
   const icon = queenSkinIconModules[`../../assets/icons/${skin}.png`]
+  const noteIcon = queenSkinNoteIconModules[`../../assets/noteIcons/${skin}.svg`]
 
   if (!icon) {
     throw new Error(`Missing queen skin icon: ${skin}.png`)
   }
 
-  return icon
+  if (!noteIcon) {
+    throw new Error(`Missing queen skin icon: ${skin}.svg`)
+  }
+
+  return { icon, noteIcon }
 }
 
 interface QueenSkinData {
   icon: string
+  noteIcon: string
   available: AnnualDateRange | null
 }
 
@@ -28,46 +40,46 @@ const halloweenAvailability: AnnualDateRange = {
 
 export const QUEEN_SKINS: Record<QueenSkinType, QueenSkinData> = {
   [QueenSkinType.GROWN_CHESS]: {
-    icon: getQueenSkinIcon(QueenSkinType.GROWN_CHESS),
+    ...getQueenSkinIcons(QueenSkinType.GROWN_CHESS),
     available: null,
   },
   [QueenSkinType.BLACK_CHESS]: {
-    icon: getQueenSkinIcon(QueenSkinType.BLACK_CHESS),
+    ...getQueenSkinIcons(QueenSkinType.BLACK_CHESS),
     available: null,
   },
   [QueenSkinType.CHRISTMAS_TREE]: {
-    icon: getQueenSkinIcon(QueenSkinType.CHRISTMAS_TREE),
+    ...getQueenSkinIcons(QueenSkinType.CHRISTMAS_TREE),
     available: {
       startsOn: { month: 12, day: 1 },
       endsOn: { month: 12, day: 31 },
     },
   },
   [QueenSkinType.BLACK_CROWN]: {
-    icon: getQueenSkinIcon(QueenSkinType.BLACK_CROWN),
+    ...getQueenSkinIcons(QueenSkinType.BLACK_CROWN),
     available: null,
   },
   [QueenSkinType.PINK_CROWN]: {
-    icon: getQueenSkinIcon(QueenSkinType.PINK_CROWN),
+    ...getQueenSkinIcons(QueenSkinType.PINK_CROWN),
     available: null,
   },
   [QueenSkinType.RED_FLAG]: {
-    icon: getQueenSkinIcon(QueenSkinType.RED_FLAG),
+    ...getQueenSkinIcons(QueenSkinType.RED_FLAG),
     available: null,
   },
   [QueenSkinType.ORANGE_PUMPKIN]: {
-    icon: getQueenSkinIcon(QueenSkinType.ORANGE_PUMPKIN),
+    ...getQueenSkinIcons(QueenSkinType.ORANGE_PUMPKIN),
     available: halloweenAvailability,
   },
   [QueenSkinType.WHITE_GHOST]: {
-    icon: getQueenSkinIcon(QueenSkinType.WHITE_GHOST),
+    ...getQueenSkinIcons(QueenSkinType.WHITE_GHOST),
     available: halloweenAvailability,
   },
   [QueenSkinType.PURPLE_CANDY]: {
-    icon: getQueenSkinIcon(QueenSkinType.PURPLE_CANDY),
+    ...getQueenSkinIcons(QueenSkinType.PURPLE_CANDY),
     available: halloweenAvailability,
   },
   [QueenSkinType.GREEN_CAULDRON]: {
-    icon: getQueenSkinIcon(QueenSkinType.GREEN_CAULDRON),
+    ...getQueenSkinIcons(QueenSkinType.GREEN_CAULDRON),
     available: halloweenAvailability,
   },
 }
