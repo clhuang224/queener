@@ -85,7 +85,8 @@ const queenSkinOptions = getAvailableQueenSkinTypes().map((type) => ({
 }
 
 .option-button {
-  flex: 1 1 130px;
+  flex: 0 0 130px;
+  min-width: 0;
   padding: 10px 12px;
   border: 1px solid #c7d2e4;
   border-radius: 12px;
@@ -105,5 +106,11 @@ const queenSkinOptions = getAvailableQueenSkinTypes().map((type) => ({
   background: #1f3c88;
   color: #fff;
   box-shadow: 0 6px 18px rgba(31, 60, 136, 0.22);
+}
+
+@media (max-width: 360px) {
+  .option-button {
+    flex-basis: 100%;
+  }
 }
 </style>
