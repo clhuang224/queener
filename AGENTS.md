@@ -288,16 +288,16 @@ When a feature gains meaningful state complexity, prefer documenting it in [docs
 | --- | --- | --- | --- | --- |
 | `Idle` | desktop+mobile | `pointerdown(cell)` | `Pressed` | start pointer session and store start position |
 | `Pressed` | desktop+mobile | `click(cell)` | `PendingSingleClick` | schedule delayed single-click note action |
-| `Pressed` | desktop | `pointerenter(other cell)` | `Dragging` | cancel pending note if needed and begin drag selection |
-| `Pressed` | mobile | `touchmove(over other cell)` | `Dragging` | resolve touched cell from coordinates and begin drag selection |
+| `Pressed` | desktop | `pointerenter(other cell)` | `Dragging` | cancel pending note if needed and begin drag selection using the start cell's note mode |
+| `Pressed` | mobile | `touchmove(over other cell)` | `Dragging` | resolve touched cell from coordinates and begin drag selection using the start cell's note mode |
 | `Pressed` | desktop | `pointerup` / `pointercancel` / `mouseleave` | `Idle` | end pointer session |
 | `Pressed` | mobile | `touchend` / `touchcancel` / `pointercancel` | `Idle` | end pointer session |
 | `PendingSingleClick` | desktop+mobile | `dblclick(cell)` | `Idle` | cancel pending note and mark queen |
 | `PendingSingleClick` | desktop+mobile | click timeout | `Idle` | `QueenGame.removeNote(position)` if noted, otherwise `QueenGame.markNote(position)` |
-| `PendingSingleClick` | desktop | `pointerenter(other cell)` | `Dragging` | cancel pending click and begin drag selection |
-| `PendingSingleClick` | mobile | `touchmove(over other cell)` | `Dragging` | cancel pending click and begin drag selection |
-| `Dragging` | desktop | `pointerenter(new cell)` | `Dragging` | mark note once per newly entered cell |
-| `Dragging` | mobile | `touchmove(over new cell)` | `Dragging` | mark note once per newly touched cell from screen point |
+| `PendingSingleClick` | desktop | `pointerenter(other cell)` | `Dragging` | cancel pending click and begin drag selection using the start cell's note mode |
+| `PendingSingleClick` | mobile | `touchmove(over other cell)` | `Dragging` | cancel pending click and begin drag selection using the start cell's note mode |
+| `Dragging` | desktop | `pointerenter(new cell)` | `Dragging` | apply the drag note action once per newly entered cell |
+| `Dragging` | mobile | `touchmove(over new cell)` | `Dragging` | apply the drag note action once per newly touched cell from screen point |
 | `Dragging` | desktop | `pointerup` / `pointercancel` / `mouseleave` | `Idle` | end drag session |
 | `Dragging` | mobile | `touchend` / `touchcancel` / `pointercancel` | `Idle` | end drag session |
 
@@ -314,7 +314,7 @@ stateDiagram-v2
   PendingSingleClick --> Idle: dblclick(cell) / cancel pending click + QueenGame.markQueen(position)
   PendingSingleClick --> Dragging: dragMove(other cell) / cancel pending click
 
-  Dragging --> Dragging: dragMove(new cell) / QueenGame.markNote(new position once)
+  Dragging --> Dragging: dragMove(new cell) / apply drag note action once
   Dragging --> Idle: pressEnd
 ```
 
@@ -327,7 +327,8 @@ Notes:
 - on mobile, drag progression is driven by `touchmove`, and `GameBoard` resolves the touched cell from screen coordinates before reusing the same drag-selection logic
 - drag sessions suppress the trailing click that browsers often emit on release
 - note marking, note removal, and queen marking should flow through `QueenGame`, not through direct `BoardCell` mutation from the component
-- single-click note actions may remove an existing note, but drag note marking should only add notes and should not clear existing notes while sliding
+- single-click note actions may remove an existing note or add a missing note
+- drag sessions choose one note action based on the start cell: starting from an empty cell only marks empty cells, while starting from a noted cell only removes existing notes
 - when a state machine becomes central to feature behavior, add both a transition table and a compact Mermaid diagram to `docs/state.md`
 
 User-facing copy should stay consistent across the app. When the project eventually adds localization, prefer centralizing translatable strings rather than hard-coding the same message in multiple components.

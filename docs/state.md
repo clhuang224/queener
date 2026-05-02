@@ -26,16 +26,16 @@ Implementation:
 | -------------------- | ----------- | ------------------------------------------------------- | -------------------- | --------------------------------------------------------------- |
 | `Idle`               | desktop+mobile | `pointerdown(cell)`                                  | `Pressed`            | start pointer session and store start position                  |
 | `Pressed`            | desktop+mobile | `click(cell)`                                        | `PendingSingleClick` | schedule delayed single-click note action                       |
-| `Pressed`            | desktop     | `pointerenter(other cell)`                              | `Dragging`           | cancel pending note if needed and begin drag selection          |
-| `Pressed`            | mobile      | `touchmove(over other cell)`                            | `Dragging`           | resolve touched cell from coordinates and begin drag selection  |
+| `Pressed`            | desktop     | `pointerenter(other cell)`                              | `Dragging`           | cancel pending note if needed and begin drag selection using the start cell's note mode |
+| `Pressed`            | mobile      | `touchmove(over other cell)`                            | `Dragging`           | resolve touched cell from coordinates and begin drag selection using the start cell's note mode |
 | `Pressed`            | desktop     | `pointerup` / `pointercancel` / `mouseleave`            | `Idle`               | end pointer session                                             |
 | `Pressed`            | mobile      | `touchend` / `touchcancel` / `pointercancel`            | `Idle`               | end pointer session                                             |
 | `PendingSingleClick` | desktop+mobile | `dblclick(cell)`                                     | `Idle`               | cancel pending note and mark queen                              |
 | `PendingSingleClick` | desktop+mobile | click timeout                                         | `Idle`               | call `QueenGame.removeNote(position)` if noted, otherwise `QueenGame.markNote(position)` |
-| `PendingSingleClick` | desktop     | `pointerenter(other cell)`                              | `Dragging`           | cancel pending click and begin drag selection                   |
-| `PendingSingleClick` | mobile      | `touchmove(over other cell)`                            | `Dragging`           | cancel pending click and begin drag selection                   |
-| `Dragging`           | desktop     | `pointerenter(new cell)`                                | `Dragging`           | mark note once for each newly entered cell                      |
-| `Dragging`           | mobile      | `touchmove(over new cell)`                              | `Dragging`           | mark note once for each newly touched cell from screen point    |
+| `PendingSingleClick` | desktop     | `pointerenter(other cell)`                              | `Dragging`           | cancel pending click and begin drag selection using the start cell's note mode |
+| `PendingSingleClick` | mobile      | `touchmove(over other cell)`                            | `Dragging`           | cancel pending click and begin drag selection using the start cell's note mode |
+| `Dragging`           | desktop     | `pointerenter(new cell)`                                | `Dragging`           | apply the drag note action once for each newly entered cell     |
+| `Dragging`           | mobile      | `touchmove(over new cell)`                              | `Dragging`           | apply the drag note action once for each newly touched cell from screen point |
 | `Dragging`           | desktop     | `pointerup` / `pointercancel` / `mouseleave`            | `Idle`               | end drag session                                                |
 | `Dragging`           | mobile      | `touchend` / `touchcancel` / `pointercancel`            | `Idle`               | end drag session                                                |
 
@@ -54,7 +54,7 @@ stateDiagram-v2
   PendingSingleClick --> Idle: note timer fires -> apply single-click note action
   PendingSingleClick --> Dragging: GameCell.pointerenter(other cell) -> handlePointerEnter
 
-  Dragging --> Dragging: GameCell.pointerenter(new cell) -> handlePointerEnter
+  Dragging --> Dragging: GameCell.pointerenter(new cell) -> apply drag note action
   Dragging --> Idle: board.pointerup or mouseleave -> handlePointerEnd
 ```
 
@@ -73,7 +73,7 @@ stateDiagram-v2
   PendingSingleClick --> Idle: note timer fires -> apply single-click note action
   PendingSingleClick --> Dragging: board.touchmove -> handleTouchMove -> handlePointerEnter
 
-  Dragging --> Dragging: board.touchmove -> handleTouchMove -> handlePointerEnter
+  Dragging --> Dragging: board.touchmove -> handleTouchMove -> apply drag note action
   Dragging --> Idle: board.touchend or touchcancel -> handlePointerEnd
 ```
 
@@ -94,7 +94,9 @@ stateDiagram-v2
 - `GameBoard` owns gesture interpretation for both desktop and mobile.
 - `QueenGame` performs the actual note and queen updates.
 - Single click uses `QueenGame.isNote(position)` to choose `removeNote(position)` or `markNote(position)`.
-- Dragging only calls `QueenGame.markNote(position)`, so existing notes are not removed while sliding across them.
+- Dragging chooses one note action for the whole drag session based on the start cell.
+- When dragging starts from an empty cell, dragging calls `QueenGame.markNote(position)` only; existing notes are not removed while sliding across them.
+- When dragging starts from a noted cell, dragging calls `QueenGame.removeNote(position)` only; empty cells are not marked while sliding across them.
 - The delayed single-click branch exists so a `dblclick` can cancel it cleanly.
 - On desktop, drag progression is driven by `pointerenter`.
 - On mobile, drag progression is driven by `touchmove`, and `GameBoard` resolves the active cell with `document.elementFromPoint(...)` before reusing the same drag-selection logic.

@@ -119,7 +119,7 @@ describe('useGameBoardGestures', () => {
     stop()
   })
 
-  it('does not clear existing notes while dragging across them', () => {
+  it('does not clear existing notes while dragging from an empty cell', () => {
     const { game, gestures, stop } = setupGestures()
 
     game.markNote([0, 1])
@@ -130,6 +130,23 @@ describe('useGameBoardGestures', () => {
 
     expect(game.board[0]![0]!.status).toBe('note')
     expect(game.board[0]![1]!.status).toBe('note')
+    stop()
+  })
+
+  it('removes existing notes and keeps empty cells unchanged while dragging from a note', () => {
+    const { game, gestures, stop } = setupGestures()
+
+    game.markNote([0, 0])
+    game.markNote([1, 1])
+
+    gestures.handlePointerDown([0, 0])
+    gestures.handlePointerEnter([0, 1])
+    gestures.handlePointerEnter([1, 1])
+    gestures.handlePointerEnd()
+
+    expect(game.board[0]![0]!.status).toBe('empty')
+    expect(game.board[0]![1]!.status).toBe('empty')
+    expect(game.board[1]![1]!.status).toBe('empty')
     stop()
   })
 

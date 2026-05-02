@@ -28,7 +28,7 @@ Players currently solve the board by marking notes on cells and confirming queen
 ### Puzzle Gameplay
 
 - Playable board rendered from predefined puzzle data
-- Click or drag to mark cells with `X` notes
+- Click to toggle notes, or drag from an empty/noted cell to mark/remove notes in one consistent stroke
 - Double click to mark a queen
 - Heart-based mistake system where hearts scale by board size (`N=5-7 => 2`, `N=8-10 => 3`)
 - One-time hint button that reveals a valid queen position

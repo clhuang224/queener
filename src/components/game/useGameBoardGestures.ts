@@ -21,6 +21,8 @@ type UseGameBoardGesturesOptions = {
   removeNote: (position: Position) => void
 }
 
+type DragNoteAction = 'mark' | 'remove'
+
 export const useGameBoardGestures = ({
   clickDelayMs = 250,
   getElementFromPoint,
@@ -34,6 +36,7 @@ export const useGameBoardGestures = ({
   const suppressNextClick = ref(false)
 
   let dragStartPosition: Position | null = null
+  let dragNoteAction: DragNoteAction | null = null
   let draggedPositions = new Set<string>()
   let pendingNoteTimer: ReturnType<typeof setTimeout> | null = null
   let pendingNotePosition: Position | null = null
@@ -75,16 +78,23 @@ export const useGameBoardGestures = ({
     clearPendingNote()
   }
 
-  const markDraggedPosition = (position: Position) => {
+  const applyDraggedNoteAction = (position: Position) => {
     const key = getPositionKey(position)
     if (draggedPositions.has(key)) return
-    markNote(position)
+
+    if (dragNoteAction === 'remove') {
+      removeNote(position)
+    } else {
+      markNote(position)
+    }
+
     draggedPositions.add(key)
   }
 
   const resetPointerSession = () => {
     isPointerDown.value = false
     dragStartPosition = null
+    dragNoteAction = null
     draggedPositions = new Set<string>()
   }
 
@@ -93,6 +103,7 @@ export const useGameBoardGestures = ({
     isDragging.value = false
     suppressNextClick.value = false
     dragStartPosition = position
+    dragNoteAction = isNote(position) ? 'remove' : 'mark'
     draggedPositions = new Set<string>()
   }
 
@@ -109,10 +120,10 @@ export const useGameBoardGestures = ({
     if (!isDragging.value) {
       isDragging.value = true
       suppressNextClick.value = true
-      markDraggedPosition(dragStartPosition)
+      applyDraggedNoteAction(dragStartPosition)
     }
 
-    markDraggedPosition(position)
+    applyDraggedNoteAction(position)
   }
 
   const handleTouchMove = (event: TouchMoveEvent) => {
