@@ -64,6 +64,8 @@ Skin direction:
 - queen skins should move toward colorful icon-based assets for marked queens
 - queen skin sources should primarily use [3D Icons](https://3dicons.co/) or assets with a similar colorful 3D icon style
 - 3D Icons currently describes its icons as CC0 / Creative Commons Zero, with personal and commercial use allowed without attribution
+- marked queen icons should intentionally keep a sticker-like treatment with protective black and white outlines, because the icon must remain readable across highly varied board colors
+- the sticker-like marked queen treatment is considered decided for now and should not be softened unless the broader board visual system changes
 - note icon assets are authored directly as SVG files under `src/assets/noteIcons/`
 - note icon SVGs should use `viewBox="0 0 500 500"` so they scale consistently inside board cells and settings previews
 - note icon SVG strokes should generally use `stroke-width="80"` unless a specific shape needs optical adjustment
@@ -72,6 +74,13 @@ Skin direction:
 - note / wrong rendering should use prepared SVG note icon assets when available, with note shown in white and wrong shown in red
 - missing note icon assets may temporarily use empty SVG placeholders so each `QueenSkinType` has a matching file
 - the long-term queen skin asset set should include prepared variants for found, note, and wrong states so outlines and fills can be tuned directly in the source image files
+
+Interaction polish:
+
+- marking a note, removing a note, marking a queen, and making a wrong guess should each have a small animation and sound effect so board interactions feel tactile
+- win and loss should have short board-level feedback before opening the result modal; the current immediate modal transition feels too abrupt
+- result animations should be brief and should not block the player longer than needed
+- if a persisted queen skin is no longer available, such as a seasonal Halloween skin after its availability window ends, settings should fall back to a stable default skin, currently `Pink Crown`
 
 Evaluation criteria:
 
