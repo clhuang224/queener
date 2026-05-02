@@ -20,6 +20,11 @@ defineProps<{
 
 <style scoped lang="scss">
 .queen-icon {
+  --queen-icon-outline: drop-shadow(1px 0 0 rgba(0, 0, 0, 0.22))
+    drop-shadow(-1px 0 0 rgba(0, 0, 0, 0.22)) drop-shadow(0 1px 0 rgba(0, 0, 0, 0.22))
+    drop-shadow(0 -1px 0 rgba(0, 0, 0, 0.22)) drop-shadow(1px 0 0 #fff) drop-shadow(-1px 0 0 #fff)
+    drop-shadow(0 1px 0 #fff) drop-shadow(0 -1px 0 #fff);
+
   pointer-events: none;
   user-select: none;
 }
@@ -28,7 +33,7 @@ defineProps<{
   width: 72%;
   height: 72%;
   object-fit: contain;
-  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.22)) drop-shadow(0 4px 5px rgba(0, 0, 0, 0.18));
+  filter: var(--queen-icon-outline);
 }
 
 .queen-icon.note {
@@ -49,6 +54,7 @@ defineProps<{
   width: 100%;
   height: 100%;
   flex: 0 0 100%;
+  filter: var(--queen-icon-outline);
   overflow: visible;
 }
 </style>
