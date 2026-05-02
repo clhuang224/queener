@@ -8,7 +8,10 @@ import { CELL_SKINS } from '@/modules/constants/cellSkins'
 import { QUEEN_SKINS } from '@/modules/constants/queenSkins'
 import type { CellSkinType } from '@/modules/enums/CellSkinType'
 import type { QueenSkinType } from '@/modules/enums/QueenSkinType'
+import type { Position } from '@/modules/types/board'
+import { playGameSound } from '@/modules/utils/playGameSound'
 import { pickDistributedColors } from '@/modules/utils/pickDistributedColors'
+import { GameSoundType } from '@/modules/enums/GameSoundType'
 
 const props = defineProps<{
   queenSkin: QueenSkinType
@@ -38,6 +41,30 @@ const getBoardElementFromPoint = (clientX: number, clientY: number) => {
   return element
 }
 
+const markNoteWithSound = (position: Position) => {
+  const wasNote = props.game.isNote(position)
+  props.game.markNote(position)
+  if (!wasNote && props.game.isNote(position)) {
+    void playGameSound(GameSoundType.NOTE)
+  }
+}
+
+const removeNoteWithSound = (position: Position) => {
+  const wasNote = props.game.isNote(position)
+  props.game.removeNote(position)
+  if (wasNote && !props.game.isNote(position)) {
+    void playGameSound(GameSoundType.NOTE)
+  }
+}
+
+const markQueenWithSound = (position: Position) => {
+  const hasQueen = props.game.markQueen(position)
+
+  if (props.game.isWin() || props.game.isGameOver()) return
+
+  void playGameSound(hasQueen ? GameSoundType.CORRECT : GameSoundType.WRONG)
+}
+
 const {
   handleMarkQueen,
   handleNoteClick,
@@ -48,9 +75,9 @@ const {
 } = useGameBoardGestures({
   getElementFromPoint: getBoardElementFromPoint,
   isNote: (position) => props.game.isNote(position),
-  markNote: (position) => props.game.markNote(position),
-  markQueen: (position) => props.game.markQueen(position),
-  removeNote: (position) => props.game.removeNote(position),
+  markNote: markNoteWithSound,
+  markQueen: markQueenWithSound,
+  removeNote: removeNoteWithSound,
 })
 </script>
 

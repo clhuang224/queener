@@ -7,12 +7,16 @@ import { SIMPLE_PUZZLES } from '@/modules/puzzles/simple'
 import { CELL_SKINS } from '@/modules/constants/cellSkins'
 import { QUEEN_SKINS } from '@/modules/constants/queenSkins'
 import { CellSkinType } from '@/modules/enums/CellSkinType'
+import { GameSoundType } from '@/modules/enums/GameSoundType'
 import { QueenSkinType } from '@/modules/enums/QueenSkinType'
 
 const push = vi.fn()
 const openAlertModal = vi.fn()
 const openConfirmModal = vi.fn()
 const openResultModal = vi.fn()
+const { playGameSound } = vi.hoisted(() => ({
+  playGameSound: vi.fn(),
+}))
 
 vi.mock('vue-router', () => ({
   useRouter: () => ({
@@ -27,6 +31,10 @@ vi.mock('@/modules/stores/globalModal', () => ({
     openConfirmModal,
     openResultModal,
   }),
+}))
+
+vi.mock('@/modules/utils/playGameSound', () => ({
+  playGameSound,
 }))
 
 const mountGameView = () => {
@@ -63,6 +71,14 @@ const findCell = (wrapper: ReturnType<typeof mount>, row: number, column: number
     )
 }
 
+const createDeferred = () => {
+  let resolve!: () => void
+  const promise = new Promise<void>((done) => {
+    resolve = done
+  })
+  return { promise, resolve }
+}
+
 describe('GameView', () => {
   beforeEach(() => {
     installStorageMock()
@@ -70,6 +86,8 @@ describe('GameView', () => {
     openAlertModal.mockReset()
     openConfirmModal.mockReset()
     openResultModal.mockReset()
+    playGameSound.mockReset()
+    playGameSound.mockResolvedValue(undefined)
   })
 
   it('restarts the current level after confirmation', async () => {
@@ -133,6 +151,7 @@ describe('GameView', () => {
     await wrapper.vm.$nextTick()
     await Promise.resolve()
 
+    expect(playGameSound).toHaveBeenCalledWith(GameSoundType.WIN)
     expect(openResultModal).toHaveBeenCalledWith({
       title: 'Congratulations!',
       content: 'You solved the puzzle. What would you like to do next?',
@@ -149,6 +168,37 @@ describe('GameView', () => {
         level: '2',
       },
     })
+  })
+
+  it('waits for the win sound before showing the result modal', async () => {
+    const sound = createDeferred()
+    playGameSound.mockImplementation((soundName) => {
+      return soundName === GameSoundType.WIN ? sound.promise : Promise.resolve()
+    })
+
+    const { wrapper } = mountGameView()
+    const levelOnePuzzle = SIMPLE_PUZZLES[0]!
+
+    for (const [row, column] of levelOnePuzzle.queens) {
+      await findCell(wrapper, row, column)!.trigger('dblclick')
+    }
+    await wrapper.vm.$nextTick()
+    await Promise.resolve()
+
+    expect(playGameSound).toHaveBeenCalledWith(GameSoundType.WIN)
+    expect(wrapper.find('[data-test="result-lock-overlay"]').exists()).toBe(true)
+    expect(openResultModal).not.toHaveBeenCalled()
+
+    sound.resolve()
+    await Promise.resolve()
+    await wrapper.vm.$nextTick()
+
+    expect(openResultModal).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: 'Congratulations!',
+      }),
+    )
+    expect(wrapper.find('[data-test="result-lock-overlay"]').exists()).toBe(false)
   })
 
   it('loads the next puzzle when the route level changes', async () => {
@@ -184,6 +234,7 @@ describe('GameView', () => {
     await Promise.resolve()
     await wrapper.vm.$nextTick()
 
+    expect(playGameSound).toHaveBeenCalledWith(GameSoundType.LOSE)
     expect(openResultModal).toHaveBeenCalledWith({
       title: 'Game Over',
       content: 'Out of hearts. What would you like to do?',

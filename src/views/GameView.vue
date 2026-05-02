@@ -9,6 +9,8 @@ import { TOTAL_LEVELS, getPuzzleByLevel } from '@/modules/puzzles/simple'
 import { useSkinStore } from '@/modules/stores/skin'
 import { useGlobalModalStore } from '@/modules/stores/globalModal'
 import { useLevelStore } from '@/modules/stores/level'
+import { playGameSound } from '@/modules/utils/playGameSound'
+import { GameSoundType } from '@/modules/enums/GameSoundType'
 
 const props = defineProps<{
   level: number
@@ -26,7 +28,8 @@ skinStore.load()
 const activeLevel = ref(1)
 const game = ref(new QueenGame(getPuzzleByLevel(activeLevel.value)))
 const hasNextLevel = computed(() => activeLevel.value < TOTAL_LEVELS)
-const isResolvingResult = ref(false)
+const isHandlingResult = ref(false)
+const isWaitingSound = ref(false)
 
 watch(
   () => props.level,
@@ -43,7 +46,8 @@ watch(
     activeLevel.value = playableLevel.activeLevel
     levelStore.setSelectedLevel(playableLevel.activeLevel)
     game.value = new QueenGame(getPuzzleByLevel(playableLevel.activeLevel))
-    isResolvingResult.value = false
+    isHandlingResult.value = false
+    isWaitingSound.value = false
   },
   { immediate: true },
 )
@@ -115,9 +119,12 @@ const isHintUsed = computed(() => game.value.isHintUsed())
 watch(
   () => game.value.isGameOver(),
   async (gameOver) => {
-    if (!gameOver || isResolvingResult.value) return
+    if (!gameOver || isHandlingResult.value) return
 
-    isResolvingResult.value = true
+    isHandlingResult.value = true
+    isWaitingSound.value = true
+    await playGameSound(GameSoundType.LOSE)
+    isWaitingSound.value = false
     const action = await openResultModal({
       title: 'Game Over',
       content: 'Out of hearts. What would you like to do?',
@@ -133,17 +140,20 @@ watch(
       await goHome()
     }
 
-    isResolvingResult.value = false
+    isHandlingResult.value = false
   },
 )
 
 watch(
   () => game.value.isWin(),
   async (win) => {
-    if (!win || isResolvingResult.value) return
+    if (!win || isHandlingResult.value) return
 
-    isResolvingResult.value = true
+    isHandlingResult.value = true
+    isWaitingSound.value = true
     levelStore.completeLevel(activeLevel.value)
+    await playGameSound(GameSoundType.WIN)
+    isWaitingSound.value = false
 
     const actions = [
       { label: 'Play Again', payload: 'retry' },
@@ -167,25 +177,31 @@ watch(
       await goHome()
     }
 
-    isResolvingResult.value = false
+    isHandlingResult.value = false
   },
 )
 </script>
 
 <template>
   <div class="game">
+    <div v-if="isWaitingSound" class="interaction-overlay" data-test="result-lock-overlay"></div>
     <p class="level-title">Level {{ activeLevel }}</p>
     <game-board :game="game" :queen-skin="queenSkin" :cell-skin="cellSkin" />
     <div class="buttons">
-      <base-button class="restart" @click="clickRestart">Restart</base-button>
-      <base-button class="quit" @click="clickQuit">Quit</base-button>
-      <base-button class="hint" @click="clickHint" :disabled="isHintUsed">Hint</base-button>
+      <base-button class="restart" :disabled="isHandlingResult" @click="clickRestart">
+        Restart
+      </base-button>
+      <base-button class="quit" :disabled="isHandlingResult" @click="clickQuit">Quit</base-button>
+      <base-button class="hint" :disabled="isHintUsed || isHandlingResult" @click="clickHint">
+        Hint
+      </base-button>
     </div>
   </div>
 </template>
 
 <style scoped>
 .game {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -203,5 +219,12 @@ watch(
   font-size: 24px;
   font-weight: 700;
   color: #1f3c88;
+}
+
+.interaction-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  cursor: wait;
 }
 </style>

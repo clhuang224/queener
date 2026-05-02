@@ -57,11 +57,12 @@ export default class QueenGame {
     return this.board[position[0]]![position[1]]!.isNote()
   }
 
-  public markQueen(position: Position) {
+  public markQueen(position: Position): boolean {
     const hasQueen = this.board[position[0]]![position[1]]!.markQueen()
     if (!hasQueen) {
       this.hearts -= 1
     }
+    return hasQueen
   }
 
   public useHint(): Position | null {

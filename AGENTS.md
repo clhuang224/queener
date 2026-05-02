@@ -14,8 +14,11 @@ When updating `README.md`, prioritize:
 - project setup and commands
 - high-level architecture
 - folder overview
+- asset credits and license/source summaries
 
 Avoid low-level implementation notes, temporary refactor guidance, or component-specific conventions in the README unless those details are necessary for someone to understand the project at a high level.
+
+When adding or changing visual or audio assets, update the README asset credits if the source or license changes. Keep detailed implementation notes in `AGENTS.md` or code-local comments, but keep source and license summaries centralized in README.
 
 ## 1. Project Overview
 

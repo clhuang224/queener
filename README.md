@@ -160,3 +160,8 @@ bun run test:e2e
 - `QueenGame` tests cover initialization, queen marking, hint behavior, reset behavior, win detection, and game-over conditions
 - `BoardCell` tests cover cell-level state transitions
 - Cypress is available for browser-level interaction testing
+
+## Asset Credits
+
+- Queen skin source direction: [3D Icons](https://3dicons.co/) or assets in a similar colorful 3D icon style. 3D Icons describes its assets as CC0 / Creative Commons Zero.
+- Sound effects: [Pixabay](https://pixabay.com/), under Pixabay's royalty-free content license.
