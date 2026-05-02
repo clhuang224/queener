@@ -64,6 +64,9 @@ Skin direction:
 - queen skins should move toward colorful icon-based assets for marked queens
 - queen skin sources should primarily use [3D Icons](https://3dicons.co/) or assets with a similar colorful 3D icon style
 - 3D Icons currently describes its icons as CC0 / Creative Commons Zero, with personal and commercial use allowed without attribution
+- note icon assets are authored directly as SVG files under `src/assets/noteIcons/`
+- note icon SVGs should use `viewBox="0 0 500 500"` so they scale consistently inside board cells and settings previews
+- note icon SVG strokes should generally use `stroke-width="80"` unless a specific shape needs optical adjustment
 - note states should use an outline version of the selected queen icon with a white or black edge treatment for contrast
 - wrong states should use a red-filled version of the selected queen icon so mistakes remain clearly distinguishable from notes and found queens
 - note / wrong rendering should use prepared SVG note icon assets when available, with note shown in white and wrong shown in red
