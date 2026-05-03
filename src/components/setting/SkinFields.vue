@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { cellSkinMapName } from '@/modules/constants/cellSkins'
-import { getAvailableQueenSkinTypes, queenSkinMapName } from '@/modules/constants/queenSkins'
+import { isQueenSkinAvailable, queenSkinMapName } from '@/modules/constants/queenSkins'
 import { CellSkinType } from '@/modules/enums/CellSkinType'
-import type { QueenSkinType } from '@/modules/enums/QueenSkinType'
+import { QueenSkinType } from '@/modules/enums/QueenSkinType'
 import { getEnumValues } from '@/modules/utils/getEnumValues'
 
 defineProps<{
@@ -20,10 +20,12 @@ const cellSkinOptions = getEnumValues(CellSkinType).map((type) => ({
   value: type,
 }))
 
-const queenSkinOptions = getAvailableQueenSkinTypes().map((type) => ({
-  label: queenSkinMapName[type],
-  value: type,
-}))
+const queenSkinOptions = getEnumValues(QueenSkinType)
+  .filter((type) => isQueenSkinAvailable(type))
+  .map((type) => ({
+    label: queenSkinMapName[type],
+    value: type,
+  }))
 </script>
 
 <template>
@@ -94,11 +96,6 @@ const queenSkinOptions = getAvailableQueenSkinTypes().map((type) => ({
   color: #345;
   font: inherit;
   cursor: pointer;
-  transition:
-    border-color 0.2s ease,
-    background-color 0.2s ease,
-    color 0.2s ease,
-    box-shadow 0.2s ease;
 }
 
 .option-button.active {

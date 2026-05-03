@@ -1,8 +1,8 @@
 export enum CellSkinType {
-  LAKE = 'lake',
-  DAWN = 'dawn',
   RAINBOW = 'rainbow',
+  LAKE = 'lake',
   AUTUMN = 'autumn',
-  COTTON_CANDY = 'cotton-candy',
+  DAWN = 'dawn',
   EARTH = 'earth',
+  COTTON_CANDY = 'cotton-candy',
 }

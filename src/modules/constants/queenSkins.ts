@@ -102,7 +102,3 @@ export const isQueenSkinAvailable = (skin: QueenSkinType, date = new Date()): bo
 
   return availability === null || isDateInAnnualRange(date, availability)
 }
-
-export const getAvailableQueenSkinTypes = (date = new Date()): QueenSkinType[] => {
-  return Object.values(QueenSkinType).filter((skin) => isQueenSkinAvailable(skin, date))
-}

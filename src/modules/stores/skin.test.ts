@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { installStorageMock } from '@/test/localStorage'
 import { useSkinStore } from './skin'
@@ -9,6 +9,10 @@ describe('skin store', () => {
   beforeEach(() => {
     installStorageMock()
     setActivePinia(createPinia())
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
   })
 
   it('loads saved skins from local storage', () => {
@@ -30,5 +34,16 @@ describe('skin store', () => {
 
     expect(window.localStorage.getItem('queen-game-cell-skin')).toBe(CellSkinType.AUTUMN)
     expect(window.localStorage.getItem('queen-game-queen-skin')).toBe(QueenSkinType.PINK_CROWN)
+  })
+
+  it('falls back to the default queen skin when saved skin is not currently available', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date(2026, 4, 3))
+    window.localStorage.setItem('queen-game-queen-skin', QueenSkinType.ORANGE_PUMPKIN)
+
+    const skinStore = useSkinStore()
+    skinStore.load()
+
+    expect(skinStore.queenSkin).toBe(QueenSkinType.PINK_CROWN)
   })
 })

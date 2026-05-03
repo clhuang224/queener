@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { QueenSkinType } from '@/modules/enums/QueenSkinType'
-import { getAvailableQueenSkinTypes, isQueenSkinAvailable, QUEEN_SKINS } from './queenSkins'
+import { isQueenSkinAvailable, QUEEN_SKINS } from './queenSkins'
 
 describe('queenSkins', () => {
   it('loads an icon for every queen skin', () => {
@@ -16,12 +16,8 @@ describe('queenSkins', () => {
     expect(isQueenSkinAvailable(QueenSkinType.ORANGE_PUMPKIN, new Date(2027, 10, 1))).toBe(false)
   })
 
-  it('includes always-available skins and current seasonal skins', () => {
-    expect(getAvailableQueenSkinTypes(new Date(2026, 9, 15))).toEqual(
-      expect.arrayContaining([QueenSkinType.BLACK_CHESS, QueenSkinType.ORANGE_PUMPKIN]),
-    )
-    expect(getAvailableQueenSkinTypes(new Date(2026, 10, 1))).not.toContain(
-      QueenSkinType.ORANGE_PUMPKIN,
-    )
+  it('keeps always-available queen skins available year-round', () => {
+    expect(isQueenSkinAvailable(QueenSkinType.BLACK_CHESS, new Date(2026, 4, 3))).toBe(true)
+    expect(isQueenSkinAvailable(QueenSkinType.BLACK_CHESS, new Date(2026, 9, 15))).toBe(true)
   })
 })
