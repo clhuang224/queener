@@ -39,8 +39,8 @@ const halloweenAvailability: AnnualDateRange = {
 }
 
 export const QUEEN_SKINS: Record<QueenSkinType, QueenSkinData> = {
-  [QueenSkinType.GROWN_CHESS]: {
-    ...getQueenSkinIcons(QueenSkinType.GROWN_CHESS),
+  [QueenSkinType.BROWN_CHESS]: {
+    ...getQueenSkinIcons(QueenSkinType.BROWN_CHESS),
     available: null,
   },
   [QueenSkinType.BLACK_CHESS]: {
@@ -85,7 +85,7 @@ export const QUEEN_SKINS: Record<QueenSkinType, QueenSkinData> = {
 }
 
 export const queenSkinMapName: Record<QueenSkinType, string> = {
-  [QueenSkinType.GROWN_CHESS]: 'Grown Chess',
+  [QueenSkinType.BROWN_CHESS]: 'Brown Chess',
   [QueenSkinType.BLACK_CHESS]: 'Black Chess',
   [QueenSkinType.CHRISTMAS_TREE]: 'Christmas Tree',
   [QueenSkinType.BLACK_CROWN]: 'Black Crown',

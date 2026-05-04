@@ -1,7 +1,7 @@
 export enum QueenSkinType {
   PINK_CROWN = 'pink-crown',
   BLACK_CROWN = 'black-crown',
-  GROWN_CHESS = 'grown-chess',
+  BROWN_CHESS = 'brown-chess',
   BLACK_CHESS = 'black-chess',
   RED_FLAG = 'red-flag',
   ORANGE_PUMPKIN = 'orange-pumpkin',
