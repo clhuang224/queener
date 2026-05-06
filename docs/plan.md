@@ -61,6 +61,10 @@ Design considerations:
 Skin direction:
 
 - cell skin palettes should generally start from palettes found on [Coolors](https://coolors.co/) and then be adjusted for board readability
+- all cell skins should define quantitative color-difference checks for common color vision deficiencies, using a perceptual color space rather than raw RGB distance
+- standard visual skins may keep their intended mood and color family, but they should avoid palette entries that collapse below the minimum color-difference threshold in color vision deficiency simulations
+- at least three cell skins should be designed for color-blind accessibility, with palettes that remain distinguishable without relying on normal red / green / blue perception
+- color-blind accessibility skins should prioritize luminance contrast, perceptual color separation, and, where useful, non-color cues such as texture, pattern, or stronger region boundaries
 - queen skins should move toward colorful icon-based assets for marked queens
 - queen skin sources should primarily use [3D Icons](https://3dicons.co/) or assets with a similar colorful 3D icon style
 - 3D Icons currently describes its icons as CC0 / Creative Commons Zero, with personal and commercial use allowed without attribution
@@ -81,6 +85,15 @@ Interaction polish:
 - win and loss should have short board-level feedback before opening the result modal; the current immediate modal transition feels too abrupt
 - result animations should be brief and should not block the player longer than needed
 - if a persisted queen skin is no longer available, such as a seasonal Halloween skin after its availability window ends, settings should fall back to a stable default skin, currently `Pink Crown`
+
+Accessibility direction:
+
+- board interactions should support keyboard play, including moving the focused cell, marking notes, and marking queens without requiring pointer input
+- the focused board cell should have a visible focus treatment that remains clear across all supported cell skins
+- gameplay state should not rely on color alone; note, wrong, found, selected, and focused states should each have a non-color cue through icon shape, outline, motion, text alternative, or border treatment
+- animation polish should respect `prefers-reduced-motion`, especially for board feedback, win / loss transitions, and repeated cell interactions
+- sound effects should be optional and controllable from settings once audio polish is introduced
+- screen reader support should provide a practical baseline for board cells, including row, column, region, and current cell status, while recognizing that the core N-Queens spatial puzzle may not be fully suitable for every assistive technology workflow
 
 Evaluation criteria:
 
