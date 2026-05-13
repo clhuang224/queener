@@ -9,7 +9,7 @@ import { useSkinStore } from '@/modules/stores/skin'
 
 const router = useRouter()
 const skinStore = useSkinStore()
-const { cellSkin, queenSkin } = storeToRefs(skinStore)
+const { cellSkin, cellTextureEnabled, queenSkin } = storeToRefs(skinStore)
 
 onMounted(() => {
   skinStore.load()
@@ -27,11 +27,18 @@ const goHome = async () => {
     <section class="setting-card">
       <h1>Setting</h1>
       <p class="setting-copy">Customize your board and queen skins here.</p>
-      <CellSkinPreview class="skin-preview" :cell-skin="cellSkin" :queen-skin="queenSkin" />
+      <CellSkinPreview
+        class="skin-preview"
+        :cell-skin="cellSkin"
+        :cell-texture-enabled="cellTextureEnabled"
+        :queen-skin="queenSkin"
+      />
       <SkinFields
         :cell-skin="cellSkin"
+        :cell-texture-enabled="cellTextureEnabled"
         :queen-skin="queenSkin"
         @update:cell-skin="skinStore.setCellSkin"
+        @update:cell-texture-enabled="skinStore.setCellTextureEnabled"
         @update:queen-skin="skinStore.setQueenSkin"
       />
       <BaseButton class="back-button" @click="goHome">Back</BaseButton>

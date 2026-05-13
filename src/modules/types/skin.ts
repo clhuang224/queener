@@ -3,5 +3,6 @@ import type { QueenSkinType } from '@/modules/enums/QueenSkinType'
 
 export interface SkinSettings {
   cellSkin: CellSkinType
+  cellTextureEnabled: boolean
   queenSkin: QueenSkinType
 }

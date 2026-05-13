@@ -1,0 +1,65 @@
+.ring {
+  background-image: repeating-radial-gradient(
+    circle at center,
+    transparent 0 3px,
+    rgba(0, 0, 0, 0.18) 3px 4px,
+    transparent 4px 6px
+  );
+  background-position: center;
+  background-size: auto;
+}
+
+.vertical {
+  background-image: repeating-linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.18) 0 2px,
+    transparent 2px 9px
+  );
+}
+
+.horizontal {
+  background-image: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.18) 0 2px, transparent 2px 9px);
+}
+
+.diagonal_left {
+  background-image: repeating-linear-gradient(
+    135deg,
+    rgba(0, 0, 0, 0.18) 0 2px,
+    transparent 2px 10px
+  );
+}
+
+.diagonal_right {
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(0, 0, 0, 0.18) 0 2px,
+    transparent 2px 10px
+  );
+}
+
+.cross {
+  background-image:
+    repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.15) 0 2px, transparent 2px 10px),
+    repeating-linear-gradient(135deg, rgba(0, 0, 0, 0.15) 0 2px, transparent 2px 10px);
+}
+
+.brick {
+  background-image: url("data:image/svg+xml,%3Csvg width='24' height='16' viewBox='0 0 24 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='rgba(0,0,0,0.18)' stroke-width='1'%3E%3Cpath d='M0 .5h24M0 8.5h24M0 15.5h24'/%3E%3Cpath d='M0 .5v8M12 .5v8M24 .5v8M6 8.5v7M18 8.5v7'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 24px 16px;
+}
+
+.dots {
+  background-image: radial-gradient(circle, rgba(0, 0, 0, 0.2) 0 2px, transparent 2px);
+  background-size: 10px 10px;
+}
+
+.grid {
+  background-image:
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.16) 0 2px, transparent 2px 10px),
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.16) 0 2px, transparent 2px 10px);
+}
+
+.waves {
+  background-image: url("data:image/svg+xml,%3Csvg width='24' height='12' viewBox='0 0 24 12' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 6c3-5 9-5 12 0s9 5 12 0' fill='none' stroke='rgba(0,0,0,0.18)' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-size: 24px 12px;
+}

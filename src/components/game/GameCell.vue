@@ -6,6 +6,7 @@ import type { Position } from '@/modules/types/board'
 
 const props = defineProps<{
   cell: BoardCell
+  cellTextureClassName: string
   queenIcon: string
   queenNoteIcon: string
 }>()
@@ -24,6 +25,7 @@ const position = computed(() => props.cell.getPosition())
 <template>
   <div
     class="game-cell"
+    :class="cellTextureClassName"
     :style="{ backgroundColor: cellColor }"
     :data-row="position[0]"
     :data-column="position[1]"

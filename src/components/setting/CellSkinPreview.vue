@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import QueenIcon from '@/components/common/QueenIcon.vue'
+import { CELL_TEXTURES, getCellTextureClassName } from '@/modules/constants/cellTextures'
 import { CELL_SKIN_COLOR_COUNT, CELL_SKINS } from '@/modules/constants/cellSkins'
 import { QUEEN_SKINS } from '@/modules/constants/queenSkins'
 import type { CellSkinType } from '@/modules/enums/CellSkinType'
@@ -9,6 +10,7 @@ import type { BoardCellStatus } from '@/modules/game/BoardCell'
 
 const props = defineProps<{
   cellSkin: CellSkinType
+  cellTextureEnabled: boolean
   queenSkin: QueenSkinType
 }>()
 
@@ -19,20 +21,23 @@ const queenNoteIcon = computed(() => QUEEN_SKINS[props.queenSkin].noteIcon)
 const gridStyle = {
   '--preview-column-count': String(CELL_SKIN_COLOR_COUNT),
 }
+
+const getTextureClass = (colorIndex: number) => {
+  if (!props.cellTextureEnabled) return ''
+
+  const texture = CELL_TEXTURES[colorIndex % CELL_TEXTURES.length]!
+  return getCellTextureClassName(texture)
+}
 </script>
 
 <template>
-  <div
-    class="cell-skin-preview"
-    :style="gridStyle"
-    data-test="cell-skin-preview"
-  >
+  <div class="cell-skin-preview" :style="gridStyle" data-test="cell-skin-preview">
     <template v-for="state in previewStates" :key="state">
       <div
         v-for="(color, colorIndex) in palette"
         :key="`${state}-${color}`"
         class="preview-cell"
-        :class="`state-${state}`"
+        :class="[`state-${state}`, getTextureClass(colorIndex)]"
         :style="{ backgroundColor: color }"
         :data-color="color"
         :data-state="state"

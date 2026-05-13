@@ -39,14 +39,17 @@ describe('SettingView', () => {
     }
     const rainbowBoardButton = findOptionButton(cellSkinMapName[CellSkinType.RAINBOW])
     const autumnBoardButton = findOptionButton(cellSkinMapName[CellSkinType.AUTUMN])
+    const textureOnButton = findOptionButton('On')
     const pinkCrownButton = findOptionButton(queenSkinMapName[QueenSkinType.PINK_CROWN])
 
     expect(rainbowBoardButton.classes()).toContain('active')
 
     await autumnBoardButton.trigger('click')
+    await textureOnButton.trigger('click')
     await pinkCrownButton.trigger('click')
 
     expect(window.localStorage.getItem('queen-game-cell-skin')).toBe(CellSkinType.AUTUMN)
+    expect(window.localStorage.getItem('queen-game-cell-texture-enabled')).toBe('true')
     expect(window.localStorage.getItem('queen-game-queen-skin')).toBe(QueenSkinType.PINK_CROWN)
     expect(wrapper.findAll('.preview-cell')).toHaveLength(CELL_SKIN_COLOR_COUNT * 4)
     expect(wrapper.findAll('[data-state="found"]')).toHaveLength(CELL_SKIN_COLOR_COUNT)
@@ -56,6 +59,7 @@ describe('SettingView', () => {
     expect(wrapper.find('.preview-cell').attributes('data-color')).toBe(
       CELL_SKINS[CellSkinType.AUTUMN][0],
     )
+    expect(wrapper.find('.preview-cell').classes().length).toBeGreaterThan(2)
   })
 
   it('shows skin options in enum order with unavailable queen skins hidden', () => {
@@ -74,7 +78,12 @@ describe('SettingView', () => {
       .filter((skin) => isQueenSkinAvailable(skin))
       .map((skin) => queenSkinMapName[skin])
 
-    expect(optionLabels).toEqual([...expectedCellSkinLabels, ...expectedQueenSkinLabels])
+    expect(optionLabels).toEqual([
+      ...expectedCellSkinLabels,
+      'Off',
+      'On',
+      ...expectedQueenSkinLabels,
+    ])
   })
 
   it('returns to the home page', async () => {

@@ -2,6 +2,7 @@
 import GameCell from '@/components/game/GameCell.vue'
 import type { QueenGamePublic } from '@/modules/game/QueenGame'
 import HeartCounter from '../common/HeartCounter.vue'
+import { CELL_TEXTURES, getCellTextureClassName } from '../../modules/constants/cellTextures'
 import { useGameBoardGestures } from './useGameBoardGestures'
 import { computed, ref } from 'vue'
 import { CELL_SKINS } from '@/modules/constants/cellSkins'
@@ -11,11 +12,13 @@ import type { QueenSkinType } from '@/modules/enums/QueenSkinType'
 import type { Position } from '@/modules/types/board'
 import { playGameSound } from '@/modules/utils/playGameSound'
 import { pickDistributedColors } from '@/modules/utils/pickDistributedColors'
+import { pickRandomItems } from '@/modules/utils/pickRandomItems'
 import { GameSoundType } from '@/modules/enums/GameSoundType'
 
 const props = defineProps<{
   queenSkin: QueenSkinType
   cellSkin: CellSkinType
+  cellTextureEnabled: boolean
   game: QueenGamePublic
 }>()
 
@@ -23,6 +26,9 @@ const boardRef = ref<HTMLDivElement | null>(null)
 const boardSize = computed(() => props.game.getSize())
 const queenIcon = computed(() => QUEEN_SKINS[props.queenSkin].icon)
 const queenNoteIcon = computed(() => QUEEN_SKINS[props.queenSkin].noteIcon)
+const boardTextureTypes = computed(() => {
+  return props.cellTextureEnabled ? pickRandomItems(CELL_TEXTURES, boardSize.value) : []
+})
 const boardStyle = computed(() => ({
   '--board-size': String(boardSize.value),
   '--board-max-size': `${boardSize.value * 62}px`,
@@ -33,6 +39,11 @@ const boardStyle = computed(() => ({
     ]),
   ),
 }))
+
+const getCellTextureClass = (region: number) => {
+  const texture = boardTextureTypes.value[region]
+  return texture ? getCellTextureClassName(texture) : ''
+}
 
 const getBoardElementFromPoint = (clientX: number, clientY: number) => {
   const element = document.elementFromPoint(clientX, clientY)
@@ -101,6 +112,7 @@ const {
           v-for="cell in row"
           :key="cell.getPosition().join('-')"
           :cell="cell"
+          :cell-texture-class-name="getCellTextureClass(cell.getRegion())"
           :queen-icon="queenIcon"
           :queen-note-icon="queenNoteIcon"
           @pointer-down="handlePointerDown"

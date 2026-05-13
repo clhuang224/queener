@@ -7,11 +7,13 @@ import { getEnumValues } from '@/modules/utils/getEnumValues'
 
 defineProps<{
   cellSkin: CellSkinType
+  cellTextureEnabled: boolean
   queenSkin: QueenSkinType
 }>()
 
 const emit = defineEmits<{
   'update:cellSkin': [skin: CellSkinType]
+  'update:cellTextureEnabled': [enabled: boolean]
   'update:queenSkin': [skin: QueenSkinType]
 }>()
 
@@ -42,6 +44,28 @@ const queenSkinOptions = getEnumValues(QueenSkinType)
           @click="emit('update:cellSkin', option.value)"
         >
           {{ option.label }}
+        </button>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <p class="field-label">Board Texture</p>
+      <div class="option-row">
+        <button
+          class="option-button"
+          :class="{ active: !cellTextureEnabled }"
+          type="button"
+          @click="emit('update:cellTextureEnabled', false)"
+        >
+          Off
+        </button>
+        <button
+          class="option-button"
+          :class="{ active: cellTextureEnabled }"
+          type="button"
+          @click="emit('update:cellTextureEnabled', true)"
+        >
+          On
         </button>
       </div>
     </div>

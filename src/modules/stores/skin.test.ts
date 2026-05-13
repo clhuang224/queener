@@ -17,12 +17,14 @@ describe('skin store', () => {
 
   it('loads saved skins from local storage', () => {
     window.localStorage.setItem('queen-game-cell-skin', CellSkinType.LAKE)
+    window.localStorage.setItem('queen-game-cell-texture-enabled', 'true')
     window.localStorage.setItem('queen-game-queen-skin', QueenSkinType.PINK_CROWN)
 
     const skinStore = useSkinStore()
     skinStore.load()
 
     expect(skinStore.cellSkin).toBe(CellSkinType.LAKE)
+    expect(skinStore.cellTextureEnabled).toBe(true)
     expect(skinStore.queenSkin).toBe(QueenSkinType.PINK_CROWN)
   })
 
@@ -30,9 +32,11 @@ describe('skin store', () => {
     const skinStore = useSkinStore()
 
     skinStore.setCellSkin(CellSkinType.AUTUMN)
+    skinStore.setCellTextureEnabled(true)
     skinStore.setQueenSkin(QueenSkinType.PINK_CROWN)
 
     expect(window.localStorage.getItem('queen-game-cell-skin')).toBe(CellSkinType.AUTUMN)
+    expect(window.localStorage.getItem('queen-game-cell-texture-enabled')).toBe('true')
     expect(window.localStorage.getItem('queen-game-queen-skin')).toBe(QueenSkinType.PINK_CROWN)
   })
 

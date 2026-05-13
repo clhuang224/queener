@@ -124,6 +124,7 @@ describe('GameView', () => {
 
   it('uses the saved skin settings for the board', async () => {
     window.localStorage.setItem('queen-game-cell-skin', CellSkinType.LAKE)
+    window.localStorage.setItem('queen-game-cell-texture-enabled', 'true')
     window.localStorage.setItem('queen-game-queen-skin', QueenSkinType.PINK_CROWN)
 
     const { wrapper, queenCell } = mountGameView()
@@ -132,6 +133,7 @@ describe('GameView', () => {
     expect(board.attributes('style')).toContain(
       `--cell-color-0: ${CELL_SKINS[CellSkinType.LAKE][0]}`,
     )
+    expect(wrapper.find('.game-cell').classes().length).toBeGreaterThan(1)
 
     await queenCell.trigger('dblclick')
     expect(queenCell.find('.queen-icon.found').attributes('src')).toBe(

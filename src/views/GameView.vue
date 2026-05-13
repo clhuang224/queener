@@ -19,7 +19,7 @@ const props = defineProps<{
 const router = useRouter()
 const skinStore = useSkinStore()
 const levelStore = useLevelStore()
-const { cellSkin, queenSkin } = storeToRefs(skinStore)
+const { cellSkin, cellTextureEnabled, queenSkin } = storeToRefs(skinStore)
 
 const { openAlertModal, openConfirmModal, openResultModal } = useGlobalModalStore()
 
@@ -186,7 +186,12 @@ watch(
   <div class="game">
     <div v-if="isWaitingSound" class="interaction-overlay" data-test="result-lock-overlay"></div>
     <p class="level-title">Level {{ activeLevel }}</p>
-    <game-board :game="game" :queen-skin="queenSkin" :cell-skin="cellSkin" />
+    <game-board
+      :game="game"
+      :queen-skin="queenSkin"
+      :cell-skin="cellSkin"
+      :cell-texture-enabled="cellTextureEnabled"
+    />
     <div class="buttons">
       <base-button class="restart" :disabled="isHandlingResult" @click="clickRestart">
         Restart
