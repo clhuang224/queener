@@ -164,5 +164,9 @@ bun run test:e2e
 
 ## Asset Credits
 
+- Board skin palette notes:
+  - `Tropical Island` is based on Paul Tol's color-blind safe color scheme work.
+  - `Cartoon` is based on IBM's color-blind safe palette.
+  - `Polo Shirt` is based on the Okabe-Ito / Bang Wong color-blind palette.
 - Queen skin source direction: [3D Icons](https://3dicons.co/) or assets in a similar colorful 3D icon style. 3D Icons describes its assets as CC0 / Creative Commons Zero.
 - Sound effects: [Pixabay](https://pixabay.com/), under Pixabay's royalty-free content license.

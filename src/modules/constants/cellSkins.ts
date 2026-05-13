@@ -2,6 +2,18 @@ import { CellSkinType } from '@/modules/enums/CellSkinType'
 
 export const CELL_SKIN_COLOR_COUNT = 10
 
+export const ACCESSIBLE_CELL_SKINS = [
+  CellSkinType.TROPICAL_ISLAND,
+  CellSkinType.CARTOON,
+  CellSkinType.POLO_SHIRT,
+] as const
+
+type AccessibleCellSkin = (typeof ACCESSIBLE_CELL_SKINS)[number]
+
+export const isAccessibleCellSkin = (skin: CellSkinType): skin is AccessibleCellSkin => {
+  return ACCESSIBLE_CELL_SKINS.includes(skin as AccessibleCellSkin)
+}
+
 type HexColor = `#${string}`
 
 type TenColorPalette = readonly [
@@ -26,16 +38,16 @@ export const CELL_SKINS: Record<CellSkinType, TenColorPalette> = {
     '#52b69a',
     '#34a0a4',
     '#168aad',
-    '#1a759f',
-    '#1e6091',
-    '#184e77',
+    '#006e9c',
+    '#24538e',
+    '#2d356b',
   ],
   [CellSkinType.DAWN]: [
     '#03071e',
     '#370617',
     '#6a040f',
     '#9d0208',
-    '#d00000',
+    '#c00000',
     '#dc2f02',
     '#e85d04',
     '#f48c06',
@@ -50,9 +62,9 @@ export const CELL_SKINS: Record<CellSkinType, TenColorPalette> = {
     '#90be6d',
     '#43aa8b',
     '#4d908e',
-    '#3b89aa',
-    '#277da1',
-    '#577590',
+    '#46accb',
+    '#1e6381',
+    '#5c207e',
   ],
   [CellSkinType.AUTUMN]: [
     '#f4f1de',
@@ -79,14 +91,14 @@ export const CELL_SKINS: Record<CellSkinType, TenColorPalette> = {
     '#b9fbc0',
   ],
   [CellSkinType.EARTH]: [
+    '#8f6857',
     '#a87e69',
-    '#b98b73',
     '#cb997e',
     '#ddbea9',
     '#ffe8d6',
-    '#d4c7b0',
+    '#c8b090',
     '#b7b7a4',
-    '#a5a58d',
+    '#8f8f79',
     '#6b705c',
     '#3f4238',
   ],
@@ -100,7 +112,7 @@ export const CELL_SKINS: Record<CellSkinType, TenColorPalette> = {
     '#BBBBBB',
     '#000000',
     '#E69F00',
-    '#56B4E9',
+    '#00A6D6',
   ],
   [CellSkinType.CARTOON]: [
     '#648FFF',
