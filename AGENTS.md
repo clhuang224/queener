@@ -170,7 +170,9 @@ Cell skin notes:
 - cell texture should remain an independent setting from cell skin so players can combine any color palette with or without non-color region cues
 - cell texture patterns should use the fixed `CellTextureType` set and select the board's needed region textures from those enum values
 - the `EMPTY` texture enum value currently represents the ring pattern and should remain one of the available texture types, not only the disabled state
-- keep pattern CSS definitions centralized in `src/assets/texture.module.scss`; component-layer helpers may map texture enum values to CSS module classes, while rendering components should only map a region id to the already selected color and texture class
+- keep pattern CSS definitions centralized in `src/assets/texture.module.scss`
+- `CellTextureType` string values should exactly match the texture class names in `src/assets/texture.module.scss` so components can use the selected texture type directly as the class name
+- rendering components should only map a region id to the already selected color and texture class
 
 ### `src/modules/utils/`
 

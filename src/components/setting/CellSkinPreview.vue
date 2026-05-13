@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import QueenIcon from '@/components/common/QueenIcon.vue'
-import { CELL_TEXTURES, getCellTextureClassName } from '@/modules/constants/cellTextures'
+import { CELL_TEXTURES } from '@/modules/constants/cellTextures'
 import { CELL_SKIN_COLOR_COUNT, CELL_SKINS } from '@/modules/constants/cellSkins'
 import { QUEEN_SKINS } from '@/modules/constants/queenSkins'
 import type { CellSkinType } from '@/modules/enums/CellSkinType'
@@ -25,8 +25,7 @@ const gridStyle = {
 const getTextureClass = (colorIndex: number) => {
   if (!props.cellTextureEnabled) return ''
 
-  const texture = CELL_TEXTURES[colorIndex % CELL_TEXTURES.length]!
-  return getCellTextureClassName(texture)
+  return CELL_TEXTURES[colorIndex % CELL_TEXTURES.length]!
 }
 </script>
 
@@ -55,6 +54,8 @@ const getTextureClass = (colorIndex: number) => {
 </template>
 
 <style scoped lang="scss">
+@import '@/assets/texture.module.scss';
+
 .cell-skin-preview {
   --preview-gap: 4px;
 

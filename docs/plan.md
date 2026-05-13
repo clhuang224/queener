@@ -64,7 +64,9 @@ Skin direction:
 - all cell skins should define quantitative color-difference checks for common color vision deficiencies, using a perceptual color space rather than raw RGB distance
 - standard visual skins may keep their intended mood and color family, but they should avoid palette entries that collapse below the minimum color-difference threshold in color vision deficiency simulations
 - at least three cell skins should be designed for color-blind accessibility, with palettes that remain distinguishable without relying on normal red / green / blue perception
-- color-blind accessibility skins should prioritize luminance contrast, perceptual color separation, and, where useful, non-color cues such as texture, pattern, or stronger region boundaries
+- color-blind accessibility skins should prioritize luminance contrast and perceptual color separation
+- board textures should remain a separate accessibility setting from cell skins so non-color region cues can be combined with any palette
+- board texture classes should be driven by `CellTextureType` values that match the corresponding texture class names
 - queen skins should move toward colorful icon-based assets for marked queens
 - queen skin sources should primarily use [3D Icons](https://3dicons.co/) or assets with a similar colorful 3D icon style
 - 3D Icons currently describes its icons as CC0 / Creative Commons Zero, with personal and commercial use allowed without attribution

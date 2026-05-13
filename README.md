@@ -89,6 +89,7 @@ This keeps the game rules centralized in `QueenGame`, while Vue components stay 
 
 ```text
 src/
+├── assets/              # Visual assets such as icons and board texture styles
 ├── components/
 │   ├── common/          # Shared UI such as buttons and heart display
 │   └── game/            # Board and cell rendering components

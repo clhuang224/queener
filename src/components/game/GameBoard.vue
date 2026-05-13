@@ -2,7 +2,7 @@
 import GameCell from '@/components/game/GameCell.vue'
 import type { QueenGamePublic } from '@/modules/game/QueenGame'
 import HeartCounter from '../common/HeartCounter.vue'
-import { CELL_TEXTURES, getCellTextureClassName } from '../../modules/constants/cellTextures'
+import { CELL_TEXTURES } from '@/modules/constants/cellTextures'
 import { useGameBoardGestures } from './useGameBoardGestures'
 import { computed, ref } from 'vue'
 import { CELL_SKINS } from '@/modules/constants/cellSkins'
@@ -41,8 +41,7 @@ const boardStyle = computed(() => ({
 }))
 
 const getCellTextureClass = (region: number) => {
-  const texture = boardTextureTypes.value[region]
-  return texture ? getCellTextureClassName(texture) : ''
+  return boardTextureTypes.value[region] ?? ''
 }
 
 const getBoardElementFromPoint = (clientX: number, clientY: number) => {
