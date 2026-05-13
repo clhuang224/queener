@@ -1,8 +1,8 @@
-import type { CellSkinType } from '@/modules/enums/CellSkinType'
+import type { BoardSkinType } from '@/modules/enums/BoardSkinType'
 import type { QueenSkinType } from '@/modules/enums/QueenSkinType'
 
 export interface SkinSettings {
-  cellSkin: CellSkinType
-  cellTextureEnabled: boolean
+  boardSkin: BoardSkinType
+  boardTextureEnabled: boolean
   queenSkin: QueenSkinType
 }

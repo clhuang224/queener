@@ -60,14 +60,14 @@ Design considerations:
 
 Skin direction:
 
-- cell skin palettes should generally start from palettes found on [Coolors](https://coolors.co/) and then be adjusted for board readability
-- all cell skins should define quantitative color-difference checks for common color vision deficiencies, using a perceptual color space rather than raw RGB distance
+- board skin palettes should generally start from palettes found on [Coolors](https://coolors.co/) and then be adjusted for board readability
+- all board skins should define quantitative color-difference checks for common color vision deficiencies, using a perceptual color space rather than raw RGB distance
 - standard visual skins may keep their intended mood and color family, but they should avoid palette entries that collapse below the minimum color-difference threshold in color vision deficiency simulations
-- at least three cell skins should be designed for color-blind accessibility, with palettes that remain distinguishable without relying on normal red / green / blue perception
+- at least three board skins should be designed for color-blind accessibility, with palettes that remain distinguishable without relying on normal red / green / blue perception
 - color-blind accessibility skins may use player-facing theme names, but their palette source or inspiration should remain documented separately
 - current color-blind accessibility palette sources are Paul Tol color schemes, IBM's color-blind safe palette, and the Okabe-Ito / Bang Wong palette
 - color-blind accessibility skins should prioritize luminance contrast and perceptual color separation
-- board textures should remain a separate accessibility setting from cell skins so non-color region cues can be combined with any palette
+- board textures should remain a separate accessibility setting from board skins so non-color region cues can be combined with any palette
 - board texture classes should be driven by `CellTextureType` values that match the corresponding texture class names
 - queen skins should move toward colorful icon-based assets for marked queens
 - queen skin sources should primarily use [3D Icons](https://3dicons.co/) or assets with a similar colorful 3D icon style
@@ -93,7 +93,7 @@ Interaction polish:
 Accessibility direction:
 
 - board interactions should support keyboard play, including moving the focused cell, marking notes, and marking queens without requiring pointer input
-- the focused board cell should have a visible focus treatment that remains clear across all supported cell skins
+- the focused board cell should have a visible focus treatment that remains clear across all supported board skins
 - gameplay state should not rely on color alone; note, wrong, found, selected, and focused states should each have a non-color cue through icon shape, outline, motion, text alternative, or border treatment
 - animation polish should respect `prefers-reduced-motion`, especially for board feedback, win / loss transitions, and repeated cell interactions
 - sound effects should be optional and controllable from settings once audio polish is introduced

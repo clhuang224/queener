@@ -5,9 +5,9 @@ import HeartCounter from '../common/HeartCounter.vue'
 import { CELL_TEXTURES } from '@/modules/constants/cellTextures'
 import { useGameBoardGestures } from './useGameBoardGestures'
 import { computed, ref } from 'vue'
-import { CELL_SKINS } from '@/modules/constants/cellSkins'
+import { BOARD_SKINS } from '@/modules/constants/boardSkins'
 import { QUEEN_SKINS } from '@/modules/constants/queenSkins'
-import type { CellSkinType } from '@/modules/enums/CellSkinType'
+import type { BoardSkinType } from '@/modules/enums/BoardSkinType'
 import type { QueenSkinType } from '@/modules/enums/QueenSkinType'
 import type { Position } from '@/modules/types/board'
 import { playGameSound } from '@/modules/utils/playGameSound'
@@ -17,8 +17,8 @@ import { GameSoundType } from '@/modules/enums/GameSoundType'
 
 const props = defineProps<{
   queenSkin: QueenSkinType
-  cellSkin: CellSkinType
-  cellTextureEnabled: boolean
+  boardSkin: BoardSkinType
+  boardTextureEnabled: boolean
   game: QueenGamePublic
 }>()
 
@@ -27,13 +27,13 @@ const boardSize = computed(() => props.game.getSize())
 const queenIcon = computed(() => QUEEN_SKINS[props.queenSkin].icon)
 const queenNoteIcon = computed(() => QUEEN_SKINS[props.queenSkin].noteIcon)
 const boardTextureTypes = computed(() => {
-  return props.cellTextureEnabled ? pickRandomItems(CELL_TEXTURES, boardSize.value) : []
+  return props.boardTextureEnabled ? pickRandomItems(CELL_TEXTURES, boardSize.value) : []
 })
 const boardStyle = computed(() => ({
   '--board-size': String(boardSize.value),
   '--board-max-size': `${boardSize.value * 62}px`,
   ...Object.fromEntries(
-    pickDistributedColors(CELL_SKINS[props.cellSkin], boardSize.value).map((color, index) => [
+    pickDistributedColors(BOARD_SKINS[props.boardSkin], boardSize.value).map((color, index) => [
       `--cell-color-${index}`,
       color,
     ]),

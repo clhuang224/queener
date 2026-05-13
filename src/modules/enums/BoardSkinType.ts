@@ -1,4 +1,4 @@
-export enum CellSkinType {
+export enum BoardSkinType {
   RAINBOW = 'rainbow',
   LAKE = 'lake',
   AUTUMN = 'autumn',

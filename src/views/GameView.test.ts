@@ -4,9 +4,9 @@ import GameView from './GameView.vue'
 import { installStorageMock } from '@/test/localStorage'
 import { createTestingPinia } from '@/test/pinia'
 import { SIMPLE_PUZZLES } from '@/modules/puzzles/simple'
-import { CELL_SKINS } from '@/modules/constants/cellSkins'
+import { BOARD_SKINS } from '@/modules/constants/boardSkins'
 import { QUEEN_SKINS } from '@/modules/constants/queenSkins'
-import { CellSkinType } from '@/modules/enums/CellSkinType'
+import { BoardSkinType } from '@/modules/enums/BoardSkinType'
 import { GameSoundType } from '@/modules/enums/GameSoundType'
 import { QueenSkinType } from '@/modules/enums/QueenSkinType'
 
@@ -123,15 +123,15 @@ describe('GameView', () => {
   })
 
   it('uses the saved skin settings for the board', async () => {
-    window.localStorage.setItem('queen-game-cell-skin', CellSkinType.LAKE)
-    window.localStorage.setItem('queen-game-cell-texture-enabled', 'true')
+    window.localStorage.setItem('queen-game-board-skin', BoardSkinType.LAKE)
+    window.localStorage.setItem('queen-game-board-texture-enabled', 'true')
     window.localStorage.setItem('queen-game-queen-skin', QueenSkinType.PINK_CROWN)
 
     const { wrapper, queenCell } = mountGameView()
     const board = wrapper.find('[data-test="game-board"]')
 
     expect(board.attributes('style')).toContain(
-      `--cell-color-0: ${CELL_SKINS[CellSkinType.LAKE][0]}`,
+      `--cell-color-0: ${BOARD_SKINS[BoardSkinType.LAKE][0]}`,
     )
     expect(wrapper.find('.game-cell').classes().length).toBeGreaterThan(1)
 

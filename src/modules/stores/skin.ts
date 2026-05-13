@@ -1,22 +1,22 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import { CELL_SKINS } from '@/modules/constants/cellSkins'
+import { BOARD_SKINS } from '@/modules/constants/boardSkins'
 import { QUEEN_SKINS, isQueenSkinAvailable } from '@/modules/constants/queenSkins'
-import { CellSkinType } from '@/modules/enums/CellSkinType'
+import { BoardSkinType } from '@/modules/enums/BoardSkinType'
 import { QueenSkinType } from '@/modules/enums/QueenSkinType'
 import type { SkinSettings } from '@/modules/types/skin'
 
-const CELL_SKIN_STORAGE_KEY = 'queen-game-cell-skin'
-const CELL_TEXTURE_ENABLED_STORAGE_KEY = 'queen-game-cell-texture-enabled'
+const BOARD_SKIN_STORAGE_KEY = 'queen-game-board-skin'
+const BOARD_TEXTURE_ENABLED_STORAGE_KEY = 'queen-game-board-texture-enabled'
 const QUEEN_SKIN_STORAGE_KEY = 'queen-game-queen-skin'
 const DEFAULT_SETTINGS: SkinSettings = {
-  cellSkin: CellSkinType.RAINBOW,
-  cellTextureEnabled: false,
+  boardSkin: BoardSkinType.RAINBOW,
+  boardTextureEnabled: false,
   queenSkin: QueenSkinType.PINK_CROWN,
 }
 
-const isCellSkin = (value: unknown): value is CellSkinType => {
-  return typeof value === 'string' && Object.prototype.hasOwnProperty.call(CELL_SKINS, value)
+const isBoardSkin = (value: unknown): value is BoardSkinType => {
+  return typeof value === 'string' && Object.prototype.hasOwnProperty.call(BOARD_SKINS, value)
 }
 
 const isQueenSkin = (value: unknown): value is QueenSkinType => {
@@ -27,11 +27,11 @@ const isSelectableQueenSkin = (value: unknown): value is QueenSkinType => {
   return isQueenSkin(value) && isQueenSkinAvailable(value)
 }
 
-const getStoredCellSkin = (): CellSkinType => {
-  if (typeof window === 'undefined') return DEFAULT_SETTINGS.cellSkin
+const getStoredBoardSkin = (): BoardSkinType => {
+  if (typeof window === 'undefined') return DEFAULT_SETTINGS.boardSkin
 
-  const storedValue = window.localStorage.getItem(CELL_SKIN_STORAGE_KEY)
-  return isCellSkin(storedValue) ? storedValue : DEFAULT_SETTINGS.cellSkin
+  const storedValue = window.localStorage.getItem(BOARD_SKIN_STORAGE_KEY)
+  return isBoardSkin(storedValue) ? storedValue : DEFAULT_SETTINGS.boardSkin
 }
 
 const getStoredQueenSkin = (): QueenSkinType => {
@@ -41,30 +41,30 @@ const getStoredQueenSkin = (): QueenSkinType => {
   return isSelectableQueenSkin(storedValue) ? storedValue : DEFAULT_SETTINGS.queenSkin
 }
 
-const getStoredCellTextureEnabled = (): boolean => {
-  if (typeof window === 'undefined') return DEFAULT_SETTINGS.cellTextureEnabled
+const getStoredBoardTextureEnabled = (): boolean => {
+  if (typeof window === 'undefined') return DEFAULT_SETTINGS.boardTextureEnabled
 
-  const storedValue = window.localStorage.getItem(CELL_TEXTURE_ENABLED_STORAGE_KEY)
-  return storedValue === null ? DEFAULT_SETTINGS.cellTextureEnabled : storedValue === 'true'
+  const storedValue = window.localStorage.getItem(BOARD_TEXTURE_ENABLED_STORAGE_KEY)
+  return storedValue === null ? DEFAULT_SETTINGS.boardTextureEnabled : storedValue === 'true'
 }
 
-const persistSkinSettings = ({ cellSkin, cellTextureEnabled, queenSkin }: SkinSettings) => {
+const persistSkinSettings = ({ boardSkin, boardTextureEnabled, queenSkin }: SkinSettings) => {
   if (typeof window === 'undefined') return
 
-  window.localStorage.setItem(CELL_SKIN_STORAGE_KEY, cellSkin)
-  window.localStorage.setItem(CELL_TEXTURE_ENABLED_STORAGE_KEY, String(cellTextureEnabled))
+  window.localStorage.setItem(BOARD_SKIN_STORAGE_KEY, boardSkin)
+  window.localStorage.setItem(BOARD_TEXTURE_ENABLED_STORAGE_KEY, String(boardTextureEnabled))
   window.localStorage.setItem(QUEEN_SKIN_STORAGE_KEY, queenSkin)
 }
 
 export const useSkinStore = defineStore('skin', () => {
-  const cellSkin = ref<CellSkinType>(DEFAULT_SETTINGS.cellSkin)
-  const cellTextureEnabled = ref(DEFAULT_SETTINGS.cellTextureEnabled)
+  const boardSkin = ref<BoardSkinType>(DEFAULT_SETTINGS.boardSkin)
+  const boardTextureEnabled = ref(DEFAULT_SETTINGS.boardTextureEnabled)
   const queenSkin = ref<QueenSkinType>(DEFAULT_SETTINGS.queenSkin)
   const hasLoaded = ref(false)
 
   const load = () => {
-    cellSkin.value = getStoredCellSkin()
-    cellTextureEnabled.value = getStoredCellTextureEnabled()
+    boardSkin.value = getStoredBoardSkin()
+    boardTextureEnabled.value = getStoredBoardTextureEnabled()
     queenSkin.value = getStoredQueenSkin()
     hasLoaded.value = true
   }
@@ -75,22 +75,22 @@ export const useSkinStore = defineStore('skin', () => {
     }
   }
 
-  const setCellSkin = (nextSkin: CellSkinType) => {
+  const setBoardSkin = (nextSkin: BoardSkinType) => {
     ensureLoaded()
-    cellSkin.value = nextSkin
+    boardSkin.value = nextSkin
     persistSkinSettings({
-      cellSkin: cellSkin.value,
-      cellTextureEnabled: cellTextureEnabled.value,
+      boardSkin: boardSkin.value,
+      boardTextureEnabled: boardTextureEnabled.value,
       queenSkin: queenSkin.value,
     })
   }
 
-  const setCellTextureEnabled = (nextEnabled: boolean) => {
+  const setBoardTextureEnabled = (nextEnabled: boolean) => {
     ensureLoaded()
-    cellTextureEnabled.value = nextEnabled
+    boardTextureEnabled.value = nextEnabled
     persistSkinSettings({
-      cellSkin: cellSkin.value,
-      cellTextureEnabled: cellTextureEnabled.value,
+      boardSkin: boardSkin.value,
+      boardTextureEnabled: boardTextureEnabled.value,
       queenSkin: queenSkin.value,
     })
   }
@@ -99,19 +99,19 @@ export const useSkinStore = defineStore('skin', () => {
     ensureLoaded()
     queenSkin.value = nextSkin
     persistSkinSettings({
-      cellSkin: cellSkin.value,
-      cellTextureEnabled: cellTextureEnabled.value,
+      boardSkin: boardSkin.value,
+      boardTextureEnabled: boardTextureEnabled.value,
       queenSkin: queenSkin.value,
     })
   }
 
   return {
-    cellSkin,
-    cellTextureEnabled,
+    boardSkin,
+    boardTextureEnabled,
     queenSkin,
     load,
-    setCellSkin,
-    setCellTextureEnabled,
+    setBoardSkin,
+    setBoardTextureEnabled,
     setQueenSkin,
   }
 })

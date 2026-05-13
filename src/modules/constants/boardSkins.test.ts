@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { CELL_SKINS, isAccessibleCellSkin } from './cellSkins'
-import type { CellSkinType } from '@/modules/enums/CellSkinType'
+import { BOARD_SKINS, isAccessibleBoardSkin } from './boardSkins'
+import type { BoardSkinType } from '@/modules/enums/BoardSkinType'
 
 const ACCESSIBLE_MINIMUM_CIELAB_DISTANCE = 15
 const BASELINE_MINIMUM_CIELAB_DISTANCE = 8
@@ -64,13 +64,13 @@ const getCielabDistance = (firstColor: LabColor, secondColor: LabColor): number 
   )
 }
 
-describe('CELL_SKINS', () => {
+describe('BOARD_SKINS', () => {
   it('keeps colors in each palette separated by CIELAB distance', () => {
     const failures: string[] = []
 
-    for (const [skin, palette] of Object.entries(CELL_SKINS)) {
-      const skinType = skin as CellSkinType
-      const minimumDistance = isAccessibleCellSkin(skinType)
+    for (const [skin, palette] of Object.entries(BOARD_SKINS)) {
+      const skinType = skin as BoardSkinType
+      const minimumDistance = isAccessibleBoardSkin(skinType)
         ? ACCESSIBLE_MINIMUM_CIELAB_DISTANCE
         : BASELINE_MINIMUM_CIELAB_DISTANCE
       const labPalette = palette.map(hexToLab)

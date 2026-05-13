@@ -19,7 +19,7 @@ const props = defineProps<{
 const router = useRouter()
 const skinStore = useSkinStore()
 const levelStore = useLevelStore()
-const { cellSkin, cellTextureEnabled, queenSkin } = storeToRefs(skinStore)
+const { boardSkin, boardTextureEnabled, queenSkin } = storeToRefs(skinStore)
 
 const { openAlertModal, openConfirmModal, openResultModal } = useGlobalModalStore()
 
@@ -189,8 +189,8 @@ watch(
     <game-board
       :game="game"
       :queen-skin="queenSkin"
-      :cell-skin="cellSkin"
-      :cell-texture-enabled="cellTextureEnabled"
+      :board-skin="boardSkin"
+      :board-texture-enabled="boardTextureEnabled"
     />
     <div class="buttons">
       <base-button class="restart" :disabled="isHandlingResult" @click="clickRestart">

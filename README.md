@@ -94,7 +94,7 @@ src/
 │   ├── common/          # Shared UI such as buttons and heart display
 │   └── game/            # Board and cell rendering components
 ├── modules/             # Non-UI gameplay, data, stores, types, constants, and helpers
-│   ├── constants/       # Shared runtime constants such as skin palettes
+│   ├── constants/       # Shared runtime constants such as board skin palettes
 │   ├── enums/           # Shared enum definitions
 │   ├── game/            # Core gameplay classes such as QueenGame and BoardCell
 │   ├── puzzles/         # Built-in puzzle definitions

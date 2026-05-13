@@ -2,35 +2,35 @@
 import { computed } from 'vue'
 import QueenIcon from '@/components/common/QueenIcon.vue'
 import { CELL_TEXTURES } from '@/modules/constants/cellTextures'
-import { CELL_SKIN_COLOR_COUNT, CELL_SKINS } from '@/modules/constants/cellSkins'
+import { BOARD_SKIN_COLOR_COUNT, BOARD_SKINS } from '@/modules/constants/boardSkins'
 import { QUEEN_SKINS } from '@/modules/constants/queenSkins'
-import type { CellSkinType } from '@/modules/enums/CellSkinType'
+import type { BoardSkinType } from '@/modules/enums/BoardSkinType'
 import type { QueenSkinType } from '@/modules/enums/QueenSkinType'
 import type { BoardCellStatus } from '@/modules/game/BoardCell'
 
 const props = defineProps<{
-  cellSkin: CellSkinType
-  cellTextureEnabled: boolean
+  boardSkin: BoardSkinType
+  boardTextureEnabled: boolean
   queenSkin: QueenSkinType
 }>()
 
 const previewStates: BoardCellStatus[] = ['found', 'note', 'wrong', 'empty']
-const palette = computed(() => CELL_SKINS[props.cellSkin])
+const palette = computed(() => BOARD_SKINS[props.boardSkin])
 const queenIcon = computed(() => QUEEN_SKINS[props.queenSkin].icon)
 const queenNoteIcon = computed(() => QUEEN_SKINS[props.queenSkin].noteIcon)
 const gridStyle = {
-  '--preview-column-count': String(CELL_SKIN_COLOR_COUNT),
+  '--preview-column-count': String(BOARD_SKIN_COLOR_COUNT),
 }
 
 const getTextureClass = (colorIndex: number) => {
-  if (!props.cellTextureEnabled) return ''
+  if (!props.boardTextureEnabled) return ''
 
   return CELL_TEXTURES[colorIndex % CELL_TEXTURES.length]!
 }
 </script>
 
 <template>
-  <div class="cell-skin-preview" :style="gridStyle" data-test="cell-skin-preview">
+  <div class="board-skin-preview" :style="gridStyle" data-test="board-skin-preview">
     <template v-for="state in previewStates" :key="state">
       <div
         v-for="(color, colorIndex) in palette"
@@ -56,7 +56,7 @@ const getTextureClass = (colorIndex: number) => {
 <style scoped lang="scss">
 @import '@/assets/texture.module.scss';
 
-.cell-skin-preview {
+.board-skin-preview {
   --preview-gap: 4px;
 
   display: grid;
@@ -83,7 +83,7 @@ const getTextureClass = (colorIndex: number) => {
 }
 
 @media (max-width: 480px) {
-  .cell-skin-preview {
+  .board-skin-preview {
     --preview-gap: 3px;
   }
 

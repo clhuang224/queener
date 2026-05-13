@@ -3,13 +3,13 @@ import { onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import BaseButton from '@/components/common/BaseButton.vue'
-import CellSkinPreview from '@/components/setting/CellSkinPreview.vue'
+import BoardSkinPreview from '@/components/setting/BoardSkinPreview.vue'
 import SkinFields from '@/components/setting/SkinFields.vue'
 import { useSkinStore } from '@/modules/stores/skin'
 
 const router = useRouter()
 const skinStore = useSkinStore()
-const { cellSkin, cellTextureEnabled, queenSkin } = storeToRefs(skinStore)
+const { boardSkin, boardTextureEnabled, queenSkin } = storeToRefs(skinStore)
 
 onMounted(() => {
   skinStore.load()
@@ -27,18 +27,18 @@ const goHome = async () => {
     <section class="setting-card">
       <h1>Setting</h1>
       <p class="setting-copy">Customize your board and queen skins here.</p>
-      <CellSkinPreview
+      <BoardSkinPreview
         class="skin-preview"
-        :cell-skin="cellSkin"
-        :cell-texture-enabled="cellTextureEnabled"
+        :board-skin="boardSkin"
+        :board-texture-enabled="boardTextureEnabled"
         :queen-skin="queenSkin"
       />
       <SkinFields
-        :cell-skin="cellSkin"
-        :cell-texture-enabled="cellTextureEnabled"
+        :board-skin="boardSkin"
+        :board-texture-enabled="boardTextureEnabled"
         :queen-skin="queenSkin"
-        @update:cell-skin="skinStore.setCellSkin"
-        @update:cell-texture-enabled="skinStore.setCellTextureEnabled"
+        @update:board-skin="skinStore.setBoardSkin"
+        @update:board-texture-enabled="skinStore.setBoardTextureEnabled"
         @update:queen-skin="skinStore.setQueenSkin"
       />
       <BaseButton class="back-button" @click="goHome">Back</BaseButton>

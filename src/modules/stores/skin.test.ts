@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { installStorageMock } from '@/test/localStorage'
 import { useSkinStore } from './skin'
-import { CellSkinType } from '@/modules/enums/CellSkinType'
+import { BoardSkinType } from '@/modules/enums/BoardSkinType'
 import { QueenSkinType } from '@/modules/enums/QueenSkinType'
 
 describe('skin store', () => {
@@ -16,27 +16,27 @@ describe('skin store', () => {
   })
 
   it('loads saved skins from local storage', () => {
-    window.localStorage.setItem('queen-game-cell-skin', CellSkinType.LAKE)
-    window.localStorage.setItem('queen-game-cell-texture-enabled', 'true')
+    window.localStorage.setItem('queen-game-board-skin', BoardSkinType.LAKE)
+    window.localStorage.setItem('queen-game-board-texture-enabled', 'true')
     window.localStorage.setItem('queen-game-queen-skin', QueenSkinType.PINK_CROWN)
 
     const skinStore = useSkinStore()
     skinStore.load()
 
-    expect(skinStore.cellSkin).toBe(CellSkinType.LAKE)
-    expect(skinStore.cellTextureEnabled).toBe(true)
+    expect(skinStore.boardSkin).toBe(BoardSkinType.LAKE)
+    expect(skinStore.boardTextureEnabled).toBe(true)
     expect(skinStore.queenSkin).toBe(QueenSkinType.PINK_CROWN)
   })
 
   it('persists skin changes', () => {
     const skinStore = useSkinStore()
 
-    skinStore.setCellSkin(CellSkinType.AUTUMN)
-    skinStore.setCellTextureEnabled(true)
+    skinStore.setBoardSkin(BoardSkinType.AUTUMN)
+    skinStore.setBoardTextureEnabled(true)
     skinStore.setQueenSkin(QueenSkinType.PINK_CROWN)
 
-    expect(window.localStorage.getItem('queen-game-cell-skin')).toBe(CellSkinType.AUTUMN)
-    expect(window.localStorage.getItem('queen-game-cell-texture-enabled')).toBe('true')
+    expect(window.localStorage.getItem('queen-game-board-skin')).toBe(BoardSkinType.AUTUMN)
+    expect(window.localStorage.getItem('queen-game-board-texture-enabled')).toBe('true')
     expect(window.localStorage.getItem('queen-game-queen-skin')).toBe(QueenSkinType.PINK_CROWN)
   })
 

@@ -1,17 +1,17 @@
-import { CellSkinType } from '@/modules/enums/CellSkinType'
+import { BoardSkinType } from '@/modules/enums/BoardSkinType'
 
-export const CELL_SKIN_COLOR_COUNT = 10
+export const BOARD_SKIN_COLOR_COUNT = 10
 
-export const ACCESSIBLE_CELL_SKINS = [
-  CellSkinType.TROPICAL_ISLAND,
-  CellSkinType.CARTOON,
-  CellSkinType.POLO_SHIRT,
+export const ACCESSIBLE_BOARD_SKINS = [
+  BoardSkinType.TROPICAL_ISLAND,
+  BoardSkinType.CARTOON,
+  BoardSkinType.POLO_SHIRT,
 ] as const
 
-type AccessibleCellSkin = (typeof ACCESSIBLE_CELL_SKINS)[number]
+type AccessibleBoardSkin = (typeof ACCESSIBLE_BOARD_SKINS)[number]
 
-export const isAccessibleCellSkin = (skin: CellSkinType): skin is AccessibleCellSkin => {
-  return ACCESSIBLE_CELL_SKINS.includes(skin as AccessibleCellSkin)
+export const isAccessibleBoardSkin = (skin: BoardSkinType): skin is AccessibleBoardSkin => {
+  return ACCESSIBLE_BOARD_SKINS.includes(skin as AccessibleBoardSkin)
 }
 
 type HexColor = `#${string}`
@@ -29,8 +29,8 @@ type TenColorPalette = readonly [
   HexColor,
 ]
 
-export const CELL_SKINS: Record<CellSkinType, TenColorPalette> = {
-  [CellSkinType.LAKE]: [
+export const BOARD_SKINS: Record<BoardSkinType, TenColorPalette> = {
+  [BoardSkinType.LAKE]: [
     '#d9ed92',
     '#b5e48c',
     '#99d98c',
@@ -42,7 +42,7 @@ export const CELL_SKINS: Record<CellSkinType, TenColorPalette> = {
     '#24538e',
     '#2d356b',
   ],
-  [CellSkinType.DAWN]: [
+  [BoardSkinType.DAWN]: [
     '#03071e',
     '#370617',
     '#6a040f',
@@ -54,7 +54,7 @@ export const CELL_SKINS: Record<CellSkinType, TenColorPalette> = {
     '#faa307',
     '#ffba08',
   ],
-  [CellSkinType.RAINBOW]: [
+  [BoardSkinType.RAINBOW]: [
     '#f94144',
     '#f3722c',
     '#f8961e',
@@ -66,7 +66,7 @@ export const CELL_SKINS: Record<CellSkinType, TenColorPalette> = {
     '#1e6381',
     '#5c207e',
   ],
-  [CellSkinType.AUTUMN]: [
+  [BoardSkinType.AUTUMN]: [
     '#f4f1de',
     '#eab69f',
     '#e07a5f',
@@ -78,7 +78,7 @@ export const CELL_SKINS: Record<CellSkinType, TenColorPalette> = {
     '#f2cc8f',
     '#c98518',
   ],
-  [CellSkinType.COTTON_CANDY]: [
+  [BoardSkinType.COTTON_CANDY]: [
     '#fbf8cc',
     '#fde4cf',
     '#ffcfd2',
@@ -90,7 +90,7 @@ export const CELL_SKINS: Record<CellSkinType, TenColorPalette> = {
     '#98f5e1',
     '#b9fbc0',
   ],
-  [CellSkinType.EARTH]: [
+  [BoardSkinType.EARTH]: [
     '#8f6857',
     '#a87e69',
     '#cb997e',
@@ -102,7 +102,7 @@ export const CELL_SKINS: Record<CellSkinType, TenColorPalette> = {
     '#6b705c',
     '#3f4238',
   ],
-  [CellSkinType.TROPICAL_ISLAND]: [
+  [BoardSkinType.TROPICAL_ISLAND]: [
     '#4477AA',
     '#EE6677',
     '#228833',
@@ -114,7 +114,7 @@ export const CELL_SKINS: Record<CellSkinType, TenColorPalette> = {
     '#E69F00',
     '#00A6D6',
   ],
-  [CellSkinType.CARTOON]: [
+  [BoardSkinType.CARTOON]: [
     '#648FFF',
     '#785EF0',
     '#DC267F',
@@ -126,7 +126,7 @@ export const CELL_SKINS: Record<CellSkinType, TenColorPalette> = {
     '#1A75FF',
     '#FEFE62',
   ],
-  [CellSkinType.POLO_SHIRT]: [
+  [BoardSkinType.POLO_SHIRT]: [
     '#E69F00',
     '#56B4E9',
     '#009E73',
@@ -140,14 +140,14 @@ export const CELL_SKINS: Record<CellSkinType, TenColorPalette> = {
   ],
 }
 
-export const cellSkinMapName: Record<CellSkinType, string> = {
-  [CellSkinType.LAKE]: 'Lake',
-  [CellSkinType.DAWN]: 'Dawn',
-  [CellSkinType.RAINBOW]: 'Rainbow',
-  [CellSkinType.AUTUMN]: 'Autumn',
-  [CellSkinType.COTTON_CANDY]: 'Cotton Candy',
-  [CellSkinType.EARTH]: 'Earth',
-  [CellSkinType.TROPICAL_ISLAND]: 'Tropical Island',
-  [CellSkinType.CARTOON]: 'Cartoon',
-  [CellSkinType.POLO_SHIRT]: 'Polo Shirt',
+export const boardSkinMapName: Record<BoardSkinType, string> = {
+  [BoardSkinType.LAKE]: 'Lake',
+  [BoardSkinType.DAWN]: 'Dawn',
+  [BoardSkinType.RAINBOW]: 'Rainbow',
+  [BoardSkinType.AUTUMN]: 'Autumn',
+  [BoardSkinType.COTTON_CANDY]: 'Cotton Candy',
+  [BoardSkinType.EARTH]: 'Earth',
+  [BoardSkinType.TROPICAL_ISLAND]: 'Tropical Island',
+  [BoardSkinType.CARTOON]: 'Cartoon',
+  [BoardSkinType.POLO_SHIRT]: 'Polo Shirt',
 }

@@ -1,24 +1,24 @@
 <script setup lang="ts">
-import { cellSkinMapName } from '@/modules/constants/cellSkins'
+import { boardSkinMapName } from '@/modules/constants/boardSkins'
 import { isQueenSkinAvailable, queenSkinMapName } from '@/modules/constants/queenSkins'
-import { CellSkinType } from '@/modules/enums/CellSkinType'
+import { BoardSkinType } from '@/modules/enums/BoardSkinType'
 import { QueenSkinType } from '@/modules/enums/QueenSkinType'
 import { getEnumValues } from '@/modules/utils/getEnumValues'
 
 defineProps<{
-  cellSkin: CellSkinType
-  cellTextureEnabled: boolean
+  boardSkin: BoardSkinType
+  boardTextureEnabled: boolean
   queenSkin: QueenSkinType
 }>()
 
 const emit = defineEmits<{
-  'update:cellSkin': [skin: CellSkinType]
-  'update:cellTextureEnabled': [enabled: boolean]
+  'update:boardSkin': [skin: BoardSkinType]
+  'update:boardTextureEnabled': [enabled: boolean]
   'update:queenSkin': [skin: QueenSkinType]
 }>()
 
-const cellSkinOptions = getEnumValues(CellSkinType).map((type) => ({
-  label: cellSkinMapName[type],
+const boardSkinOptions = getEnumValues(BoardSkinType).map((type) => ({
+  label: boardSkinMapName[type],
   value: type,
 }))
 
@@ -36,12 +36,12 @@ const queenSkinOptions = getEnumValues(QueenSkinType)
       <p class="field-label">Board Skin</p>
       <div class="option-row">
         <button
-          v-for="option in cellSkinOptions"
+          v-for="option in boardSkinOptions"
           :key="option.value"
           class="option-button"
-          :class="{ active: option.value === cellSkin }"
+          :class="{ active: option.value === boardSkin }"
           type="button"
-          @click="emit('update:cellSkin', option.value)"
+          @click="emit('update:boardSkin', option.value)"
         >
           {{ option.label }}
         </button>
@@ -53,17 +53,17 @@ const queenSkinOptions = getEnumValues(QueenSkinType)
       <div class="option-row">
         <button
           class="option-button"
-          :class="{ active: !cellTextureEnabled }"
+          :class="{ active: !boardTextureEnabled }"
           type="button"
-          @click="emit('update:cellTextureEnabled', false)"
+          @click="emit('update:boardTextureEnabled', false)"
         >
           Off
         </button>
         <button
           class="option-button"
-          :class="{ active: cellTextureEnabled }"
+          :class="{ active: boardTextureEnabled }"
           type="button"
-          @click="emit('update:cellTextureEnabled', true)"
+          @click="emit('update:boardTextureEnabled', true)"
         >
           On
         </button>
