@@ -90,7 +90,7 @@ export const CELL_SKINS: Record<CellSkinType, TenColorPalette> = {
     '#6b705c',
     '#3f4238',
   ],
-  [CellSkinType.PAUL_TOL]: [
+  [CellSkinType.TROPICAL_ISLAND]: [
     '#4477AA',
     '#EE6677',
     '#228833',
@@ -102,7 +102,7 @@ export const CELL_SKINS: Record<CellSkinType, TenColorPalette> = {
     '#E69F00',
     '#56B4E9',
   ],
-  [CellSkinType.IBM_PALETTE]: [
+  [CellSkinType.CARTOON]: [
     '#648FFF',
     '#785EF0',
     '#DC267F',
@@ -114,7 +114,7 @@ export const CELL_SKINS: Record<CellSkinType, TenColorPalette> = {
     '#1A75FF',
     '#FEFE62',
   ],
-  [CellSkinType.BANG_WONG]: [
+  [CellSkinType.POLO_SHIRT]: [
     '#E69F00',
     '#56B4E9',
     '#009E73',
@@ -135,7 +135,7 @@ export const cellSkinMapName: Record<CellSkinType, string> = {
   [CellSkinType.AUTUMN]: 'Autumn',
   [CellSkinType.COTTON_CANDY]: 'Cotton Candy',
   [CellSkinType.EARTH]: 'Earth',
-  [CellSkinType.PAUL_TOL]: 'Paul Tol',
-  [CellSkinType.IBM_PALETTE]: 'IBM Palette',
-  [CellSkinType.BANG_WONG]: 'Bang Wong',
+  [CellSkinType.TROPICAL_ISLAND]: 'Tropical Island',
+  [CellSkinType.CARTOON]: 'Cartoon',
+  [CellSkinType.POLO_SHIRT]: 'Polo Shirt',
 }
