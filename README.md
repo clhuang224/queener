@@ -30,6 +30,7 @@ Players currently solve the board by marking notes on cells and confirming queen
 ### Puzzle Gameplay
 
 - Playable board rendered from predefined puzzle data
+- Each new game and restart creates a puzzle variant by rotating the board and remapping region colors
 - Click to toggle notes, or drag from an empty/noted cell to mark/remove notes in one consistent stroke
 - Double click to mark a queen
 - Heart-based mistake system where hearts scale by board size (`N=5-7 => 2`, `N=8-10 => 3`)
@@ -87,6 +88,8 @@ BoardCell (game state)
 ```
 
 This keeps the game rules centralized in `QueenGame`, while Vue components stay focused on rendering and user interaction.
+
+`QueenGame` creates a fresh per-run puzzle variant whenever a game starts or restarts. The original puzzle data stays unchanged, while the active board may rotate by quarter turns and remap region ids so players cannot memorize fixed queen coordinates through repeated restarts.
 
 Generic app UI can use unstyled Reka UI primitives for accessibility-heavy behavior such as dialogs, while game-specific board interactions remain custom and engine-driven.
 
@@ -165,7 +168,7 @@ bun run test:e2e
 
 ## Testing
 
-- `QueenGame` tests cover initialization, queen marking, hint behavior, reset behavior, win detection, and game-over conditions
+- `QueenGame` tests cover initialization, per-run puzzle variants, queen marking, hint behavior, reset behavior, win detection, and game-over conditions
 - `BoardCell` tests cover cell-level state transitions
 - Cypress is available for browser-level interaction testing
 

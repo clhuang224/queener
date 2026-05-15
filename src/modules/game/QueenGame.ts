@@ -5,6 +5,7 @@ import { randomInteger } from '@/modules/utils/random'
 
 export default class QueenGame {
   private puzzle: Puzzle
+  private activePuzzle: Puzzle
   private hintUsed: boolean
   public maxHearts: number
   public hearts: number
@@ -12,10 +13,11 @@ export default class QueenGame {
 
   constructor(puzzle: Puzzle) {
     this.puzzle = puzzle
+    this.activePuzzle = this.createPuzzleVariant(puzzle)
     this.hintUsed = false
     this.maxHearts = QueenGame.resolveHeartsBySize(puzzle.rules.size)
     this.hearts = this.maxHearts
-    this.board = this.createBoard(puzzle)
+    this.board = this.createBoard(this.activePuzzle)
   }
 
   public static resolveHeartsBySize(size: number): number {
@@ -39,6 +41,76 @@ export default class QueenGame {
         return cell
       }),
     )
+  }
+
+  private createPuzzleVariant(puzzle: Puzzle): Puzzle {
+    const rotatedPuzzle = this.rotatePuzzle(puzzle, randomInteger(0, 3))
+    return this.remapPuzzleRegions(rotatedPuzzle)
+  }
+
+  private rotatePuzzle(puzzle: Puzzle, quarterTurns: number): Puzzle {
+    const turns = quarterTurns % 4
+    if (turns === 0) {
+      return {
+        ...puzzle,
+        regions: puzzle.regions.map((row) => [...row]),
+        queens: puzzle.queens.map((position) => [...position]),
+      }
+    }
+
+    return {
+      ...puzzle,
+      regions: this.rotateRegions(puzzle.regions, turns),
+      queens: puzzle.queens.map((position) =>
+        this.rotatePosition(position, puzzle.rules.size, turns),
+      ),
+    }
+  }
+
+  private rotateRegions(regions: number[][], quarterTurns: number): number[][] {
+    const size = regions.length
+    return Array.from({ length: size }, (_, row) =>
+      Array.from({ length: size }, (_, column) => {
+        const [sourceRow, sourceColumn] = this.rotatePosition([row, column], size, 4 - quarterTurns)
+        return regions[sourceRow]![sourceColumn]!
+      }),
+    )
+  }
+
+  private rotatePosition([row, column]: Position, size: number, quarterTurns: number): Position {
+    let rotatedRow = row
+    let rotatedColumn = column
+
+    for (let turn = 0; turn < quarterTurns; turn++) {
+      const nextRow = rotatedColumn
+      const nextColumn = size - rotatedRow - 1
+      rotatedRow = nextRow
+      rotatedColumn = nextColumn
+    }
+
+    return [rotatedRow, rotatedColumn]
+  }
+
+  private remapPuzzleRegions(puzzle: Puzzle): Puzzle {
+    const regionIds = [...new Set(puzzle.regions.flat())]
+    const shuffledRegionIds = [...regionIds]
+
+    for (let index = shuffledRegionIds.length - 1; index > 0; index--) {
+      const swapIndex = randomInteger(0, index)
+      const currentRegion = shuffledRegionIds[index]!
+      shuffledRegionIds[index] = shuffledRegionIds[swapIndex]!
+      shuffledRegionIds[swapIndex] = currentRegion
+    }
+
+    const regionMap = new Map(
+      regionIds.map((regionId, index) => [regionId, shuffledRegionIds[index]!]),
+    )
+
+    return {
+      ...puzzle,
+      regions: puzzle.regions.map((row) => row.map((region) => regionMap.get(region)!)),
+      queens: puzzle.queens.map((position) => [...position]),
+    }
   }
 
   public getSize(): number {
@@ -67,7 +139,7 @@ export default class QueenGame {
 
   public useHint(): Position | null {
     if (this.hintUsed) return null
-    const queens = this.puzzle.queens.filter(
+    const queens = this.activePuzzle.queens.filter(
       ([row, column]) => !this.board[row]![column]!.isFound(),
     )
     if (queens.length === 0) return null
@@ -83,7 +155,7 @@ export default class QueenGame {
   }
 
   public isWin(): boolean {
-    return this.puzzle.queens.every(([row, column]) => this.board[row]![column]!.isFound())
+    return this.activePuzzle.queens.every(([row, column]) => this.board[row]![column]!.isFound())
   }
 
   public isGameOver(): boolean {
@@ -91,7 +163,8 @@ export default class QueenGame {
   }
 
   public resetGame(): void {
-    this.board = this.createBoard(this.puzzle)
+    this.activePuzzle = this.createPuzzleVariant(this.puzzle)
+    this.board = this.createBoard(this.activePuzzle)
     this.hintUsed = false
     this.hearts = this.maxHearts
   }

@@ -1,14 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import GameView from './GameView.vue'
+import GameBoard from '@/components/game/GameBoard.vue'
 import { installStorageMock } from '@/test/localStorage'
 import { createTestingPinia } from '@/test/pinia'
-import { SIMPLE_PUZZLES } from '@/modules/puzzles/simple'
 import { BOARD_SKINS } from '@/modules/constants/boardSkins'
 import { QUEEN_SKINS } from '@/modules/constants/queenSkins'
 import { BoardSkinType } from '@/modules/enums/BoardSkinType'
 import { GameSoundType } from '@/modules/enums/GameSoundType'
 import { QueenSkinType } from '@/modules/enums/QueenSkinType'
+import type { QueenGamePublic } from '@/modules/game/QueenGame'
 
 const push = vi.fn()
 const openAlertModal = vi.fn()
@@ -38,8 +39,6 @@ vi.mock('@/modules/utils/playGameSound', () => ({
 }))
 
 const mountGameView = () => {
-  const levelOnePuzzle = SIMPLE_PUZZLES[0]!
-  const [queenRow, queenColumn] = levelOnePuzzle.queens[0]!
   const wrapper = mount(GameView, {
     props: {
       level: 1,
@@ -48,6 +47,7 @@ const mountGameView = () => {
       plugins: [createTestingPinia()],
     },
   })
+  const [queenRow, queenColumn] = getQueenPositions(wrapper)[0]!
 
   return {
     wrapper,
@@ -59,6 +59,24 @@ const mountGameView = () => {
     })!,
     restartButton: wrapper.findAll('button').find((button) => button.text() === 'Restart')!,
   }
+}
+
+const getRenderedGame = (wrapper: ReturnType<typeof mount>) => {
+  return wrapper.findComponent(GameBoard).props('game') as QueenGamePublic
+}
+
+const getQueenPositions = (wrapper: ReturnType<typeof mount>) => {
+  return getRenderedGame(wrapper)
+    .board.flat()
+    .filter((cell) => cell.isQueen())
+    .map((cell) => cell.getPosition())
+}
+
+const getWrongPositions = (wrapper: ReturnType<typeof mount>) => {
+  return getRenderedGame(wrapper)
+    .board.flat()
+    .filter((cell) => !cell.isQueen())
+    .map((cell) => cell.getPosition())
 }
 
 const findCell = (wrapper: ReturnType<typeof mount>, row: number, column: number) => {
@@ -145,9 +163,8 @@ describe('GameView', () => {
     openResultModal.mockResolvedValue('next')
 
     const { wrapper } = mountGameView()
-    const levelOnePuzzle = SIMPLE_PUZZLES[0]!
 
-    for (const [row, column] of levelOnePuzzle.queens) {
+    for (const [row, column] of getQueenPositions(wrapper)) {
       await findCell(wrapper, row, column)!.trigger('dblclick')
     }
     await wrapper.vm.$nextTick()
@@ -179,9 +196,8 @@ describe('GameView', () => {
     })
 
     const { wrapper } = mountGameView()
-    const levelOnePuzzle = SIMPLE_PUZZLES[0]!
 
-    for (const [row, column] of levelOnePuzzle.queens) {
+    for (const [row, column] of getQueenPositions(wrapper)) {
       await findCell(wrapper, row, column)!.trigger('dblclick')
     }
     await wrapper.vm.$nextTick()
@@ -207,10 +223,9 @@ describe('GameView', () => {
     window.localStorage.setItem('queen-game-highest-completed-level', '1')
 
     const { wrapper } = mountGameView()
-    const levelTwoPuzzle = SIMPLE_PUZZLES[1]!
-    const [row, column] = levelTwoPuzzle.queens[0]!
 
     await wrapper.setProps({ level: 2 })
+    const [row, column] = getQueenPositions(wrapper)[0]!
     await findCell(wrapper, row, column)!.trigger('dblclick')
 
     expect(wrapper.find('.level-title').text()).toBe('Level 2')
@@ -221,12 +236,7 @@ describe('GameView', () => {
     openResultModal.mockResolvedValue('retry')
 
     const { wrapper } = mountGameView()
-    const levelOnePuzzle = SIMPLE_PUZZLES[0]!
-    const queenPositions = new Set(levelOnePuzzle.queens.map(([row, column]) => `${row},${column}`))
-    const wrongPositions = levelOnePuzzle.regions
-      .flatMap((row, rowIndex) => row.map((_, columnIndex) => [rowIndex, columnIndex] as const))
-      .filter(([row, column]) => !queenPositions.has(`${row},${column}`))
-      .slice(0, 2)
+    const wrongPositions = getWrongPositions(wrapper).slice(0, 2)
     const wrongCell = findCell(wrapper, ...wrongPositions[0]!)!
 
     for (const [row, column] of wrongPositions) {

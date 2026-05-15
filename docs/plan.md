@@ -9,29 +9,39 @@ This document captures the current planned direction of the project. The items a
 - favor reusable game logic over one-off UI-coupled implementations
 - add infrastructure when product needs become concrete, not only because it might be useful later
 
+## Implemented Baseline
+
+The current product baseline already includes:
+
+- hearts that scale by board size
+- a settings page for board texture, board skin, and queen skin preferences
+- Reka UI as the unstyled accessibility primitive layer for non-board UI
+- per-run puzzle variants that rotate the board and remap region ids whenever a game starts or restarts
+- a fixed campaign structure backed by declarative puzzle data
+
 ## 1. Core Product Milestones
 
 The immediate goal is to turn the current prototype into a complete and polished single-player experience.
 
 Scope:
 
-- complete the win and loss flow
-- define and implement the relationship between board size `N` and the number of hearts
+- complete and polish the win and loss flow
 - establish a stronger visual baseline for the game
-- ship a fixed set of ten built-in puzzles
-- add a settings page
-- allow players to choose queen and board skins
+- refine the fixed built-in puzzle campaign
+- improve restart, hint, and result feedback
+- make the main loop feel complete from level selection through replay or next-level navigation
 
 Done when:
 
 - the full game loop feels complete from start to finish
-- players can clearly understand success, failure, and restart flow
+- players can clearly understand success, failure, restart, replay, and next-level flow
 - puzzle count and progression feel intentional rather than placeholder-driven
-- basic personalization options are available through settings
+- restart and replay flows feel polished rather than mechanical
 
 Notes:
 
 - this phase should focus on product completeness rather than architecture expansion
+- puzzle variants should stay engine-owned in `QueenGame`; puzzle definition files should remain declarative source data
 
 ## 2. UI And Visual Design
 
@@ -40,14 +50,14 @@ The project should define a clearer visual direction instead of treating present
 Scope:
 
 - improve the overall look and feel of the game
-- use Reka UI as the Vue-native primitive layer for non-board UI that needs complex accessibility behavior
 - establish consistent visual rules for layout, spacing, buttons, board presentation, and feedback states
 - improve the quality of win, loss, hint, and settings-related UI
+- continue applying Reka UI to non-board controls when the accessibility behavior is worth the abstraction
 
 Questions to answer:
 
-- which non-board UI should use Reka primitives, and which pieces are simpler as native HTML or project-owned components?
-- where should Queener define its reusable visual styling on top of unstyled primitives?
+- which remaining non-board UI should move to Reka primitives, and which pieces are simpler as native HTML or project-owned components?
+- where should Queener define reusable visual styling on top of unstyled primitives?
 - what visual identity should Queener aim for beyond being functionally playable?
 
 Design considerations:
@@ -110,7 +120,7 @@ Done when:
 
 - the project has a clear UI direction
 - the game feels intentionally designed rather than prototype-like
-- the team has decided whether a UI framework is part of the long-term stack
+- reusable non-board controls feel consistent without making the board or game-specific interactions generic
 
 Notes:
 

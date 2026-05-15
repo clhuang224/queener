@@ -56,6 +56,13 @@ const setupGestures = () => {
   }
 }
 
+const getQueenPositions = (game: QueenGame) => {
+  return game.board
+    .flat()
+    .filter((cell) => cell.isQueen())
+    .map((cell) => cell.getPosition())
+}
+
 describe('useGameBoardGestures', () => {
   beforeEach(() => {
     vi.useFakeTimers()
@@ -92,15 +99,16 @@ describe('useGameBoardGestures', () => {
 
   it('marks a queen on double click without leaving a note behind', () => {
     const { game, gestures, stop } = setupGestures()
+    const queenPosition = getQueenPositions(game)[0]!
 
-    gestures.handleNoteClick([0, 0])
-    gestures.handleNoteClick([0, 0])
-    gestures.handleMarkQueen([0, 0])
+    gestures.handleNoteClick(queenPosition)
+    gestures.handleNoteClick(queenPosition)
+    gestures.handleMarkQueen(queenPosition)
 
     vi.advanceTimersByTime(300)
 
-    expect(game.board[0]![0]!.status).toBe('found')
-    expect(game.board[0]![0]!.isFound()).toBe(true)
+    expect(game.board[queenPosition[0]]![queenPosition[1]]!.status).toBe('found')
+    expect(game.board[queenPosition[0]]![queenPosition[1]]!.isFound()).toBe(true)
     stop()
   })
 

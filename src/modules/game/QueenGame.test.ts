@@ -1,6 +1,37 @@
-import { describe, it, expect } from 'vitest'
+import { afterEach, describe, it, expect, vi } from 'vitest'
 import QueenGame from './QueenGame.ts'
 import { SIMPLE_PUZZLES } from '../puzzles/simple.ts'
+import type { Puzzle } from '@/modules/types/puzzle'
+
+const getQueenPositions = (game: QueenGame) => {
+  return game.board
+    .flat()
+    .filter((cell) => cell.isQueen())
+    .map((cell) => cell.getPosition())
+}
+
+const TEST_PUZZLE: Puzzle = {
+  id: 'test-transform',
+  rules: {
+    size: 3,
+    allowDisconnectedRegions: false,
+    queensPerUnit: 1,
+  },
+  regions: [
+    [0, 0, 1],
+    [2, 1, 1],
+    [2, 2, 0],
+  ],
+  queens: [
+    [0, 0],
+    [1, 2],
+    [2, 1],
+  ],
+}
+
+afterEach(() => {
+  vi.restoreAllMocks()
+})
 
 describe('QueenGame.resolveHeartsBySize', () => {
   it('returns 2 hearts for size 5 to 7', () => {
@@ -27,11 +58,7 @@ describe.each(SIMPLE_PUZZLES)('QueenGame', (puzzle) => {
       })
       it(`should have ${puzzle.rules.size} queens on the board`, () => {
         const game = new QueenGame(puzzle)
-        const queenCount = game.board.reduce(
-          (count, row) => count + row.filter((square) => square.isQueen()).length,
-          0,
-        )
-        expect(queenCount).toBe(puzzle.rules.size)
+        expect(getQueenPositions(game)).toHaveLength(puzzle.rules.size)
       })
       it(`should initialize hearts based on size ${puzzle.rules.size}`, () => {
         const game = new QueenGame(puzzle)
@@ -43,7 +70,7 @@ describe.each(SIMPLE_PUZZLES)('QueenGame', (puzzle) => {
     describe('markQueen', () => {
       it('should mark a correct queen as found', () => {
         const game = new QueenGame(puzzle)
-        const [row, col] = puzzle.queens[0]!
+        const [row, col] = getQueenPositions(game)[0]!
         game.markQueen([row, col])
         expect(game.board[row]![col]!.isFound()).toBe(true)
       })
@@ -75,7 +102,7 @@ describe.each(SIMPLE_PUZZLES)('QueenGame', (puzzle) => {
     describe('win condition', () => {
       it('should detect win when all queens are found', () => {
         const game = new QueenGame(puzzle)
-        for (const pos of puzzle.queens) {
+        for (const pos of getQueenPositions(game)) {
           game.markQueen(pos)
         }
         expect(game.isWin()).toBe(true)
@@ -85,12 +112,12 @@ describe.each(SIMPLE_PUZZLES)('QueenGame', (puzzle) => {
     describe('reset', () => {
       it('should reset the game state', () => {
         const game = new QueenGame(puzzle)
-        const [row, col] = puzzle.queens[0]!
+        const [row, col] = getQueenPositions(game)[0]!
         game.markQueen([row, col])
         game.useHint()
         game.resetGame()
         expect(game.hearts).toBe(expectedHearts)
-        expect(game.board[row]![col]!.isFound()).toBe(false)
+        expect(game.board.flat().some((cell) => cell.isFound())).toBe(false)
       })
     })
 
@@ -105,5 +132,65 @@ describe.each(SIMPLE_PUZZLES)('QueenGame', (puzzle) => {
         expect(game.isGameOver()).toBe(true)
       })
     })
+  })
+})
+
+describe('QueenGame puzzle transformation', () => {
+  it('rotates regions and queen positions for each run', () => {
+    vi.spyOn(Math, 'random')
+      .mockReturnValueOnce(0.25)
+      .mockReturnValueOnce(0.99)
+      .mockReturnValueOnce(0.99)
+
+    const game = new QueenGame(TEST_PUZZLE)
+
+    expect(game.board.map((row) => row.map((cell) => cell.getRegion()))).toEqual([
+      [2, 2, 0],
+      [2, 1, 0],
+      [0, 1, 1],
+    ])
+    expect(getQueenPositions(game)).toEqual([
+      [0, 2],
+      [1, 0],
+      [2, 1],
+    ])
+  })
+
+  it('remaps region ids while preserving region membership', () => {
+    vi.spyOn(Math, 'random')
+      .mockReturnValueOnce(0)
+      .mockReturnValueOnce(0)
+      .mockReturnValueOnce(0)
+
+    const game = new QueenGame(TEST_PUZZLE)
+
+    expect(game.board.map((row) => row.map((cell) => cell.getRegion()))).toEqual([
+      [1, 1, 2],
+      [0, 2, 2],
+      [0, 0, 1],
+    ])
+    expect(TEST_PUZZLE.regions).toEqual([
+      [0, 0, 1],
+      [2, 1, 1],
+      [2, 2, 0],
+    ])
+  })
+
+  it('creates a new transformed puzzle when resetting the game', () => {
+    vi.spyOn(Math, 'random')
+      .mockReturnValueOnce(0)
+      .mockReturnValueOnce(0.99)
+      .mockReturnValueOnce(0.99)
+      .mockReturnValueOnce(0.25)
+      .mockReturnValueOnce(0.99)
+      .mockReturnValueOnce(0.99)
+
+    const game = new QueenGame(TEST_PUZZLE)
+    const initialQueenPositions = getQueenPositions(game)
+
+    game.resetGame()
+
+    expect(getQueenPositions(game)).not.toEqual(initialQueenPositions)
+    expect(game.board.flat().some((cell) => cell.isFound())).toBe(false)
   })
 })

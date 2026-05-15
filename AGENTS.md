@@ -145,6 +145,8 @@ Responsibilities:
 
 Keep puzzle data declarative. Validation or gameplay logic should not live inside puzzle definition files.
 
+Puzzle definitions are source data, not the exact board players see in every run. `QueenGame` may create a per-run puzzle variant by rotating the board and remapping region ids before board cells are created. Do not mutate puzzle definitions when creating these variants.
+
 Current puzzle shape notes:
 
 - puzzle size should live in `puzzle.rules.size`
@@ -224,12 +226,15 @@ In practice, this means:
 It should own:
 
 - board creation
+- per-run puzzle variant creation
 - heart tracking
 - hint usage
 - win / lose checks
 - reset behavior
 
 If a new gameplay rule is introduced, prefer adding or updating a method on `QueenGame` instead of implementing the rule inside a Vue component.
+
+At game start and reset, `QueenGame` should create a fresh active puzzle variant from the original puzzle. Current variants may rotate the board by quarter turns and remap region ids so region colors change while the puzzle's region shapes and queen solution remain internally consistent. Hints, win checks, and board cell creation must use the active puzzle variant, not the original puzzle coordinates.
 
 ### `BoardCell`
 
