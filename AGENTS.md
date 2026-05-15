@@ -343,6 +343,35 @@ Notes:
 
 User-facing copy should stay consistent across the app. When the project eventually adds localization, prefer centralizing translatable strings rather than hard-coding the same message in multiple components.
 
+For `aria-label`, use short sentence-case action labels for icon-only or symbol-only controls. Describe what the control does rather than what it looks like, and do not include the control type such as "button" because assistive technology already announces it.
+
+Good examples:
+
+- `Open settings`
+- `Previous level`
+- `Next level`
+
+### Reka UI Primitives
+
+This project uses Reka UI for Vue-native, unstyled accessibility primitives. Reka was chosen because it brings the Radix-style primitive model to Vue without imposing a visual theme, which lets Queener keep its own game-specific look and feel.
+
+Use Reka when a component needs complex interaction semantics that are easy to get wrong by hand, such as:
+
+- dialog or alert dialog behavior
+- focus trapping or focus restoration
+- keyboard navigation across a composite widget
+- ARIA roles and relationships for non-native controls
+- portals, popovers, dropdowns, selects, tabs, switches, or similar app UI primitives
+- outside interaction handling such as escape key and outside pointer/focus events
+
+Prefer project-owned components and native HTML when the component is simple, display-oriented, or part of game-specific interaction:
+
+- board and cell interactions should remain controlled by `GameBoard`, `GameCell`, and their gesture/state-machine code
+- simple buttons, counters, icons, previews, and layout wrappers do not need Reka unless they gain non-trivial accessibility behavior
+- domain-specific game pickers, such as the current `LevelPicker`, should keep their custom UI when native buttons and semantic labels are enough
+
+Treat Reka as the behavior and accessibility layer for generic app controls. Keep visual styling in Queener components and SCSS so the UI framework supports the product instead of defining its personality.
+
 ## 5. Model And File Placement Rules
 
 When deciding where a new shape or helper should live, use this quick guide:

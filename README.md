@@ -23,7 +23,9 @@ Players currently solve the board by marking notes on cells and confirming queen
 ### Home Screen
 
 - Simple landing screen with the project tagline
-- One-click entry into the playable puzzle screen
+- Level picker for unlocked campaign puzzles
+- Board size and heart count preview for the selected level
+- Entry points for starting a puzzle and opening settings
 
 ### Puzzle Gameplay
 
@@ -62,6 +64,7 @@ Current priorities include:
 - **Language:** TypeScript
 - **Routing:** Vue Router
 - **State Management:** Pinia
+- **UI Primitives:** Reka UI
 - **Unit Testing:** Vitest
 - **E2E Testing:** Cypress
 - **Tooling:** Vite, ESLint, oxlint, oxfmt
@@ -85,6 +88,8 @@ BoardCell (game state)
 
 This keeps the game rules centralized in `QueenGame`, while Vue components stay focused on rendering and user interaction.
 
+Generic app UI can use unstyled Reka UI primitives for accessibility-heavy behavior such as dialogs, while game-specific board interactions remain custom and engine-driven.
+
 ## Project Structure
 
 ```text
@@ -92,7 +97,9 @@ src/
 ├── assets/              # Visual assets such as icons and board texture styles
 ├── components/
 │   ├── common/          # Shared UI such as buttons and heart display
-│   └── game/            # Board and cell rendering components
+│   ├── game/            # Board and cell rendering components
+│   ├── home/            # Home screen components such as level picking
+│   └── setting/         # Settings UI and skin previews
 ├── modules/             # Non-UI gameplay, data, stores, types, constants, and helpers
 │   ├── constants/       # Shared runtime constants such as board skin palettes
 │   ├── enums/           # Shared enum definitions

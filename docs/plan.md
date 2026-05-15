@@ -40,23 +40,23 @@ The project should define a clearer visual direction instead of treating present
 Scope:
 
 - improve the overall look and feel of the game
-- decide whether the project should adopt a UI framework or continue with a lighter custom component approach
+- use Reka UI as the Vue-native primitive layer for non-board UI that needs complex accessibility behavior
 - establish consistent visual rules for layout, spacing, buttons, board presentation, and feedback states
 - improve the quality of win, loss, hint, and settings-related UI
 
 Questions to answer:
 
-- should the project introduce a UI framework, or would that add unnecessary weight for this style of game?
-- if a framework is adopted, should it be used broadly or only for non-board UI such as settings, dialogs, and panels?
+- which non-board UI should use Reka primitives, and which pieces are simpler as native HTML or project-owned components?
+- where should Queener define its reusable visual styling on top of unstyled primitives?
 - what visual identity should Queener aim for beyond being functionally playable?
 
 Design considerations:
 
 - the game board and cell interaction layer are part of the product identity and should remain highly controllable
-- non-core UI such as settings, dialogs, and generic controls may benefit from reusable UI primitives or a lightweight framework
-- introducing a UI framework too early may speed up generic screens while also pushing the project toward a more generic look
-- the project should define its visual language before committing to a larger UI dependency
-- if a framework is adopted later, it should support the game rather than define the game's personality
+- non-core UI such as settings, dialogs, and generic controls may benefit from Reka primitives when they need focus management, keyboard navigation, ARIA relationships, portals, or outside interaction handling
+- Reka is intentionally unstyled, so it should provide behavior and accessibility while Queener components keep ownership of visual design
+- simple display components, native button flows, and game-specific interactions should not be converted to Reka only for consistency
+- the board and cell gesture layer should not be generalized into Reka primitives; it should stay tied to the documented game interaction state machine
 
 Skin direction:
 

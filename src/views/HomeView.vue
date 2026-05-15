@@ -40,7 +40,7 @@ const openSetting = async () => {
 <template>
   <main>
     <header>
-      <base-button @click="openSetting">⚙️</base-button>
+      <base-button aria-label="Open settings" @click="openSetting">⚙️</base-button>
     </header>
     <h2>Place the queens. Become the winner.</h2>
     <level-picker

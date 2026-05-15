@@ -25,11 +25,14 @@ describe('HomeView', () => {
       },
     })
     const buttons = wrapper.findAll('button')
-    const previousButton = buttons.find((button) => button.text() === '←')
-    const nextButton = buttons.find((button) => button.text() === '→')
+    const previousButton = buttons.find(
+      (button) => button.attributes('aria-label') === 'Previous level',
+    )
+    const nextButton = buttons.find((button) => button.attributes('aria-label') === 'Next level')
 
     expect(wrapper.find('.level-number').text()).toBe('1')
     expect(wrapper.text()).not.toContain('Unlocked:')
+    expect(wrapper.find('.level-card').attributes('aria-live')).toBe('polite')
     expect(previousButton!.attributes('disabled')).toBeDefined()
     expect(nextButton!.attributes('disabled')).toBeDefined()
   })
@@ -43,8 +46,10 @@ describe('HomeView', () => {
       },
     })
     const buttons = wrapper.findAll('button')
-    const nextButton = buttons.find((button) => button.text() === '→')
-    const previousButton = buttons.find((button) => button.text() === '←')
+    const nextButton = buttons.find((button) => button.attributes('aria-label') === 'Next level')
+    const previousButton = buttons.find(
+      (button) => button.attributes('aria-label') === 'Previous level',
+    )
     const startButton = buttons.find((button) => button.text() === 'Start')
 
     await nextButton!.trigger('click')
@@ -70,7 +75,9 @@ describe('HomeView', () => {
       },
     })
 
-    const settingButton = wrapper.findAll('button').find((button) => button.text() === '⚙️')
+    const settingButton = wrapper
+      .findAll('button')
+      .find((button) => button.attributes('aria-label') === 'Open settings')
     await settingButton!.trigger('click')
 
     expect(push).toHaveBeenCalledWith({
@@ -87,7 +94,9 @@ describe('HomeView', () => {
       },
     })
     await wrapper.vm.$nextTick()
-    const previousButton = wrapper.findAll('button').find((button) => button.text() === '←')
+    const previousButton = wrapper
+      .findAll('button')
+      .find((button) => button.attributes('aria-label') === 'Previous level')
 
     expect(wrapper.text()).toContain('Board: 8x8 · Hearts: 3')
 
