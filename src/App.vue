@@ -18,6 +18,7 @@ import GlobalModal from '@/components/GlobalModal.vue'
   display: flex;
   flex-direction: column;
   background-color: #eee;
+  user-select: none;
 
   --border-radius: 8px;
 }
