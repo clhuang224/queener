@@ -9,7 +9,11 @@ const LEVEL_ONE = {
 
 const visitGame = () => {
   cy.viewport(1280, 900)
-  cy.visit('/')
+  cy.visit('/', {
+    onBeforeLoad(win) {
+      cy.stub(win.Math, 'random').returns(0)
+    },
+  })
   cy.contains('button', 'Start').click()
   cy.url().should('include', '/game')
   cy.get('[data-test="game-board"]').should('be.visible')
@@ -18,11 +22,14 @@ const visitGame = () => {
 const getCell = ([row, column]: BoardPosition) => cy.get(`[data-test="cell-${row}-${column}"]`)
 
 describe('desktop board interactions', () => {
-  it('supports single click, double click, and drag note marking', () => {
+  it('supports note toggling, double click, and drag note marking/removal', () => {
     visitGame()
 
     getCell(LEVEL_ONE.noteCell).click()
     getCell(LEVEL_ONE.noteCell).should('have.attr', 'data-status', 'note')
+
+    getCell(LEVEL_ONE.noteCell).click()
+    getCell(LEVEL_ONE.noteCell).should('have.attr', 'data-status', 'empty')
 
     getCell(LEVEL_ONE.queenCell).dblclick()
     getCell(LEVEL_ONE.queenCell).should('have.attr', 'data-status', 'found')
@@ -49,5 +56,28 @@ describe('desktop board interactions', () => {
 
     getCell(LEVEL_ONE.dragStartCell).should('have.attr', 'data-status', 'note')
     getCell(LEVEL_ONE.dragEnterCell).should('have.attr', 'data-status', 'note')
+
+    getCell(LEVEL_ONE.dragStartCell).trigger('pointerdown', {
+      pointerType: 'mouse',
+      button: 0,
+      buttons: 1,
+      force: true,
+    })
+    getCell(LEVEL_ONE.dragEnterCell).trigger('pointerenter', {
+      pointerType: 'mouse',
+      button: 0,
+      buttons: 1,
+      force: true,
+    })
+    cy.get('[data-test="game-board"]').trigger('pointerup', {
+      pointerType: 'mouse',
+      button: 0,
+      buttons: 0,
+      force: true,
+    })
+    getCell(LEVEL_ONE.dragEnterCell).click()
+
+    getCell(LEVEL_ONE.dragStartCell).should('have.attr', 'data-status', 'empty')
+    getCell(LEVEL_ONE.dragEnterCell).should('have.attr', 'data-status', 'empty')
   })
 })
