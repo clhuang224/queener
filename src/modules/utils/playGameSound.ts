@@ -16,7 +16,7 @@ const getSoundSource = (type: GameSoundType) => {
   return source
 }
 
-const soundSources = getEnumValues(GameSoundType).reduce(
+export const GAME_SOUND_SOURCES = getEnumValues(GameSoundType).reduce(
   (map, type) => ({
     ...map,
     [type]: getSoundSource(type),
@@ -28,7 +28,7 @@ export const playGameSound = (sound: GameSoundType): Promise<void> => {
   if (typeof Audio === 'undefined') return Promise.resolve()
 
   return new Promise((resolve) => {
-    const audio = new Audio(soundSources[sound])
+    const audio = new Audio(GAME_SOUND_SOURCES[sound])
     let isDone = false
 
     const finish = () => {

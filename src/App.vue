@@ -1,12 +1,25 @@
 <script setup lang="ts">
+import { onMounted, ref } from 'vue'
 import { RouterView } from 'vue-router'
 import GlobalModal from '@/components/GlobalModal.vue'
+import { preloadGameAssets } from '@/modules/utils/preloadGameAssets'
+import PrepareView from '@/views/PrepareView.vue'
+
+const isPreparing = ref(true)
+
+onMounted(async () => {
+  await preloadGameAssets()
+  isPreparing.value = false
+})
 </script>
 
 <template>
   <div class="app">
-    <RouterView />
-    <GlobalModal />
+    <PrepareView v-if="isPreparing" />
+    <template v-else>
+      <RouterView />
+      <GlobalModal />
+    </template>
   </div>
 </template>
 
