@@ -52,4 +52,20 @@ describe('preloadGameAssets', () => {
 
     await expect(preloadGameAssets()).resolves.toBeUndefined()
   })
+
+  it('skips preloading when the test hook is enabled', async () => {
+    const imageSources: string[] = []
+    const fetchMock = vi.fn<(_: RequestInfo | URL, __?: RequestInit) => Promise<Response>>(() =>
+      Promise.resolve({ ok: true } as Response),
+    )
+
+    window.__QUEENER_E2E_SKIP_PRELOAD__ = true
+    vi.stubGlobal('Image', createImageMock('load', imageSources))
+    vi.stubGlobal('fetch', fetchMock)
+
+    await preloadGameAssets()
+
+    expect(imageSources).toEqual([])
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
 })

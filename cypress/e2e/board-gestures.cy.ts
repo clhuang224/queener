@@ -11,6 +11,7 @@ const visitGame = () => {
   cy.viewport(1280, 900)
   cy.visit('/', {
     onBeforeLoad(win) {
+      win.__QUEENER_E2E_SKIP_PRELOAD__ = true
       cy.stub(win.Math, 'random').returns(0)
     },
   })

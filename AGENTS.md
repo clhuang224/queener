@@ -436,6 +436,8 @@ For board interactions specifically:
 
 - keep most gesture and interaction edge cases in Vitest component tests around `GameBoard`
 - use Cypress to confirm a smaller set of real browser flows still works end-to-end
+- set `window.__QUEENER_E2E_SKIP_PRELOAD__ = true` in `cy.visit(... onBeforeLoad)` for Cypress specs that do not intentionally cover app startup or asset preloading
+- do not set `window.__QUEENER_E2E_SKIP_PRELOAD__` in Cypress specs that are meant to verify the prepare view or preload behavior
 - avoid overloading Cypress with every timing edge case unless the bug only reproduces in a real browser
 
 Avoid brittle assertions against:

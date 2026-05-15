@@ -26,6 +26,7 @@ describe('board layout', () => {
     it(`renders level ${level} as a visual ${size} x ${size} board`, () => {
       cy.visit(`/game/${level}`, {
         onBeforeLoad(win) {
+          win.__QUEENER_E2E_SKIP_PRELOAD__ = true
           win.localStorage.setItem(
             'queen-game-highest-completed-level',
             String(HIGHEST_COMPLETED_LEVEL_TO_UNLOCK_ALL),

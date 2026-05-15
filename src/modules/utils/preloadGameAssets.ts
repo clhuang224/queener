@@ -3,6 +3,12 @@ import { GAME_SOUND_SOURCES } from '@/modules/utils/playGameSound'
 
 const PRELOAD_TIMEOUT_MS = 5000
 
+declare global {
+  interface Window {
+    __QUEENER_E2E_SKIP_PRELOAD__?: boolean
+  }
+}
+
 const preloadWithTimeout = (preload: () => Promise<void>): Promise<void> => {
   return new Promise((resolve) => {
     const timeout = window.setTimeout(resolve, PRELOAD_TIMEOUT_MS)
@@ -46,6 +52,8 @@ const preloadSound = (source: string): Promise<void> => {
 }
 
 export const preloadGameAssets = async (): Promise<void> => {
+  if (window.__QUEENER_E2E_SKIP_PRELOAD__) return
+
   const imageSources = Object.values(QUEEN_SKINS).map((skin) => skin.icon)
   const soundSources = Object.values(GAME_SOUND_SOURCES)
 
