@@ -4,6 +4,7 @@ import { isQueenSkinAvailable, queenSkinMapName } from '@/modules/constants/quee
 import { BoardSkinType } from '@/modules/enums/BoardSkinType'
 import { QueenSkinType } from '@/modules/enums/QueenSkinType'
 import { getEnumValues } from '@/modules/utils/getEnumValues'
+import { SwitchRoot, SwitchThumb } from 'reka-ui'
 
 defineProps<{
   boardSkin: BoardSkinType
@@ -49,24 +50,18 @@ const queenSkinOptions = getEnumValues(QueenSkinType)
     </div>
 
     <div class="field-group">
-      <p class="field-label">Board Texture</p>
-      <div class="option-row">
-        <button
-          class="option-button"
-          :class="{ active: !boardTextureEnabled }"
-          type="button"
-          @click="emit('update:boardTextureEnabled', false)"
-        >
-          Off
-        </button>
-        <button
-          class="option-button"
-          :class="{ active: boardTextureEnabled }"
-          type="button"
-          @click="emit('update:boardTextureEnabled', true)"
-        >
-          On
-        </button>
+      <div class="switch-field">
+        <p id="board-texture-label" class="field-label">Board Texture</p>
+        <div class="switch-control">
+          <SwitchRoot
+            class="texture-switch"
+            :model-value="boardTextureEnabled"
+            aria-labelledby="board-texture-label"
+            @update:model-value="emit('update:boardTextureEnabled', $event)"
+          >
+            <SwitchThumb class="texture-switch-thumb" />
+          </SwitchRoot>
+        </div>
       </div>
     </div>
 
@@ -129,9 +124,65 @@ const queenSkinOptions = getEnumValues(QueenSkinType)
   box-shadow: 0 6px 18px rgba(31, 60, 136, 0.22);
 }
 
+.switch-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.switch-field .field-label {
+  margin-bottom: 0;
+}
+
+.switch-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.texture-switch {
+  position: relative;
+  width: 52px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid #c7d2e4;
+  border-radius: 999px;
+  background: #dce5f2;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.texture-switch[data-state='checked'] {
+  border-color: #1f3c88;
+  background: #1f3c88;
+}
+
+.texture-switch-thumb {
+  display: block;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(31, 60, 136, 0.22);
+  transform: translateX(3px);
+  transition: transform 0.2s ease;
+}
+
+.texture-switch-thumb[data-state='checked'] {
+  transform: translateX(23px);
+}
+
 @media (max-width: 360px) {
   .option-button {
     flex-basis: 100%;
+  }
+
+  .switch-field {
+    align-items: flex-start;
+    flex-direction: column;
   }
 }
 </style>

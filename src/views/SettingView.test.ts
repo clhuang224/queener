@@ -43,13 +43,14 @@ describe('SettingView', () => {
     }
     const rainbowBoardButton = findOptionButton(boardSkinMapName[BoardSkinType.RAINBOW])
     const autumnBoardButton = findOptionButton(boardSkinMapName[BoardSkinType.AUTUMN])
-    const textureOnButton = findOptionButton('On')
+    const textureSwitch = wrapper.find('[role="switch"]')
     const pinkCrownButton = findOptionButton(queenSkinMapName[QueenSkinType.PINK_CROWN])
 
     expect(rainbowBoardButton.classes()).toContain('active')
+    expect(textureSwitch.attributes('aria-checked')).toBe('false')
 
     await autumnBoardButton.trigger('click')
-    await textureOnButton.trigger('click')
+    await textureSwitch.trigger('click')
     await pinkCrownButton.trigger('click')
 
     expect(window.localStorage.getItem('queen-game-board-skin')).toBe(BoardSkinType.AUTUMN)
@@ -84,12 +85,10 @@ describe('SettingView', () => {
       .filter((skin) => isQueenSkinAvailable(skin))
       .map((skin) => queenSkinMapName[skin])
 
-    expect(optionLabels).toEqual([
-      ...expectedBoardSkinLabels,
-      'Off',
-      'On',
-      ...expectedQueenSkinLabels,
-    ])
+    expect(optionLabels).toEqual([...expectedBoardSkinLabels, ...expectedQueenSkinLabels])
+    expect(wrapper.find('[role="switch"]').attributes('aria-labelledby')).toBe(
+      'board-texture-label',
+    )
   })
 
   it('returns to the home page', async () => {
