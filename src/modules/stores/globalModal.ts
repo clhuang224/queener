@@ -59,7 +59,7 @@ export const useGlobalModalStore = defineStore('global-modal', () => {
     await openResultModal({
       title,
       content,
-      actions: [{ label: '確定', payload: undefined }],
+      actions: [{ label: 'Confirm', payload: undefined }],
     })
   }
 
@@ -71,8 +71,8 @@ export const useGlobalModalStore = defineStore('global-modal', () => {
       title,
       content,
       actions: [
-        { label: '確定', payload: undefined, settle: 'resolve' },
-        { label: '取消', payload: new Error('cancelled'), settle: 'reject' },
+        { label: 'Confirm', payload: undefined, settle: 'resolve' },
+        { label: 'Cancel', payload: new Error('cancelled'), settle: 'reject' },
       ],
     })
   }
