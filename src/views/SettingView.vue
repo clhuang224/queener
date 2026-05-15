@@ -3,8 +3,10 @@ import { onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import BaseButton from '@/components/common/BaseButton.vue'
+import BoardSkinField from '@/components/setting/BoardSkinField.vue'
 import BoardSkinPreview from '@/components/setting/BoardSkinPreview.vue'
-import SkinFields from '@/components/setting/SkinFields.vue'
+import BoardTextureField from '@/components/setting/BoardTextureField.vue'
+import QueenSkinField from '@/components/setting/QueenSkinField.vue'
 import { useSkinStore } from '@/modules/stores/skin'
 
 const router = useRouter()
@@ -33,14 +35,14 @@ const goHome = async () => {
         :board-texture-enabled="boardTextureEnabled"
         :queen-skin="queenSkin"
       />
-      <SkinFields
-        :board-skin="boardSkin"
-        :board-texture-enabled="boardTextureEnabled"
-        :queen-skin="queenSkin"
-        @update:board-skin="skinStore.setBoardSkin"
-        @update:board-texture-enabled="skinStore.setBoardTextureEnabled"
-        @update:queen-skin="skinStore.setQueenSkin"
-      />
+      <div class="skin-fields">
+        <QueenSkinField :queen-skin="queenSkin" @update:queen-skin="skinStore.setQueenSkin" />
+        <BoardSkinField :board-skin="boardSkin" @update:board-skin="skinStore.setBoardSkin" />
+        <BoardTextureField
+          :board-texture-enabled="boardTextureEnabled"
+          @update:board-texture-enabled="skinStore.setBoardTextureEnabled"
+        />
+      </div>
       <BaseButton class="back-button" @click="goHome">Back</BaseButton>
     </section>
   </main>
@@ -80,5 +82,9 @@ h1 {
 
 .skin-preview {
   margin-bottom: 20px;
+}
+
+.skin-fields > * + * {
+  margin-top: 16px;
 }
 </style>

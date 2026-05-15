@@ -38,24 +38,42 @@ describe('SettingView', () => {
       },
     })
 
-    const findOptionButton = (label: string) => {
-      return wrapper.findAll('.option-button').find((button) => button.text() === label)!
+    const findRadioGroup = (label: string) => {
+      return wrapper
+        .findAll('[role="radiogroup"]')
+        .find((group) => group.attributes('aria-label') === label)!
     }
-    const rainbowBoardButton = findOptionButton(boardSkinMapName[BoardSkinType.RAINBOW])
-    const autumnBoardButton = findOptionButton(boardSkinMapName[BoardSkinType.AUTUMN])
+    const boardSkinGroup = findRadioGroup('Board skin')
+    const queenSkinGroup = findRadioGroup('Queen skin')
+    const rainbowBoardRadio = boardSkinGroup
+      .findAll('[role="radio"]')
+      .find(
+        (radio) => radio.attributes('aria-labelledby') === `board-skin-${BoardSkinType.RAINBOW}-label`,
+      )!
+    const autumnBoardRadio = boardSkinGroup
+      .findAll('[role="radio"]')
+      .find(
+        (radio) => radio.attributes('aria-labelledby') === `board-skin-${BoardSkinType.AUTUMN}-label`,
+      )!
     const textureSwitch = wrapper.find('[role="switch"]')
-    const pinkCrownButton = findOptionButton(queenSkinMapName[QueenSkinType.PINK_CROWN])
+    const blackCrownRadio = queenSkinGroup
+      .findAll('[role="radio"]')
+      .find(
+        (radio) =>
+          radio.attributes('aria-labelledby') === `queen-skin-${QueenSkinType.BLACK_CROWN}-label`,
+      )!
 
-    expect(rainbowBoardButton.classes()).toContain('active')
+    expect(rainbowBoardRadio.attributes('aria-checked')).toBe('true')
     expect(textureSwitch.attributes('aria-checked')).toBe('false')
+    expect(blackCrownRadio.attributes('aria-checked')).toBe('false')
 
-    await autumnBoardButton.trigger('click')
+    await autumnBoardRadio.trigger('click')
     await textureSwitch.trigger('click')
-    await pinkCrownButton.trigger('click')
+    await blackCrownRadio.trigger('click')
 
     expect(window.localStorage.getItem('queen-game-board-skin')).toBe(BoardSkinType.AUTUMN)
     expect(window.localStorage.getItem('queen-game-board-texture-enabled')).toBe('true')
-    expect(window.localStorage.getItem('queen-game-queen-skin')).toBe(QueenSkinType.PINK_CROWN)
+    expect(window.localStorage.getItem('queen-game-queen-skin')).toBe(QueenSkinType.BLACK_CROWN)
     expect(wrapper.findAll('.preview-cell')).toHaveLength(BOARD_SKIN_COLOR_COUNT * 4)
     expect(wrapper.findAll('[data-state="found"]')).toHaveLength(BOARD_SKIN_COLOR_COUNT)
     expect(wrapper.findAll('[data-state="note"]')).toHaveLength(BOARD_SKIN_COLOR_COUNT)
@@ -77,7 +95,23 @@ describe('SettingView', () => {
       },
     })
 
-    const optionLabels = wrapper.findAll('.option-button').map((button) => button.text())
+    const findRadioGroup = (label: string) => {
+      return wrapper
+        .findAll('[role="radiogroup"]')
+        .find((group) => group.attributes('aria-label') === label)!
+    }
+    const boardSkinGroup = findRadioGroup('Board skin')
+    const queenSkinGroup = findRadioGroup('Queen skin')
+    const boardSkinLabels = boardSkinGroup.findAll('[role="radio"]').map((radio) => {
+      const labelId = radio.attributes('aria-labelledby')!
+
+      return wrapper.find(`#${labelId}`).text()
+    })
+    const queenSkinLabels = queenSkinGroup.findAll('[role="radio"]').map((radio) => {
+      const labelId = radio.attributes('aria-labelledby')!
+
+      return wrapper.find(`#${labelId}`).text()
+    })
     const expectedBoardSkinLabels = getEnumValues(BoardSkinType).map(
       (skin) => boardSkinMapName[skin],
     )
@@ -85,10 +119,16 @@ describe('SettingView', () => {
       .filter((skin) => isQueenSkinAvailable(skin))
       .map((skin) => queenSkinMapName[skin])
 
-    expect(optionLabels).toEqual([...expectedBoardSkinLabels, ...expectedQueenSkinLabels])
+    expect(boardSkinLabels).toEqual(expectedBoardSkinLabels)
+    expect(queenSkinLabels).toEqual(expectedQueenSkinLabels)
     expect(wrapper.find('[role="switch"]').attributes('aria-labelledby')).toBe(
       'board-texture-label',
     )
+    expect(wrapper.findAll('.board-swatch-strip')).toHaveLength(expectedBoardSkinLabels.length)
+    expect(wrapper.find('.board-swatch-strip').findAll('.board-swatch')).toHaveLength(
+      BOARD_SKIN_COLOR_COUNT,
+    )
+    expect(wrapper.findAll('.queen-skin-icon')).toHaveLength(expectedQueenSkinLabels.length)
   })
 
   it('returns to the home page', async () => {
