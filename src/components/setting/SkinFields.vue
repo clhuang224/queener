@@ -32,7 +32,7 @@ const queenSkinOptions = getEnumValues(QueenSkinType)
 </script>
 
 <template>
-  <section class="skin-fields">
+  <section>
     <div class="field-group">
       <p class="field-label">Board Skin</p>
       <div class="option-row">
@@ -84,10 +84,6 @@ const queenSkinOptions = getEnumValues(QueenSkinType)
 </template>
 
 <style scoped lang="scss">
-.skin-fields {
-  width: min(100%, 420px);
-}
-
 .field-group + .field-group {
   margin-top: 16px;
 }
