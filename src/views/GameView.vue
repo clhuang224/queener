@@ -257,6 +257,11 @@ watch(
 
 .board-panel {
   --panel-padding: 8px;
+  width: var(--board-panel-max-size);
+  max-width: calc(100% - 32px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .hint {

@@ -41,10 +41,17 @@ onMounted(async () => {
   --color-border: rgba(96, 111, 96, 0.22);
   --color-focus: rgba(126, 164, 140, 0.34);
   --color-overlay: rgba(63, 73, 65, 0.24);
+  --radius-panel: 18px;
   --radius-soft: 16px;
   --radius-control: 999px;
   --radius-cell: 10px 8px 11px 9px;
   --border-radius: 8px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
 .app {
