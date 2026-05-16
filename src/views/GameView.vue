@@ -195,6 +195,7 @@ watch(
     />
     <div class="buttons">
       <BaseButton
+        icon
         class="restart"
         :disabled="isHandlingResult"
         aria-label="Restart level"
@@ -203,6 +204,7 @@ watch(
         <IconRefresh />
       </BaseButton>
       <BaseButton
+        icon
         class="quit"
         :disabled="isHandlingResult"
         aria-label="Quit to home"
@@ -211,6 +213,7 @@ watch(
         <IconHome />
       </BaseButton>
       <BaseButton
+        icon
         class="hint"
         :disabled="isHintUsed || isHandlingResult"
         aria-label="Use hint"

@@ -44,7 +44,7 @@ const goHome = async () => {
           @update:board-texture-enabled="skinStore.setBoardTextureEnabled"
         />
       </div>
-      <BaseButton class="back-button" aria-label="Back home" @click="goHome">
+      <BaseButton icon class="back-button" aria-label="Back home" @click="goHome">
         <IconChevronLeft />
       </BaseButton>
     </section>

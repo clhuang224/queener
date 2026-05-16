@@ -18,6 +18,7 @@ const emit = defineEmits<{
 <template>
   <div class="level-picker">
     <BaseButton
+      icon
       class="arrow-button"
       :disabled="selectedLevel <= 1"
       aria-label="Previous level"
@@ -31,6 +32,7 @@ const emit = defineEmits<{
       <p class="rules">Board: {{ boardSize }}x{{ boardSize }} · Hearts: {{ maxHearts }}</p>
     </div>
     <BaseButton
+      icon
       class="arrow-button"
       :disabled="!canGoNext"
       aria-label="Next level"
@@ -52,9 +54,9 @@ const emit = defineEmits<{
   min-width: 140px;
   padding: 18px 20px;
   text-align: center;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 18px 14px 20px 15px;
 }
 
 .label,
@@ -64,7 +66,7 @@ const emit = defineEmits<{
 
 .label {
   font-size: 14px;
-  color: #5c677d;
+  color: var(--color-text-muted);
 }
 
 .level-number {
@@ -72,18 +74,23 @@ const emit = defineEmits<{
   margin: 8px 0 6px;
   font-size: 42px;
   line-height: 1;
-  color: #1f3c88;
+  color: var(--color-primary);
 }
 
 .rules {
   margin-top: 6px;
   font-size: 13px;
-  color: #4d5a74;
+  color: var(--color-text-muted);
 }
 
 .arrow-button {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  --icon-button-size: 48px;
+
+  background-color: var(--color-accent);
+  color: var(--color-text);
+
+  &:hover:not(:disabled) {
+    background-color: var(--color-accent-hover);
+  }
 }
 </style>

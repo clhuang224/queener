@@ -38,6 +38,7 @@ const isCancelAction = (action: ModalAction) => {
       <BaseButton
         v-for="(action, index) in actions"
         :key="`${action.label}-${index}`"
+        :icon="isConfirmAction(action) || isCancelAction(action)"
         :aria-label="action.label"
         @click="handleSelect(action)"
       >

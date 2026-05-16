@@ -39,9 +39,9 @@ const openSetting = async () => {
 </script>
 
 <template>
-  <main>
+  <main class="home-view">
     <header>
-      <BaseButton aria-label="Open settings" @click="openSetting">
+      <BaseButton icon class="icon-button" aria-label="Open settings" @click="openSetting">
         <IconSettings />
       </BaseButton>
     </header>
@@ -54,14 +54,14 @@ const openSetting = async () => {
       @previous="selectPreviousLevel"
       @next="selectNextLevel"
     />
-    <BaseButton aria-label="Start level" @click="startLevel">
+    <BaseButton icon aria-label="Start level" @click="startLevel">
       <IconPlayerPlay />
     </BaseButton>
   </main>
 </template>
 
 <style lang="scss" scoped>
-main {
+.home-view {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -70,11 +70,40 @@ main {
   height: 100%;
   margin: 0 auto;
   max-width: 480px;
+  padding: 24px;
+  box-sizing: border-box;
+
   header {
     width: 100%;
     display: flex;
     justify-content: flex-end;
     align-items: center;
+  }
+}
+
+h2 {
+  max-width: 420px;
+  margin: 0;
+  color: var(--color-text);
+  font-size: 30px;
+  line-height: 1.18;
+  text-align: center;
+}
+
+.icon-button {
+  --icon-button-size: 44px;
+
+  background-color: var(--color-accent);
+  color: var(--color-text);
+
+  &:hover:not(:disabled) {
+    background-color: var(--color-accent-hover);
+  }
+}
+
+@media (max-width: 480px) {
+  h2 {
+    font-size: 26px;
   }
 }
 </style>

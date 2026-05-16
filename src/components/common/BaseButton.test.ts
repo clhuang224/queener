@@ -21,4 +21,18 @@ describe('BaseButton', () => {
     const button = wrapper.find('button')
     expect(button.attributes('disabled')).toBeDefined()
   })
+  it('passes the aria label to the button element', () => {
+    const wrapper = mount(BaseButton, {
+      attrs: { 'aria-label': 'Open settings' },
+    })
+    const button = wrapper.find('button')
+    expect(button.attributes('aria-label')).toBe('Open settings')
+  })
+  it('applies the icon button class when icon is true', () => {
+    const wrapper = mount(BaseButton, {
+      props: { icon: true },
+    })
+    const button = wrapper.find('button')
+    expect(button.classes()).toContain('base-button--icon')
+  })
 })
