@@ -15,7 +15,7 @@ const visitGame = () => {
       cy.stub(win.Math, 'random').returns(0)
     },
   })
-  cy.contains('button', 'Start').click()
+  cy.get('button[aria-label="Start level"]').click()
   cy.url().should('include', '/game')
   cy.get('[data-test="game-board"]').should('be.visible')
 }
