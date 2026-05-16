@@ -7,7 +7,7 @@ import { useLevelStore } from '@/modules/stores/level'
 import { storeToRefs } from 'pinia'
 import QueenGame from '@/modules/game/QueenGame'
 import { getPuzzleByLevel } from '@/modules/puzzles/simple'
-import { IconPlayerPlay, IconSettings } from '@tabler/icons-vue'
+import { IconSettings } from '@tabler/icons-vue'
 
 const router = useRouter()
 const levelStore = useLevelStore()
@@ -40,11 +40,15 @@ const openSetting = async () => {
 
 <template>
   <main class="home-view">
-    <header>
-      <BaseButton icon class="icon-button" aria-label="Open settings" @click="openSetting">
-        <IconSettings />
-      </BaseButton>
-    </header>
+    <BaseButton
+      icon
+      variant="ghost"
+      class="setting-button"
+      aria-label="Open settings"
+      @click="openSetting"
+    >
+      <IconSettings />
+    </BaseButton>
     <h2>Place the queens. Become the winner.</h2>
     <LevelPicker
       :selected-level="selectedLevel"
@@ -53,10 +57,8 @@ const openSetting = async () => {
       :max-hearts="selectedMaxHearts"
       @previous="selectPreviousLevel"
       @next="selectNextLevel"
+      @start="startLevel"
     />
-    <BaseButton icon aria-label="Start level" @click="startLevel">
-      <IconPlayerPlay />
-    </BaseButton>
   </main>
 </template>
 
@@ -69,39 +71,33 @@ const openSetting = async () => {
   gap: 24px;
   height: 100%;
   margin: 0 auto;
-  max-width: 480px;
   padding: 24px;
   box-sizing: border-box;
-
-  header {
-    width: 100%;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-  }
 }
 
 h2 {
-  max-width: 420px;
   margin: 0;
   color: var(--color-text);
   font-size: 30px;
   line-height: 1.18;
   text-align: center;
+  text-wrap: pretty;
 }
 
-.icon-button {
-  --icon-button-size: 44px;
+.setting-button {
+  --icon-button-size: 40px;
 
-  background-color: var(--color-accent);
-  color: var(--color-text);
-
-  &:hover:not(:disabled) {
-    background-color: var(--color-accent-hover);
-  }
+  position: fixed;
+  top: 24px;
+  right: 24px;
 }
 
 @media (max-width: 480px) {
+  .setting-button {
+    top: 16px;
+    right: 16px;
+  }
+
   h2 {
     font-size: 26px;
   }

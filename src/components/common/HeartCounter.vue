@@ -16,8 +16,8 @@ defineProps({
 <template>
   <div class="hearts">
     <div class="heart" v-for="i in maxHearts" :key="i">
-      <IconHeartFilled v-if="i <= hearts" />
-      <IconHeart v-else />
+      <IconHeartFilled v-if="i <= hearts" :size="40" />
+      <IconHeart v-else :size="40" />
     </div>
   </div>
 </template>

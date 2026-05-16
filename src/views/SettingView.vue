@@ -3,6 +3,7 @@ import { onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import BaseButton from '@/components/common/BaseButton.vue'
+import BasePanel from '@/components/common/BasePanel.vue'
 import BoardSkinField from '@/components/setting/BoardSkinField.vue'
 import BoardSkinPreview from '@/components/setting/BoardSkinPreview.vue'
 import BoardTextureField from '@/components/setting/BoardTextureField.vue'
@@ -27,7 +28,16 @@ const goHome = async () => {
 
 <template>
   <main class="setting-view">
-    <section class="setting-card">
+    <BaseButton
+      icon
+      variant="ghost"
+      class="back-button"
+      aria-label="Back home"
+      @click="goHome"
+    >
+      <IconChevronLeft />
+    </BaseButton>
+    <BasePanel class="setting-panel">
       <h1>Setting</h1>
       <p class="setting-copy">Customize your board and queen skins here.</p>
       <BoardSkinPreview
@@ -44,10 +54,7 @@ const goHome = async () => {
           @update:board-texture-enabled="skinStore.setBoardTextureEnabled"
         />
       </div>
-      <BaseButton icon class="back-button" aria-label="Back home" @click="goHome">
-        <IconChevronLeft />
-      </BaseButton>
-    </section>
+    </BasePanel>
   </main>
 </template>
 
@@ -61,12 +68,8 @@ const goHome = async () => {
   box-sizing: border-box;
 }
 
-.setting-card {
+.setting-panel {
   width: min(100%, 520px);
-  padding: 24px;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 22px 18px 24px 18px;
 }
 
 h1 {
@@ -80,14 +83,17 @@ h1 {
 }
 
 .back-button {
-  --icon-button-size: 44px;
+  --icon-button-size: 40px;
 
-  margin-top: 20px;
-  background-color: var(--color-accent);
-  color: var(--color-text);
+  position: fixed;
+  top: 24px;
+  left: 24px;
+}
 
-  &:hover:not(:disabled) {
-    background-color: var(--color-accent-hover);
+@media (max-width: 480px) {
+  .back-button {
+    top: 16px;
+    left: 16px;
   }
 }
 

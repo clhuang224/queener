@@ -3,6 +3,7 @@ import { computed, ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import BaseButton from '@/components/common/BaseButton.vue'
+import BasePanel from '@/components/common/BasePanel.vue'
 import GameBoard from '@/components/game/GameBoard.vue'
 import QueenGame from '@/modules/game/QueenGame'
 import { TOTAL_LEVELS, getPuzzleByLevel } from '@/modules/puzzles/simple'
@@ -31,6 +32,9 @@ const game = ref(new QueenGame(getPuzzleByLevel(activeLevel.value)))
 const hasNextLevel = computed(() => activeLevel.value < TOTAL_LEVELS)
 const isHandlingResult = ref(false)
 const isWaitingSound = ref(false)
+const boardPanelStyle = computed(() => ({
+  '--board-panel-max-size': `${game.value.getSize() * 62 + 40}px`,
+}))
 
 watch(
   () => props.level,
@@ -186,16 +190,10 @@ watch(
 <template>
   <div class="game">
     <div v-if="isWaitingSound" class="interaction-overlay" data-test="result-lock-overlay"></div>
-    <p class="level-title">Level {{ activeLevel }}</p>
-    <GameBoard
-      :game="game"
-      :queen-skin="queenSkin"
-      :board-skin="boardSkin"
-      :board-texture-enabled="boardTextureEnabled"
-    />
-    <div class="buttons">
+    <div class="page-actions">
       <BaseButton
         icon
+        variant="ghost"
         class="restart"
         :disabled="isHandlingResult"
         aria-label="Restart level"
@@ -205,6 +203,7 @@ watch(
       </BaseButton>
       <BaseButton
         icon
+        variant="ghost"
         class="quit"
         :disabled="isHandlingResult"
         aria-label="Quit to home"
@@ -212,16 +211,25 @@ watch(
       >
         <IconHome />
       </BaseButton>
-      <BaseButton
-        icon
-        class="hint"
-        :disabled="isHintUsed || isHandlingResult"
-        aria-label="Use hint"
-        @click="clickHint"
-      >
-        <IconBulb />
-      </BaseButton>
     </div>
+    <p class="level-title">Level {{ activeLevel }}</p>
+    <BasePanel class="board-panel" :style="boardPanelStyle">
+      <GameBoard
+        :game="game"
+        :queen-skin="queenSkin"
+        :board-skin="boardSkin"
+        :board-texture-enabled="boardTextureEnabled"
+      />
+    </BasePanel>
+    <BaseButton
+      icon
+      class="hint"
+      :disabled="isHintUsed || isHandlingResult"
+      aria-label="Use hint"
+      @click="clickHint"
+    >
+      <IconBulb />
+    </BaseButton>
   </div>
 </template>
 
@@ -233,11 +241,28 @@ watch(
   align-items: center;
   justify-content: center;
   height: 100%;
-  .buttons {
-    margin-top: 20px;
-    display: flex;
-    gap: 12px;
-  }
+}
+
+.page-actions {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  display: flex;
+  gap: 8px;
+}
+
+.page-actions .base-button {
+  --icon-button-size: 40px;
+}
+
+.board-panel {
+  --panel-padding: 8px;
+}
+
+.hint {
+  --icon-button-size: 46px;
+
+  margin-top: 20px;
 }
 
 .level-title {
@@ -252,5 +277,12 @@ watch(
   inset: 0;
   z-index: 1;
   cursor: wait;
+}
+
+@media (max-width: 480px) {
+  .page-actions {
+    top: 16px;
+    right: 16px;
+  }
 }
 </style>

@@ -29,6 +29,7 @@ onMounted(async () => {
 :root {
   --color-page: #f4ecd9;
   --color-surface: #fffdf7;
+  --color-panel: rgba(255, 253, 247, 0.68);
   --color-surface-muted: #f5dddf;
   --color-text: #3f4941;
   --color-text-muted: #7b7469;

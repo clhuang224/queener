@@ -2,13 +2,17 @@
 defineProps<{
   disabled?: boolean
   icon?: boolean
+  variant?: 'primary' | 'ghost'
 }>()
 </script>
 
 <template>
   <button
     class="base-button"
-    :class="{ 'base-button--icon': icon }"
+    :class="[
+      `base-button--${variant ?? 'primary'}`,
+      { 'base-button--icon': icon },
+    ]"
     :disabled="disabled"
   >
     <slot />
@@ -64,5 +68,22 @@ defineProps<{
   min-height: var(--icon-button-size, 42px);
   padding: 0;
   gap: 0;
+}
+
+.base-button--ghost {
+  background-color: transparent;
+  color: var(--color-text-muted);
+  border-color: transparent;
+
+  &:hover:not(:disabled) {
+    background-color: var(--color-selected);
+    color: var(--color-text);
+  }
+
+  &:disabled {
+    background-color: transparent;
+    color: var(--color-text-muted);
+    border-color: transparent;
+  }
 }
 </style>

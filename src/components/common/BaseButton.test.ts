@@ -35,4 +35,11 @@ describe('BaseButton', () => {
     const button = wrapper.find('button')
     expect(button.classes()).toContain('base-button--icon')
   })
+  it('applies the ghost variant class when variant is ghost', () => {
+    const wrapper = mount(BaseButton, {
+      props: { variant: 'ghost' },
+    })
+    const button = wrapper.find('button')
+    expect(button.classes()).toContain('base-button--ghost')
+  })
 })
