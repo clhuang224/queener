@@ -186,20 +186,20 @@ watch(
   <div class="game">
     <div v-if="isWaitingSound" class="interaction-overlay" data-test="result-lock-overlay"></div>
     <p class="level-title">Level {{ activeLevel }}</p>
-    <game-board
+    <GameBoard
       :game="game"
       :queen-skin="queenSkin"
       :board-skin="boardSkin"
       :board-texture-enabled="boardTextureEnabled"
     />
     <div class="buttons">
-      <base-button class="restart" :disabled="isHandlingResult" @click="clickRestart">
+      <BaseButton class="restart" :disabled="isHandlingResult" @click="clickRestart">
         Restart
-      </base-button>
-      <base-button class="quit" :disabled="isHandlingResult" @click="clickQuit">Quit</base-button>
-      <base-button class="hint" :disabled="isHintUsed || isHandlingResult" @click="clickHint">
+      </BaseButton>
+      <BaseButton class="quit" :disabled="isHandlingResult" @click="clickQuit">Quit</BaseButton>
+      <BaseButton class="hint" :disabled="isHintUsed || isHandlingResult" @click="clickHint">
         Hint
-      </base-button>
+      </BaseButton>
     </div>
   </div>
 </template>

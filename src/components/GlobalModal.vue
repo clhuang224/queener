@@ -21,7 +21,7 @@ const { selectGlobalModalAction } = useGlobalModalStore()
         class="global-modal__content"
         @escape-key-down.prevent
       >
-        <base-modal
+        <BaseModal
           :title="globalModal.title"
           :content="globalModal.content"
           :actions="globalModal.actions"

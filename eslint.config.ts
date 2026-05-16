@@ -18,6 +18,20 @@ export default defineConfigWithVueTs(
   vueTsConfigs.recommended,
 
   {
+    name: 'app/vue-template-style',
+    files: ['**/*.vue'],
+    rules: {
+      'vue/component-name-in-template-casing': [
+        'error',
+        'PascalCase',
+        {
+          registeredComponentsOnly: false,
+        },
+      ],
+    },
+  },
+
+  {
     ...pluginCypress.configs.recommended,
     files: ['cypress/e2e/**/*.{cy,spec}.{js,ts,jsx,tsx}', 'cypress/support/**/*.{js,ts,jsx,tsx}'],
   },

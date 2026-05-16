@@ -104,10 +104,10 @@ const {
     @touchend="handlePointerEnd"
     @touchcancel="handlePointerEnd"
   >
-    <heart-counter :hearts="game.hearts" :max-hearts="game.maxHearts" />
+    <HeartCounter :hearts="game.hearts" :max-hearts="game.maxHearts" />
     <div class="board-cells">
       <template v-for="(row, rowIndex) in game.board" :key="rowIndex">
-        <game-cell
+        <GameCell
           v-for="cell in row"
           :key="cell.getPosition().join('-')"
           :cell="cell"

@@ -40,10 +40,10 @@ const openSetting = async () => {
 <template>
   <main>
     <header>
-      <base-button aria-label="Open settings" @click="openSetting">⚙️</base-button>
+      <BaseButton aria-label="Open settings" @click="openSetting">⚙️</BaseButton>
     </header>
     <h2>Place the queens. Become the winner.</h2>
-    <level-picker
+    <LevelPicker
       :selected-level="selectedLevel"
       :can-go-next="canGoNextLevel"
       :board-size="selectedBoardSize"
@@ -51,7 +51,7 @@ const openSetting = async () => {
       @previous="selectPreviousLevel"
       @next="selectNextLevel"
     />
-    <base-button class="btn" @click="startLevel">Start</base-button>
+    <BaseButton class="btn" @click="startLevel">Start</BaseButton>
   </main>
 </template>
 

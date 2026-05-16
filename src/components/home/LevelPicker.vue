@@ -16,27 +16,27 @@ const emit = defineEmits<{
 
 <template>
   <div class="level-picker">
-    <base-button
+    <BaseButton
       class="arrow-button"
       :disabled="selectedLevel <= 1"
       aria-label="Previous level"
       @click="emit('previous')"
     >
       ←
-    </base-button>
+    </BaseButton>
     <div class="level-card" aria-live="polite">
       <p class="label">Level</p>
       <strong class="level-number">{{ selectedLevel }}</strong>
       <p class="rules">Board: {{ boardSize }}x{{ boardSize }} · Hearts: {{ maxHearts }}</p>
     </div>
-    <base-button
+    <BaseButton
       class="arrow-button"
       :disabled="!canGoNext"
       aria-label="Next level"
       @click="emit('next')"
     >
       →
-    </base-button>
+    </BaseButton>
   </div>
 </template>
 
