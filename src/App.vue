@@ -30,7 +30,7 @@ onMounted(async () => {
   --color-page: #f4ecd9;
   --color-surface: #fffdf7;
   --color-panel: rgba(255, 253, 247, 0.68);
-  --color-surface-muted: #f5dddf;
+  --color-surface-muted: rgba(126, 164, 140, 0.12);
   --color-text: #3f4941;
   --color-text-muted: #7b7469;
   --color-primary: #7ea48c;
