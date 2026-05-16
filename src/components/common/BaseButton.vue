@@ -1,23 +1,26 @@
 <script setup lang="ts">
 defineProps<{
   disabled?: boolean
+  ariaLabel?: string
 }>()
 </script>
 
 <template>
-  <button class="base-button" :disabled="disabled">
+  <button :aria-label="ariaLabel" class="base-button" :disabled="disabled">
     <slot />
   </button>
 </template>
 
 <style scoped lang="scss">
 .base-button {
-  padding: 10px 20px;
-  font-size: 16px;
   background-color: #007bff;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--border-radius);
+  padding: 4px 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   cursor: pointer;
   transition: background-color 0.3s ease;
 

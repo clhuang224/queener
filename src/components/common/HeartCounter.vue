@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { IconHeart, IconHeartFilled } from '@tabler/icons-vue'
+
 defineProps({
   maxHearts: {
     type: Number,
@@ -14,7 +16,8 @@ defineProps({
 <template>
   <div class="hearts">
     <div class="heart" v-for="i in maxHearts" :key="i">
-      {{ i <= hearts ? '❤️' : '🤍' }}
+      <IconHeartFilled v-if="i <= hearts" />
+      <IconHeart v-else />
     </div>
   </div>
 </template>
@@ -26,5 +29,8 @@ defineProps({
   justify-content: center;
   margin-bottom: 10px;
   font-size: 40px;
+  .heart {
+    color: #e53e3e;
+  }
 }
 </style>

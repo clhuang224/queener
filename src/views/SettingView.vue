@@ -8,6 +8,7 @@ import BoardSkinPreview from '@/components/setting/BoardSkinPreview.vue'
 import BoardTextureField from '@/components/setting/BoardTextureField.vue'
 import QueenSkinField from '@/components/setting/QueenSkinField.vue'
 import { useSkinStore } from '@/modules/stores/skin'
+import { IconChevronLeft } from '@tabler/icons-vue'
 
 const router = useRouter()
 const skinStore = useSkinStore()
@@ -43,7 +44,9 @@ const goHome = async () => {
           @update:board-texture-enabled="skinStore.setBoardTextureEnabled"
         />
       </div>
-      <BaseButton class="back-button" @click="goHome">Back</BaseButton>
+      <BaseButton class="back-button" aria-label="Back home" @click="goHome">
+        <IconChevronLeft />
+      </BaseButton>
     </section>
   </main>
 </template>

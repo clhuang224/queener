@@ -11,6 +11,7 @@ import { useGlobalModalStore } from '@/modules/stores/globalModal'
 import { useLevelStore } from '@/modules/stores/level'
 import { playGameSound } from '@/modules/utils/playGameSound'
 import { GameSoundType } from '@/modules/enums/GameSoundType'
+import { IconBulb, IconHome, IconRefresh } from '@tabler/icons-vue'
 
 const props = defineProps<{
   level: number
@@ -193,12 +194,29 @@ watch(
       :board-texture-enabled="boardTextureEnabled"
     />
     <div class="buttons">
-      <BaseButton class="restart" :disabled="isHandlingResult" @click="clickRestart">
-        Restart
+      <BaseButton
+        class="restart"
+        :disabled="isHandlingResult"
+        aria-label="Restart level"
+        @click="clickRestart"
+      >
+        <IconRefresh />
       </BaseButton>
-      <BaseButton class="quit" :disabled="isHandlingResult" @click="clickQuit">Quit</BaseButton>
-      <BaseButton class="hint" :disabled="isHintUsed || isHandlingResult" @click="clickHint">
-        Hint
+      <BaseButton
+        class="quit"
+        :disabled="isHandlingResult"
+        aria-label="Quit to home"
+        @click="clickQuit"
+      >
+        <IconHome />
+      </BaseButton>
+      <BaseButton
+        class="hint"
+        :disabled="isHintUsed || isHandlingResult"
+        aria-label="Use hint"
+        @click="clickHint"
+      >
+        <IconBulb />
       </BaseButton>
     </div>
   </div>

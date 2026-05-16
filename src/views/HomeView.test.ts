@@ -50,7 +50,7 @@ describe('HomeView', () => {
     const previousButton = buttons.find(
       (button) => button.attributes('aria-label') === 'Previous level',
     )
-    const startButton = buttons.find((button) => button.text() === 'Start')
+    const startButton = buttons.find((button) => button.attributes('aria-label') === 'Start level')
 
     await nextButton!.trigger('click')
     expect(wrapper.find('.level-number').text()).toBe('3')

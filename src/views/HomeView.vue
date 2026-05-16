@@ -7,6 +7,7 @@ import { useLevelStore } from '@/modules/stores/level'
 import { storeToRefs } from 'pinia'
 import QueenGame from '@/modules/game/QueenGame'
 import { getPuzzleByLevel } from '@/modules/puzzles/simple'
+import { IconPlayerPlay, IconSettings } from '@tabler/icons-vue'
 
 const router = useRouter()
 const levelStore = useLevelStore()
@@ -40,7 +41,9 @@ const openSetting = async () => {
 <template>
   <main>
     <header>
-      <BaseButton aria-label="Open settings" @click="openSetting">⚙️</BaseButton>
+      <BaseButton aria-label="Open settings" @click="openSetting">
+        <IconSettings />
+      </BaseButton>
     </header>
     <h2>Place the queens. Become the winner.</h2>
     <LevelPicker
@@ -51,7 +54,9 @@ const openSetting = async () => {
       @previous="selectPreviousLevel"
       @next="selectNextLevel"
     />
-    <BaseButton class="btn" @click="startLevel">Start</BaseButton>
+    <BaseButton aria-label="Start level" @click="startLevel">
+      <IconPlayerPlay />
+    </BaseButton>
   </main>
 </template>
 

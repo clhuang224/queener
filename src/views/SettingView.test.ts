@@ -138,7 +138,9 @@ describe('SettingView', () => {
       },
     })
 
-    const backButton = wrapper.findAll('button').find((button) => button.text() === 'Back')
+    const backButton = wrapper
+      .findAll('button')
+      .find((button) => button.attributes('aria-label') === 'Back home')
     await backButton!.trigger('click')
 
     expect(push).toHaveBeenCalledWith({

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import BaseButton from '@/components/common/BaseButton.vue'
+import { IconArrowNarrowLeft, IconArrowNarrowRight } from '@tabler/icons-vue'
 
 defineProps<{
   selectedLevel: number
@@ -22,7 +23,7 @@ const emit = defineEmits<{
       aria-label="Previous level"
       @click="emit('previous')"
     >
-      ←
+      <IconArrowNarrowLeft />
     </BaseButton>
     <div class="level-card" aria-live="polite">
       <p class="label">Level</p>
@@ -35,7 +36,7 @@ const emit = defineEmits<{
       aria-label="Next level"
       @click="emit('next')"
     >
-      →
+      <IconArrowNarrowRight />
     </BaseButton>
   </div>
 </template>
@@ -81,8 +82,8 @@ const emit = defineEmits<{
 }
 
 .arrow-button {
-  min-width: 56px;
-  padding-inline: 0;
-  font-size: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

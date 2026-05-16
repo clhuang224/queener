@@ -57,7 +57,9 @@ const mountGameView = () => {
         cell.attributes('data-column') === String(queenColumn)
       )
     })!,
-    restartButton: wrapper.findAll('button').find((button) => button.text() === 'Restart')!,
+    restartButton: wrapper
+      .findAll('button')
+      .find((button) => button.attributes('aria-label') === 'Restart level')!,
   }
 }
 

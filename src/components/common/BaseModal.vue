@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import { IconCircle, IconX } from '@tabler/icons-vue'
 import type { ModalAction } from '@/modules/types/modal'
 import { AlertDialogDescription, AlertDialogTitle } from 'reka-ui'
+import BaseButton from './BaseButton.vue'
 
 defineProps<{
   title: string
@@ -14,6 +16,14 @@ const emit = defineEmits<{
 const handleSelect = (action: ModalAction) => {
   emit('select', action)
 }
+
+const isConfirmAction = (action: ModalAction) => {
+  return action.settle === 'resolve' || action.label === 'Confirm'
+}
+
+const isCancelAction = (action: ModalAction) => {
+  return action.settle === 'reject' || action.label === 'Cancel'
+}
 </script>
 
 <template>
@@ -25,14 +35,16 @@ const handleSelect = (action: ModalAction) => {
       {{ content }}
     </AlertDialogDescription>
     <div class="actions">
-      <button
+      <BaseButton
         v-for="(action, index) in actions"
         :key="`${action.label}-${index}`"
-        type="button"
+        :aria-label="action.label"
         @click="handleSelect(action)"
       >
-        {{ action.label }}
-      </button>
+        <IconCircle v-if="isConfirmAction(action)" aria-hidden="true" />
+        <IconX v-else-if="isCancelAction(action)" aria-hidden="true" />
+        <span v-else>{{ action.label }}</span>
+      </BaseButton>
     </div>
   </div>
 </template>
