@@ -236,7 +236,7 @@ watch(
   .buttons {
     margin-top: 20px;
     display: flex;
-    gap: 10px;
+    gap: 12px;
   }
 }
 
@@ -244,7 +244,7 @@ watch(
   margin: 0 0 16px;
   font-size: 24px;
   font-weight: 700;
-  color: #1f3c88;
+  color: var(--color-text);
 }
 
 .interaction-overlay {

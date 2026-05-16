@@ -66,7 +66,7 @@ const handleBoardSkinChange = (value: unknown) => {
   margin: 0 0 10px;
   font-size: 14px;
   font-weight: 700;
-  color: #39507a;
+  color: var(--color-text);
 }
 
 .board-skin-grid {
@@ -82,30 +82,28 @@ const handleBoardSkinChange = (value: unknown) => {
   min-width: 0;
   min-height: 32px;
   padding: 4px;
-  border: 1px solid #c7d2e4;
-  border-radius: 8px;
-  background: #f8fbff;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-cell);
+  background: var(--color-surface);
   cursor: pointer;
   transition:
     border-color 0.2s ease,
-    background-color 0.2s ease,
-    box-shadow 0.2s ease,
-    transform 0.2s ease;
+    background-color 0.2s ease;
 }
 
 .board-skin-option:hover {
-  border-color: #6f86b7;
+  border-color: var(--color-accent-hover);
+  background: var(--color-selected);
 }
 
 .board-skin-option:focus-visible {
-  outline: 3px solid rgba(31, 60, 136, 0.28);
+  outline: 3px solid var(--color-focus);
   outline-offset: 2px;
 }
 
 .board-skin-option[data-state='checked'] {
-  border-color: #1f3c88;
-  background: #eaf0ff;
-  box-shadow: 0 6px 18px rgba(31, 60, 136, 0.22);
+  border-color: var(--color-primary);
+  background: var(--color-selected);
 }
 
 .board-swatch-strip {
@@ -115,17 +113,11 @@ const handleBoardSkinChange = (value: unknown) => {
   height: 9px;
   overflow: hidden;
   border-radius: 999px;
-  box-shadow: 0 0 0 1px rgba(31, 60, 136, 0.12);
+  border: 1px solid var(--color-border);
 }
 
 .board-swatch {
   width: 9px;
   height: 9px;
-}
-
-@media (max-width: 480px) {
-  .board-skin-option {
-    border-radius: 6px;
-  }
 }
 </style>

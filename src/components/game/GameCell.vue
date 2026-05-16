@@ -63,19 +63,17 @@ const position = computed(() => props.cell.getPosition())
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 10px;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  border-radius: var(--radius-cell);
+  border: 1px solid var(--color-border);
   transition:
     transform 0.05s ease,
-    box-shadow 0.1s ease;
+    border-color 0.1s ease;
   &:hover {
     transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    border-color: var(--color-primary);
   }
   &:active {
     transform: translateY(0);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
   }
 }
 

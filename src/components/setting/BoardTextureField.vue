@@ -38,7 +38,7 @@ const emit = defineEmits<{
   margin: 0;
   font-size: 14px;
   font-weight: 700;
-  color: #39507a;
+  color: var(--color-text);
 }
 
 .switch-control {
@@ -52,9 +52,9 @@ const emit = defineEmits<{
   width: 52px;
   height: 30px;
   padding: 0;
-  border: 1px solid #c7d2e4;
+  border: 1px solid var(--color-border);
   border-radius: 999px;
-  background: #dce5f2;
+  background: var(--color-surface-muted);
   cursor: pointer;
   transition:
     background-color 0.2s ease,
@@ -62,8 +62,13 @@ const emit = defineEmits<{
 }
 
 .texture-switch[data-state='checked'] {
-  border-color: #1f3c88;
-  background: #1f3c88;
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+}
+
+.texture-switch:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
 }
 
 .texture-switch-thumb {
@@ -71,8 +76,9 @@ const emit = defineEmits<{
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 2px 8px rgba(31, 60, 136, 0.22);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-sizing: border-box;
   transform: translateX(3px);
   transition: transform 0.2s ease;
 }

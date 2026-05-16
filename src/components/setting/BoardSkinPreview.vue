@@ -68,18 +68,13 @@ const getTextureClass = (colorIndex: number) => {
 .preview-cell {
   aspect-ratio: 1;
   min-width: 0;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  border-radius: 8px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-cell);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 18px;
   user-select: none;
-}
-
-.preview-cell.state-empty {
-  box-shadow: none;
 }
 
 @media (max-width: 480px) {
@@ -88,7 +83,6 @@ const getTextureClass = (colorIndex: number) => {
   }
 
   .preview-cell {
-    border-radius: 6px;
     font-size: 14px;
   }
 }

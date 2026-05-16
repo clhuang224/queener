@@ -54,21 +54,21 @@ const isCancelAction = (action: ModalAction) => {
 .base-modal {
   width: min(400px, calc(100vw - 32px));
   padding: 24px;
-  background-color: white;
-  border-radius: var(--border-radius);
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.18);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 22px 18px 24px 18px;
 }
 
 .title {
   margin: 0;
-  color: #1f2937;
+  color: var(--color-text);
   font-size: 24px;
   line-height: 1.25;
 }
 
 .content {
   margin: 12px 0 0;
-  color: #4b5563;
+  color: var(--color-text-muted);
   font-size: 16px;
   line-height: 1.6;
 }
@@ -78,27 +78,5 @@ const isCancelAction = (action: ModalAction) => {
   justify-content: flex-end;
   gap: 12px;
   margin-top: 24px;
-
-  button {
-    min-width: 72px;
-    padding: 10px 16px;
-    color: white;
-    font-size: 16px;
-    border: 0;
-    border-radius: 6px;
-    background-color: #007bff;
-    cursor: pointer;
-    transition:
-      background-color 0.2s ease,
-      transform 0.2s ease;
-
-    &:hover {
-      background-color: #0056b3;
-    }
-
-    &:active {
-      transform: translateY(1px);
-    }
-  }
 }
 </style>

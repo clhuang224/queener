@@ -67,7 +67,7 @@ Design considerations:
 - keep the outer app UI calm so board skins and queen skins remain the visual focus
 - avoid black outlines, heavy shadows, glossy gradients, or paper-card styling; use spacing, gentle borders, rounded shapes, and restrained color blocks for hierarchy
 - use shared semantic CSS variables in `App.vue` for page, surface, text, muted text, primary, accent, selected, border, focus, and radius values
-- validate visual directions through small spikes before applying them across the whole app; start with `HomeView`, `LevelPicker`, and `BaseButton` before touching settings, modals, or board presentation
+- apply the current visual direction across shared UI, settings, modals, and board-adjacent presentation after validating small spikes in `HomeView`, `LevelPicker`, and `BaseButton`
 - the game board and cell interaction layer are part of the product identity and should remain highly controllable
 - non-core UI such as settings, dialogs, and generic controls may benefit from Reka primitives when they need focus management, keyboard navigation, ARIA relationships, portals, or outside interaction handling
 - Reka is intentionally unstyled, so it should provide behavior and accessibility while Queener components keep ownership of visual design

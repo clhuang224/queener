@@ -64,23 +64,31 @@ const goHome = async () => {
 .setting-card {
   width: min(100%, 520px);
   padding: 24px;
-  background: rgba(255, 255, 255, 0.92);
-  border-radius: 20px;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 22px 18px 24px 18px;
 }
 
 h1 {
   margin: 0 0 8px;
-  color: #1f3c88;
+  color: var(--color-text);
 }
 
 .setting-copy {
   margin: 0 0 20px;
-  color: #5c677d;
+  color: var(--color-text-muted);
 }
 
 .back-button {
+  --icon-button-size: 44px;
+
   margin-top: 20px;
+  background-color: var(--color-accent);
+  color: var(--color-text);
+
+  &:hover:not(:disabled) {
+    background-color: var(--color-accent-hover);
+  }
 }
 
 .skin-preview {

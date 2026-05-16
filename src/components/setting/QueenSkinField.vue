@@ -61,7 +61,7 @@ const handleQueenSkinChange = (value: unknown) => {
   margin: 0 0 10px;
   font-size: 14px;
   font-weight: 700;
-  color: #39507a;
+  color: var(--color-text);
 }
 
 .queen-skin-grid {
@@ -77,51 +77,39 @@ const handleQueenSkinChange = (value: unknown) => {
   aspect-ratio: 1;
   min-width: 0;
   padding: 0;
-  border: 1px solid #c7d2e4;
-  border-radius: 8px;
-  background: #f8fbff;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-cell);
+  background: var(--color-surface);
   cursor: pointer;
   transition:
     border-color 0.2s ease,
-    background-color 0.2s ease,
-    box-shadow 0.2s ease,
-    transform 0.2s ease;
+    background-color 0.2s ease;
 }
 
 .queen-skin-option:hover {
-  border-color: #6f86b7;
+  border-color: var(--color-accent-hover);
+  background: var(--color-selected);
 }
 
 .queen-skin-option:focus-visible {
-  outline: 3px solid rgba(31, 60, 136, 0.28);
+  outline: 3px solid var(--color-focus);
   outline-offset: 2px;
 }
 
 .queen-skin-option[data-state='checked'] {
-  border-color: #1f3c88;
-  background: #eaf0ff;
-  box-shadow: 0 6px 18px rgba(31, 60, 136, 0.22);
-}
-
-.queen-skin-option[data-state='checked'] .queen-skin-icon {
-  transform: scale(1.08);
+  border-color: var(--color-primary);
+  background: var(--color-selected);
 }
 
 .queen-skin-icon {
   width: 72%;
   height: 72%;
   object-fit: contain;
-  filter: drop-shadow(0 2px 4px rgba(31, 60, 136, 0.16));
-  transition: transform 0.2s ease;
 }
 
 @media (max-width: 480px) {
   .queen-skin-grid {
     gap: 3px;
-  }
-
-  .queen-skin-option {
-    border-radius: 6px;
   }
 }
 </style>

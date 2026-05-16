@@ -34,7 +34,7 @@ const { selectGlobalModalAction } = useGlobalModalStore()
 
 <style lang="scss" scoped>
 .global-modal__overlay {
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: var(--color-overlay);
   position: fixed;
   z-index: 10;
   left: 0;

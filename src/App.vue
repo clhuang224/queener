@@ -25,7 +25,8 @@ onMounted(async () => {
 
 <style lang="scss">
 @import 'normalize.css';
-.app {
+
+:root {
   --color-page: #f4ecd9;
   --color-surface: #fffdf7;
   --color-surface-muted: #f5dddf;
@@ -35,12 +36,17 @@ onMounted(async () => {
   --color-primary-hover: #6f947e;
   --color-accent: #b9d7dc;
   --color-accent-hover: #a9ccd2;
-  --color-selected: #f3cbd2;
+  --color-selected: rgba(126, 164, 140, 0.2);
   --color-border: rgba(96, 111, 96, 0.22);
   --color-focus: rgba(126, 164, 140, 0.34);
+  --color-overlay: rgba(63, 73, 65, 0.24);
   --radius-soft: 16px;
   --radius-control: 999px;
+  --radius-cell: 10px 8px 11px 9px;
+  --border-radius: 8px;
+}
 
+.app {
   width: 100%;
   height: 100vh;
   display: flex;
@@ -48,7 +54,5 @@ onMounted(async () => {
   background-color: var(--color-page);
   color: var(--color-text);
   user-select: none;
-
-  --border-radius: 8px;
 }
 </style>
