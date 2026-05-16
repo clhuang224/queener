@@ -19,6 +19,7 @@
     "format": "oxfmt src/"
   },
   "dependencies": {
+    "@tabler/icons-vue": "^3.44.0",
     "normalize.css": "^8.0.1",
     "pinia": "^3.0.4",
     "reka-ui": "^2.9.7",
