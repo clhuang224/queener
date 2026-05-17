@@ -4,6 +4,14 @@ Place the queens. Become the winner.
 
 Queener is a puzzle-focused single-page application inspired by the N-Queens problem. It combines classic queen-placement constraints with region-based puzzle layouts, mistake limits, and light in-browser interaction.
 
+## Screenshots
+
+<p>
+  <img src="./docs/screenshots/demo-home.png" alt="Home screen" width="260" />
+  <img src="./docs/screenshots/demo-game.png" alt="Game screen" width="260" />
+  <img src="./docs/screenshots/demo-setting.png" alt="Settings screen" width="260" />
+</p>
+
 ## Overview
 
 The goal is to place `N` queens on an `N x N` board without breaking the puzzle rules.
