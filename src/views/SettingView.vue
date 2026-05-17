@@ -28,17 +28,20 @@ const goHome = async () => {
 
 <template>
   <main class="setting-view">
-    <BaseButton
-      icon
-      variant="ghost"
-      class="back-button"
-      aria-label="Back home"
-      @click="goHome"
-    >
-      <IconChevronLeft />
-    </BaseButton>
-    <BasePanel class="setting-panel">
+    <header class="setting-header">
+      <BaseButton
+        icon
+        variant="ghost"
+        class="back-button"
+        aria-label="Back home"
+        @click="goHome"
+      >
+        <IconChevronLeft />
+      </BaseButton>
       <h1>Setting</h1>
+      <span aria-hidden="true"></span>
+    </header>
+    <BasePanel class="setting-panel">
       <p class="setting-copy">Customize your board and queen skins here.</p>
       <BoardSkinPreview
         class="skin-preview"
@@ -61,20 +64,29 @@ const goHome = async () => {
 <style scoped lang="scss">
 .setting-view {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 16px;
   min-height: 100%;
   padding: 24px;
-  box-sizing: border-box;
 }
 
+.setting-header,
 .setting-panel {
   width: min(100%, 520px);
 }
 
+.setting-header {
+  display: grid;
+  grid-template-columns: 40px 1fr 40px;
+  align-items: center;
+}
+
 h1 {
-  margin: 0 0 8px;
+  margin: 0;
   color: var(--color-text);
+  text-align: center;
 }
 
 .setting-copy {
@@ -84,17 +96,6 @@ h1 {
 
 .back-button {
   --icon-button-size: 40px;
-
-  position: fixed;
-  top: 24px;
-  left: 24px;
-}
-
-@media (max-width: 480px) {
-  .back-button {
-    top: 16px;
-    left: 16px;
-  }
 }
 
 .skin-preview {
