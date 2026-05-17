@@ -49,7 +49,10 @@ const openSetting = async () => {
     >
       <IconSettings />
     </BaseButton>
-    <h2>Place the queens. Become the winner.</h2>
+    <h2 class="slogan">
+      <span>Place the queens</span>
+      <span>Become the winner</span>
+    </h2>
     <LevelPicker
       :selected-level="selectedLevel"
       :can-go-next="canGoNextLevel"
@@ -75,13 +78,20 @@ const openSetting = async () => {
   box-sizing: border-box;
 }
 
-h2 {
+.slogan {
+  display: grid;
+  gap: 2px;
   margin: 0;
   color: var(--color-text);
-  font-size: 30px;
-  line-height: 1.18;
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.08;
   text-align: center;
   text-wrap: pretty;
+}
+
+.slogan span:last-child {
+  color: var(--color-primary);
 }
 
 .setting-button {
@@ -98,8 +108,8 @@ h2 {
     right: 16px;
   }
 
-  h2 {
-    font-size: 26px;
+  .slogan {
+    font-size: 28px;
   }
 }
 </style>

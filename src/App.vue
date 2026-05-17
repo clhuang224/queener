@@ -41,6 +41,7 @@ onMounted(async () => {
   --color-border: rgba(96, 111, 96, 0.22);
   --color-focus: rgba(126, 164, 140, 0.34);
   --color-overlay: rgba(63, 73, 65, 0.24);
+  --font-body: 'Arial Rounded MT Bold', 'Trebuchet MS', Arial, sans-serif;
   --radius-panel: 18px;
   --radius-soft: 16px;
   --radius-control: 999px;
@@ -52,6 +53,17 @@ onMounted(async () => {
 *::before,
 *::after {
   box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-body);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
 }
 
 .app {
