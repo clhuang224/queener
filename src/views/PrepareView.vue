@@ -14,6 +14,7 @@ const loaderColors = computed(() => pickRandomItems(BOARD_SKINS[boardSkin.value]
 
 <template>
   <main class="prepare-view" aria-busy="true">
+    <h1>Queen<span>er</span></h1>
     <span class="loader" aria-hidden="true">
       <span
         v-for="(color, index) in loaderColors"
@@ -29,11 +30,22 @@ const loaderColors = computed(() => pickRandomItems(BOARD_SKINS[boardSkin.value]
 .prepare-view {
   width: 100%;
   min-height: 100%;
-  display: grid;
+  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 24px;
   box-sizing: border-box;
+  gap: 32px;
+}
+
+h1 {
+  font-size: 56px;
+  margin: 0;
+  color: var(--color-primary);
+  span {
+    color: var(--color-text);
+  }
 }
 
 .loader {
@@ -51,7 +63,6 @@ const loaderColors = computed(() => pickRandomItems(BOARD_SKINS[boardSkin.value]
   aspect-ratio: 1;
   border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 6px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.14);
   animation: animloader 1.2s ease-in-out infinite;
 }
 
