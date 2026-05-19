@@ -46,27 +46,29 @@ const goHome = async () => {
       <h1>Setting</h1>
       <span aria-hidden="true"></span>
     </header>
-    <BasePanel class="setting-panel">
-      <p class="setting-copy">Customize your board and queen skins here.</p>
-      <BoardSkinPreview
-        class="skin-preview"
-        :board-skin="boardSkin"
-        :board-texture-enabled="boardTextureEnabled"
-        :queen-skin="queenSkin"
-      />
-      <div class="skin-fields">
-        <QueenSkinField :queen-skin="queenSkin" @update:queen-skin="skinStore.setQueenSkin" />
-        <BoardSkinField :board-skin="boardSkin" @update:board-skin="skinStore.setBoardSkin" />
-        <BoardTextureField
+    <div class="setting-content">
+      <BasePanel class="setting-panel">
+        <p class="setting-copy">Customize your board and queen skins here.</p>
+        <BoardSkinPreview
+          class="skin-preview"
+          :board-skin="boardSkin"
           :board-texture-enabled="boardTextureEnabled"
-          @update:board-texture-enabled="skinStore.setBoardTextureEnabled"
+          :queen-skin="queenSkin"
         />
-        <SoundVolumeField
-          :sound-volume="soundVolume"
-          @update:sound-volume="audioStore.setSoundVolume"
-        />
-      </div>
-    </BasePanel>
+        <div class="skin-fields">
+          <QueenSkinField :queen-skin="queenSkin" @update:queen-skin="skinStore.setQueenSkin" />
+          <BoardSkinField :board-skin="boardSkin" @update:board-skin="skinStore.setBoardSkin" />
+          <BoardTextureField
+            :board-texture-enabled="boardTextureEnabled"
+            @update:board-texture-enabled="skinStore.setBoardTextureEnabled"
+          />
+          <SoundVolumeField
+            :sound-volume="soundVolume"
+            @update:sound-volume="audioStore.setSoundVolume"
+          />
+        </div>
+      </BasePanel>
+    </div>
   </main>
 </template>
 
@@ -75,21 +77,34 @@ const goHome = async () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   gap: 16px;
-  min-height: 100%;
+  height: 100%;
   padding: 24px;
+  overflow: hidden;
 }
 
 .setting-header,
-.setting-panel {
+.setting-content {
   width: min(100%, 520px);
 }
 
 .setting-header {
+  flex: 0 0 auto;
   display: grid;
   grid-template-columns: 40px 1fr 40px;
   align-items: center;
+}
+
+.setting-content {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding-bottom: 24px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.setting-panel {
+  width: 100%;
 }
 
 h1 {

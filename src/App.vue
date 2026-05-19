@@ -57,6 +57,7 @@ onMounted(async () => {
 
 body {
   font-family: var(--font-body);
+  overflow: hidden;
 }
 
 button,
