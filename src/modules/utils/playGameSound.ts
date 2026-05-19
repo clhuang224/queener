@@ -1,5 +1,6 @@
 import { GameSoundType } from '../enums/GameSoundType'
 import { getEnumValues } from './getEnumValues'
+import { getStoredSoundVolume } from './soundVolume'
 
 const soundModules = import.meta.glob<string>('../../assets/sounds/*.mp3', {
   eager: true,
@@ -27,8 +28,12 @@ export const GAME_SOUND_SOURCES = getEnumValues(GameSoundType).reduce(
 export const playGameSound = (sound: GameSoundType): Promise<void> => {
   if (typeof Audio === 'undefined') return Promise.resolve()
 
+  const soundVolume = getStoredSoundVolume()
+  if (soundVolume <= 0) return Promise.resolve()
+
   return new Promise((resolve) => {
     const audio = new Audio(GAME_SOUND_SOURCES[sound])
+    audio.volume = soundVolume / 100
     let isDone = false
 
     const finish = () => {

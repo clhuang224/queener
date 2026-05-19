@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { createTestingPinia } from '@/test/pinia'
 import { installStorageMock } from '@/test/localStorage'
+import { installResizeObserverMock } from '@/test/resizeObserver'
 import {
   BOARD_SKIN_COLOR_COUNT,
   BOARD_SKINS,
@@ -10,6 +11,7 @@ import {
 import { isQueenSkinAvailable, queenSkinMapName } from '@/modules/constants/queenSkins'
 import { BoardSkinType } from '@/modules/enums/BoardSkinType'
 import { QueenSkinType } from '@/modules/enums/QueenSkinType'
+import { SOUND_VOLUME_STORAGE_KEY } from '@/modules/utils/soundVolume'
 import { getEnumValues } from '@/modules/utils/getEnumValues'
 import SettingView from './SettingView.vue'
 
@@ -24,6 +26,7 @@ vi.mock('vue-router', () => ({
 describe('SettingView', () => {
   beforeEach(() => {
     installStorageMock()
+    installResizeObserverMock()
     push.mockReset()
   })
 
@@ -129,6 +132,23 @@ describe('SettingView', () => {
       BOARD_SKIN_COLOR_COUNT,
     )
     expect(wrapper.findAll('.queen-skin-icon')).toHaveLength(expectedQueenSkinLabels.length)
+    expect(wrapper.find('[role="slider"]').attributes('aria-label')).toBe(
+      'Sound effects volume',
+    )
+    expect(wrapper.text()).toContain('80%')
+  })
+
+  it('loads saved sound volume', async () => {
+    window.localStorage.setItem(SOUND_VOLUME_STORAGE_KEY, '35')
+
+    const wrapper = mount(SettingView, {
+      global: {
+        plugins: [createTestingPinia()],
+      },
+    })
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.text()).toContain('35%')
   })
 
   it('returns to the home page', async () => {

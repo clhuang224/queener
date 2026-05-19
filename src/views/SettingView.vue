@@ -8,15 +8,20 @@ import BoardSkinField from '@/components/setting/BoardSkinField.vue'
 import BoardSkinPreview from '@/components/setting/BoardSkinPreview.vue'
 import BoardTextureField from '@/components/setting/BoardTextureField.vue'
 import QueenSkinField from '@/components/setting/QueenSkinField.vue'
+import SoundVolumeField from '@/components/setting/SoundVolumeField.vue'
+import { useAudioStore } from '@/modules/stores/audio'
 import { useSkinStore } from '@/modules/stores/skin'
 import { IconChevronLeft } from '@tabler/icons-vue'
 
 const router = useRouter()
 const skinStore = useSkinStore()
+const audioStore = useAudioStore()
 const { boardSkin, boardTextureEnabled, queenSkin } = storeToRefs(skinStore)
+const { soundVolume } = storeToRefs(audioStore)
 
 onMounted(() => {
   skinStore.load()
+  audioStore.load()
 })
 
 const goHome = async () => {
@@ -55,6 +60,10 @@ const goHome = async () => {
         <BoardTextureField
           :board-texture-enabled="boardTextureEnabled"
           @update:board-texture-enabled="skinStore.setBoardTextureEnabled"
+        />
+        <SoundVolumeField
+          :sound-volume="soundVolume"
+          @update:sound-volume="audioStore.setSoundVolume"
         />
       </div>
     </BasePanel>
