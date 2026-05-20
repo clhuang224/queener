@@ -16,6 +16,9 @@ import { getEnumValues } from '@/modules/utils/getEnumValues'
 import SettingView from './SettingView.vue'
 
 const push = vi.fn()
+const { playGameSound } = vi.hoisted(() => ({
+  playGameSound: vi.fn(),
+}))
 
 vi.mock('vue-router', () => ({
   useRouter: () => ({
@@ -23,15 +26,22 @@ vi.mock('vue-router', () => ({
   }),
 }))
 
+vi.mock('@/modules/utils/playGameSound', () => ({
+  playGameSound,
+}))
+
 describe('SettingView', () => {
   beforeEach(() => {
     installStorageMock()
     installResizeObserverMock()
     push.mockReset()
+    playGameSound.mockReset()
+    vi.spyOn(Math, 'random').mockReturnValue(0)
   })
 
   afterEach(() => {
     vi.useRealTimers()
+    vi.restoreAllMocks()
   })
 
   it('updates and persists skin fields', async () => {
@@ -166,5 +176,17 @@ describe('SettingView', () => {
     expect(push).toHaveBeenCalledWith({
       name: 'home',
     })
+  })
+
+  it('plays a random sound preview', async () => {
+    const wrapper = mount(SettingView, {
+      global: {
+        plugins: [createTestingPinia()],
+      },
+    })
+
+    await wrapper.get('button[aria-label="Preview sound effect"]').trigger('click')
+
+    expect(playGameSound).toHaveBeenCalledWith('note')
   })
 })

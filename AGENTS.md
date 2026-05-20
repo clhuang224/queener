@@ -484,6 +484,7 @@ Example:
 When making changes in this repository:
 
 - preserve the engine-first architecture unless there is a clear reason to change it
+- treat iPhone SE width (`375px`) as the smallest supported responsive viewport unless a feature explicitly needs a narrower target
 - prefer small, named components over long anonymous template blocks
 - keep views focused on screen flow
 - keep game rules centralized in `QueenGame`

@@ -106,6 +106,14 @@ Interaction polish:
 - result animations should be brief and should not block the player longer than needed
 - if a persisted queen skin is no longer available, such as a seasonal Halloween skin after its availability window ends, settings should fall back to a stable default skin, currently `Pink Crown`
 
+Small polish candidates:
+
+- add a sound effect preview control next to the settings volume slider so players can hear the current volume before returning to the game
+- show lightweight campaign progress on the home screen, such as the selected level out of total levels or unlocked progress
+- make the used hint state more visually explicit after the hint has been consumed
+- consider a reset settings action once settings include enough independent preferences to justify restoring defaults
+- improve GameView's lightweight level information without adding visual noise around the board
+
 Accessibility direction:
 
 - board interactions should support keyboard play, including moving the focused cell, marking notes, and marking queens without requiring pointer input

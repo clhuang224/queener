@@ -32,4 +32,16 @@ describe('SoundVolumeField', () => {
 
     expect(wrapper.emitted('update:soundVolume')).toEqual([[70]])
   })
+
+  it('emits preview when the preview button is clicked', async () => {
+    const wrapper = mount(SoundVolumeField, {
+      props: {
+        soundVolume: 45,
+      },
+    })
+
+    await wrapper.get('button[aria-label="Preview sound effect"]').trigger('click')
+
+    expect(wrapper.emitted('preview')).toEqual([[]])
+  })
 })

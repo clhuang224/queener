@@ -9,9 +9,13 @@ import BoardSkinPreview from '@/components/setting/BoardSkinPreview.vue'
 import BoardTextureField from '@/components/setting/BoardTextureField.vue'
 import QueenSkinField from '@/components/setting/QueenSkinField.vue'
 import SoundVolumeField from '@/components/setting/SoundVolumeField.vue'
+import { GameSoundType } from '@/modules/enums/GameSoundType'
 import { useAudioStore } from '@/modules/stores/audio'
 import { useSkinStore } from '@/modules/stores/skin'
+import { playGameSound } from '@/modules/utils/playGameSound'
+import { randomInteger } from '@/modules/utils/random'
 import { IconChevronLeft } from '@tabler/icons-vue'
+import { getEnumValues } from '@/modules/utils/getEnumValues'
 
 const router = useRouter()
 const skinStore = useSkinStore()
@@ -29,18 +33,24 @@ const goHome = async () => {
     name: 'home',
   })
 }
+
+const previewSounds = getEnumValues(GameSoundType).filter(
+  (sound) => ![GameSoundType.WIN, GameSoundType.LOSE].includes(sound),
+)
+
+const previewSoundEffect = () => {
+  const soundIndex = randomInteger(0, previewSounds.length - 1)
+  const sound = previewSounds[soundIndex]
+  if (!sound) return
+
+  void playGameSound(sound)
+}
 </script>
 
 <template>
   <main class="setting-view">
     <header class="setting-header">
-      <BaseButton
-        icon
-        variant="ghost"
-        class="back-button"
-        aria-label="Back home"
-        @click="goHome"
-      >
+      <BaseButton icon variant="ghost" class="back-button" aria-label="Back home" @click="goHome">
         <IconChevronLeft />
       </BaseButton>
       <h1>Setting</h1>
@@ -65,6 +75,7 @@ const goHome = async () => {
           <SoundVolumeField
             :sound-volume="soundVolume"
             @update:sound-volume="audioStore.setSoundVolume"
+            @preview="previewSoundEffect"
           />
         </div>
       </BasePanel>
