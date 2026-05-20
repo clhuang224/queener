@@ -10,6 +10,7 @@ import {
 } from '@/modules/constants/boardSkins'
 import { isQueenSkinAvailable, queenSkinMapName } from '@/modules/constants/queenSkins'
 import { BoardSkinType } from '@/modules/enums/BoardSkinType'
+import { GameSoundType } from '@/modules/enums/GameSoundType'
 import { QueenSkinType } from '@/modules/enums/QueenSkinType'
 import { SOUND_VOLUME_STORAGE_KEY } from '@/modules/utils/soundVolume'
 import { getEnumValues } from '@/modules/utils/getEnumValues'
@@ -187,6 +188,6 @@ describe('SettingView', () => {
 
     await wrapper.get('button[aria-label="Preview sound effect"]').trigger('click')
 
-    expect(playGameSound).toHaveBeenCalledWith('note')
+    expect(playGameSound).toHaveBeenCalledWith(GameSoundType.CORRECT)
   })
 })
