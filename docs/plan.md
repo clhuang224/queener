@@ -145,24 +145,31 @@ Scope:
 - generate a random username the first time a player enters the game
 - allow the username to be edited from settings
 - record every meaningful run action, including `markNote`, `removeNote`, `markQueen`, and `hint`
-- store each action with a timestamp in milliseconds, shaped roughly like `{ action: ActionType.MARK_NOTE, action_at: millisecond }`
+- store each action with a run-relative timestamp in milliseconds, shaped roughly like `{ action: ActionType.MARK_NOTE, actionAtMillisecond: 1234, position: [1, 1] }`
 - save completed run records in IndexedDB
-- design the IndexedDB table around fields such as `uid`, `level`, `record`, and `user`
+- design the IndexedDB table around fields such as `uid`, `level`, `puzzle`, `puzzleVariant`, `record`, `startedAt`, `endedAt`, `user`, and `score`
+- store the original `puzzle` and active `puzzleVariant` so replay can reproduce the exact board direction, rotation, and region mapping from that run
 - add a leaderboard entry point from `LevelPicker` for the selected level
 - show the leaderboard for a level using locally stored run records
 - replay a completed run as a time-lapse after the game ends
 - add a setting that lets players disable end-of-game replay
+- calculate leaderboard score from a 1000-point model: 700 time score, 200 remaining hearts bonus, and 100 remaining hints bonus
+- make time score decay from full score at a size-based target time to zero at a size-based timeout time
+- use remaining hearts and remaining hints as ratios so future hint item counts can scale without changing the score model
+- introduce `QueenGameRunRecorder` for action capture, `QueenGameRunScorer` for score calculation, and `QueenGameReplayPlayer` for playback
 
 Done when:
 
 - each completed run can be saved with enough action history to replay it
 - local leaderboard entries can be shown per level
 - player identity is stable locally but editable from settings
+- scoring is deterministic and documented enough for leaderboard entries to be comparable
 - end-of-game replay can be turned off from settings
 
 Depends on:
 
 - a stable run record schema
+- a stable score formula and board-size timing targets
 - IndexedDB storage utilities
 - a clear replay UI that does not obscure win / loss flow
 
@@ -170,6 +177,7 @@ Notes:
 
 - keep the first version local-only; backend sync can wait until the backend/data phase
 - action recording should stay close to game intent handling without moving core game rules out of `QueenGame`
+- avoid `QueenGamePlayer` as a class name because it is ambiguous with user identity; prefer recorder, scorer, and replay player names that describe responsibility directly
 
 ## 4. Puzzle Generator
 
