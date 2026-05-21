@@ -12,7 +12,7 @@ import { useGlobalModalStore } from '@/modules/stores/globalModal'
 import { useLevelStore } from '@/modules/stores/level'
 import { playGameSound } from '@/modules/utils/playGameSound'
 import { GameSoundType } from '@/modules/enums/GameSoundType'
-import { IconBulb, IconHome, IconRefresh } from '@tabler/icons-vue'
+import { IconBulb, IconBulbOff, IconHome, IconRefresh } from '@tabler/icons-vue'
 
 const props = defineProps<{
   level: number
@@ -120,6 +120,7 @@ const goToNextLevel = async () => {
 }
 
 const isHintUsed = computed(() => game.value.isHintUsed())
+const hintButtonLabel = computed(() => (isHintUsed.value ? 'Hint used' : 'Use hint'))
 
 watch(
   () => game.value.isGameOver(),
@@ -224,11 +225,13 @@ watch(
     <BaseButton
       icon
       class="hint"
+      :class="{ 'hint--used': isHintUsed }"
       :disabled="isHintUsed || isHandlingResult"
-      aria-label="Use hint"
+      :aria-label="hintButtonLabel"
       @click="clickHint"
     >
-      <IconBulb />
+      <IconBulbOff v-if="isHintUsed" />
+      <IconBulb v-else />
     </BaseButton>
   </div>
 </template>

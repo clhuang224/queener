@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { installStorageMock } from '@/test/localStorage'
-import { useSkinStore } from './skin'
+import { DEFAULT_SKIN_SETTINGS, useSkinStore } from './skin'
 import { BoardSkinType } from '@/modules/enums/BoardSkinType'
 import { QueenSkinType } from '@/modules/enums/QueenSkinType'
 
@@ -49,5 +49,27 @@ describe('skin store', () => {
     skinStore.load()
 
     expect(skinStore.queenSkin).toBe(QueenSkinType.PINK_CROWN)
+  })
+
+  it('resets skin settings to defaults', () => {
+    const skinStore = useSkinStore()
+    skinStore.setBoardSkin(BoardSkinType.AUTUMN)
+    skinStore.setBoardTextureEnabled(true)
+    skinStore.setQueenSkin(QueenSkinType.BLACK_CROWN)
+
+    skinStore.resetSkinSettings()
+
+    expect(skinStore.boardSkin).toBe(DEFAULT_SKIN_SETTINGS.boardSkin)
+    expect(skinStore.boardTextureEnabled).toBe(DEFAULT_SKIN_SETTINGS.boardTextureEnabled)
+    expect(skinStore.queenSkin).toBe(DEFAULT_SKIN_SETTINGS.queenSkin)
+    expect(window.localStorage.getItem('queen-game-board-skin')).toBe(
+      DEFAULT_SKIN_SETTINGS.boardSkin,
+    )
+    expect(window.localStorage.getItem('queen-game-board-texture-enabled')).toBe(
+      String(DEFAULT_SKIN_SETTINGS.boardTextureEnabled),
+    )
+    expect(window.localStorage.getItem('queen-game-queen-skin')).toBe(
+      DEFAULT_SKIN_SETTINGS.queenSkin,
+    )
   })
 })

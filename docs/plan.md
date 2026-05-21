@@ -102,17 +102,12 @@ Skin direction:
 Interaction polish:
 
 - marking a note, removing a note, marking a queen, and making a wrong guess should each have a small animation and sound effect so board interactions feel tactile
+- hint usage should get its own short sound effect so it feels distinct from note marking or correct queen placement
+- hint feedback should move away from blocking alert modals; prefer in-board visual feedback or a short non-blocking message so the game flow stays continuous
+- hints should eventually split into two item types: one that reveals a queen position, and one that identifies a region where the player can safely mark notes
 - win and loss should have short board-level feedback before opening the result modal; the current immediate modal transition feels too abrupt
 - result animations should be brief and should not block the player longer than needed
 - if a persisted queen skin is no longer available, such as a seasonal Halloween skin after its availability window ends, settings should fall back to a stable default skin, currently `Pink Crown`
-
-Small polish candidates:
-
-- add a sound effect preview control next to the settings volume slider so players can hear the current volume before returning to the game
-- show lightweight campaign progress on the home screen, such as the selected level out of total levels or unlocked progress
-- make the used hint state more visually explicit after the hint has been consumed
-- consider a reset settings action once settings include enough independent preferences to justify restoring defaults
-- improve GameView's lightweight level information without adding visual noise around the board
 
 Accessibility direction:
 
@@ -140,7 +135,43 @@ Notes:
 
 - if a UI framework is adopted, it should support the product direction rather than overpower the game-specific board UI
 
-## 3. Puzzle Generator
+## 3. Leaderboard And Run Replay
+
+Add local leaderboard and run replay support based on recorded player actions.
+
+Scope:
+
+- create a `userStore` that owns the local player identity
+- generate a random username the first time a player enters the game
+- allow the username to be edited from settings
+- record every meaningful run action, including `markNote`, `removeNote`, `markQueen`, and `hint`
+- store each action with a timestamp in milliseconds, shaped roughly like `{ action: ActionType.MARK_NOTE, action_at: millisecond }`
+- save completed run records in IndexedDB
+- design the IndexedDB table around fields such as `uid`, `level`, `record`, and `user`
+- add a leaderboard entry point from `LevelPicker` for the selected level
+- show the leaderboard for a level using locally stored run records
+- replay a completed run as a time-lapse after the game ends
+- add a setting that lets players disable end-of-game replay
+
+Done when:
+
+- each completed run can be saved with enough action history to replay it
+- local leaderboard entries can be shown per level
+- player identity is stable locally but editable from settings
+- end-of-game replay can be turned off from settings
+
+Depends on:
+
+- a stable run record schema
+- IndexedDB storage utilities
+- a clear replay UI that does not obscure win / loss flow
+
+Notes:
+
+- keep the first version local-only; backend sync can wait until the backend/data phase
+- action recording should stay close to game intent handling without moving core game rules out of `QueenGame`
+
+## 4. Puzzle Generator
 
 Build a lightweight puzzle generator that can produce puzzles with different difficulty levels.
 
@@ -161,7 +192,7 @@ Depends on:
 - a clearer definition of puzzle difficulty
 - a stable understanding of the intended player experience
 
-## 4. Monorepo Structure
+## 5. Monorepo Structure
 
 Evaluate moving the project to a monorepo structure.
 
@@ -181,7 +212,7 @@ Notes:
 - this should be treated as an architecture investment, not as an end in itself
 - if product needs do not yet justify the migration, it can be delayed
 
-## 5. Backend And Data Layer
+## 6. Backend And Data Layer
 
 Evaluate an appropriate backend and database approach, ideally within the same monorepo if the project adopts that structure.
 
@@ -206,7 +237,7 @@ Notes:
 - the current preference is to keep the initial version lightweight and avoid mandatory user accounts
 - players may submit results with a self-entered display name
 
-## 6. Ghost Competition Mode
+## 7. Ghost Competition Mode
 
 Add a ghost mode based on previously recorded runs.
 
@@ -226,7 +257,7 @@ Depends on:
 - backend support for run recording
 - a stable representation of player path history
 
-## 7. Realtime Competition Mode
+## 8. Realtime Competition Mode
 
 Explore a realtime multiplayer mode built with sockets.
 

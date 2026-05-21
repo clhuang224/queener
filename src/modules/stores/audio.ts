@@ -28,9 +28,16 @@ export const useAudioStore = defineStore('audio', () => {
     persistSoundVolume(soundVolume.value)
   }
 
+  const resetAudioSettings = () => {
+    soundVolume.value = DEFAULT_SOUND_VOLUME
+    hasLoaded.value = true
+    persistSoundVolume(soundVolume.value)
+  }
+
   return {
     soundVolume,
     load,
     setSoundVolume,
+    resetAudioSettings,
   }
 })

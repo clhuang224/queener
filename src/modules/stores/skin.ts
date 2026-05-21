@@ -9,7 +9,7 @@ import type { SkinSettings } from '@/modules/types/skin'
 const BOARD_SKIN_STORAGE_KEY = 'queen-game-board-skin'
 const BOARD_TEXTURE_ENABLED_STORAGE_KEY = 'queen-game-board-texture-enabled'
 const QUEEN_SKIN_STORAGE_KEY = 'queen-game-queen-skin'
-const DEFAULT_SETTINGS: SkinSettings = {
+export const DEFAULT_SKIN_SETTINGS: SkinSettings = {
   boardSkin: BoardSkinType.RAINBOW,
   boardTextureEnabled: false,
   queenSkin: QueenSkinType.PINK_CROWN,
@@ -28,24 +28,24 @@ const isSelectableQueenSkin = (value: unknown): value is QueenSkinType => {
 }
 
 const getStoredBoardSkin = (): BoardSkinType => {
-  if (typeof window === 'undefined') return DEFAULT_SETTINGS.boardSkin
+  if (typeof window === 'undefined') return DEFAULT_SKIN_SETTINGS.boardSkin
 
   const storedValue = window.localStorage.getItem(BOARD_SKIN_STORAGE_KEY)
-  return isBoardSkin(storedValue) ? storedValue : DEFAULT_SETTINGS.boardSkin
+  return isBoardSkin(storedValue) ? storedValue : DEFAULT_SKIN_SETTINGS.boardSkin
 }
 
 const getStoredQueenSkin = (): QueenSkinType => {
-  if (typeof window === 'undefined') return DEFAULT_SETTINGS.queenSkin
+  if (typeof window === 'undefined') return DEFAULT_SKIN_SETTINGS.queenSkin
 
   const storedValue = window.localStorage.getItem(QUEEN_SKIN_STORAGE_KEY)
-  return isSelectableQueenSkin(storedValue) ? storedValue : DEFAULT_SETTINGS.queenSkin
+  return isSelectableQueenSkin(storedValue) ? storedValue : DEFAULT_SKIN_SETTINGS.queenSkin
 }
 
 const getStoredBoardTextureEnabled = (): boolean => {
-  if (typeof window === 'undefined') return DEFAULT_SETTINGS.boardTextureEnabled
+  if (typeof window === 'undefined') return DEFAULT_SKIN_SETTINGS.boardTextureEnabled
 
   const storedValue = window.localStorage.getItem(BOARD_TEXTURE_ENABLED_STORAGE_KEY)
-  return storedValue === null ? DEFAULT_SETTINGS.boardTextureEnabled : storedValue === 'true'
+  return storedValue === null ? DEFAULT_SKIN_SETTINGS.boardTextureEnabled : storedValue === 'true'
 }
 
 const persistSkinSettings = ({ boardSkin, boardTextureEnabled, queenSkin }: SkinSettings) => {
@@ -57,9 +57,9 @@ const persistSkinSettings = ({ boardSkin, boardTextureEnabled, queenSkin }: Skin
 }
 
 export const useSkinStore = defineStore('skin', () => {
-  const boardSkin = ref<BoardSkinType>(DEFAULT_SETTINGS.boardSkin)
-  const boardTextureEnabled = ref(DEFAULT_SETTINGS.boardTextureEnabled)
-  const queenSkin = ref<QueenSkinType>(DEFAULT_SETTINGS.queenSkin)
+  const boardSkin = ref<BoardSkinType>(DEFAULT_SKIN_SETTINGS.boardSkin)
+  const boardTextureEnabled = ref(DEFAULT_SKIN_SETTINGS.boardTextureEnabled)
+  const queenSkin = ref<QueenSkinType>(DEFAULT_SKIN_SETTINGS.queenSkin)
   const hasLoaded = ref(false)
 
   const load = () => {
@@ -105,6 +105,14 @@ export const useSkinStore = defineStore('skin', () => {
     })
   }
 
+  const resetSkinSettings = () => {
+    boardSkin.value = DEFAULT_SKIN_SETTINGS.boardSkin
+    boardTextureEnabled.value = DEFAULT_SKIN_SETTINGS.boardTextureEnabled
+    queenSkin.value = DEFAULT_SKIN_SETTINGS.queenSkin
+    hasLoaded.value = true
+    persistSkinSettings(DEFAULT_SKIN_SETTINGS)
+  }
+
   return {
     boardSkin,
     boardTextureEnabled,
@@ -113,5 +121,6 @@ export const useSkinStore = defineStore('skin', () => {
     setBoardSkin,
     setBoardTextureEnabled,
     setQueenSkin,
+    resetSkinSettings,
   }
 })

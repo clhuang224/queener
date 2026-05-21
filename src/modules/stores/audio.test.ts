@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
 import { installStorageMock } from '@/test/localStorage'
 import { useAudioStore } from './audio'
-import { SOUND_VOLUME_STORAGE_KEY } from '@/modules/utils/soundVolume'
+import { DEFAULT_SOUND_VOLUME, SOUND_VOLUME_STORAGE_KEY } from '@/modules/utils/soundVolume'
 
 describe('audio store', () => {
   beforeEach(() => {
@@ -37,5 +37,15 @@ describe('audio store', () => {
     audioStore.setSoundVolume(-10)
     expect(audioStore.soundVolume).toBe(0)
     expect(window.localStorage.getItem(SOUND_VOLUME_STORAGE_KEY)).toBe('0')
+  })
+
+  it('resets audio settings to defaults', () => {
+    const audioStore = useAudioStore()
+    audioStore.setSoundVolume(35)
+
+    audioStore.resetAudioSettings()
+
+    expect(audioStore.soundVolume).toBe(DEFAULT_SOUND_VOLUME)
+    expect(window.localStorage.getItem(SOUND_VOLUME_STORAGE_KEY)).toBe(String(DEFAULT_SOUND_VOLUME))
   })
 })

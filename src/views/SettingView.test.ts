@@ -190,4 +190,27 @@ describe('SettingView', () => {
 
     expect(playGameSound).toHaveBeenCalledWith(GameSoundType.CORRECT)
   })
+
+  it('resets settings to defaults', async () => {
+    window.localStorage.setItem('queen-game-board-skin', BoardSkinType.AUTUMN)
+    window.localStorage.setItem('queen-game-board-texture-enabled', 'true')
+    window.localStorage.setItem('queen-game-queen-skin', QueenSkinType.BLACK_CROWN)
+    window.localStorage.setItem(SOUND_VOLUME_STORAGE_KEY, '35')
+
+    const wrapper = mount(SettingView, {
+      global: {
+        plugins: [createTestingPinia()],
+      },
+    })
+    await wrapper.vm.$nextTick()
+
+    await wrapper.get('button[aria-label="Reset settings"]').trigger('click')
+    await wrapper.vm.$nextTick()
+
+    expect(window.localStorage.getItem('queen-game-board-skin')).toBe(BoardSkinType.RAINBOW)
+    expect(window.localStorage.getItem('queen-game-board-texture-enabled')).toBe('false')
+    expect(window.localStorage.getItem('queen-game-queen-skin')).toBe(QueenSkinType.PINK_CROWN)
+    expect(window.localStorage.getItem(SOUND_VOLUME_STORAGE_KEY)).toBe('80')
+    expect(wrapper.text()).toContain('80%')
+  })
 })

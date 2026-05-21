@@ -259,4 +259,24 @@ describe('GameView', () => {
     })
     expect(wrongCell.text()).toBe('')
   })
+
+  it('shows a used hint state after hint is consumed', async () => {
+    openAlertModal.mockResolvedValue(undefined)
+
+    const { wrapper } = mountGameView()
+    const hintButton = wrapper
+      .findAll('button')
+      .find((button) => button.attributes('aria-label') === 'Use hint')!
+
+    await hintButton.trigger('click')
+    await wrapper.vm.$nextTick()
+
+    expect(openAlertModal).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: 'Hint',
+      }),
+    )
+    expect(hintButton.attributes('aria-label')).toBe('Hint used')
+    expect(hintButton.attributes('disabled')).toBeDefined()
+  })
 })

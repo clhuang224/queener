@@ -14,7 +14,7 @@ import { useAudioStore } from '@/modules/stores/audio'
 import { useSkinStore } from '@/modules/stores/skin'
 import { playGameSound } from '@/modules/utils/playGameSound'
 import { randomInteger } from '@/modules/utils/random'
-import { IconChevronLeft } from '@tabler/icons-vue'
+import { IconChevronLeft, IconRestore } from '@tabler/icons-vue'
 import { getEnumValues } from '@/modules/utils/getEnumValues'
 
 const router = useRouter()
@@ -44,6 +44,11 @@ const previewSoundEffect = () => {
   if (!sound) return
 
   void playGameSound(sound)
+}
+
+const resetSettings = () => {
+  skinStore.resetSkinSettings()
+  audioStore.resetAudioSettings()
 }
 </script>
 
@@ -77,6 +82,15 @@ const previewSoundEffect = () => {
             @update:sound-volume="audioStore.setSoundVolume"
             @preview="previewSoundEffect"
           />
+          <BaseButton
+            variant="ghost"
+            class="reset-button"
+            aria-label="Reset settings"
+            @click="resetSettings"
+          >
+            <IconRestore aria-hidden="true" />
+            <span>Reset Settings</span>
+          </BaseButton>
         </div>
       </BasePanel>
     </div>
@@ -139,5 +153,9 @@ h1 {
 
 .skin-fields > * + * {
   margin-top: 16px;
+}
+
+.reset-button {
+  width: 100%;
 }
 </style>
