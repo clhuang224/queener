@@ -54,7 +54,7 @@ const getTextureClass = (colorIndex: number) => {
 </template>
 
 <style scoped lang="scss">
-@import '@/assets/texture.module.scss';
+@use '@/assets/texture.module.scss';
 
 .board-skin-preview {
   --preview-gap: 4px;

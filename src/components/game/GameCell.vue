@@ -49,7 +49,7 @@ const position = computed(() => props.cell.getPosition())
 </template>
 
 <style scoped lang="scss">
-@import '@/assets/texture.module.scss';
+@use '@/assets/texture.module.scss';
 
 .game-cell {
   touch-action: none;
