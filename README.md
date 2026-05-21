@@ -180,11 +180,14 @@ bun run test:e2e
 - `BoardCell` tests cover cell-level state transitions
 - Cypress is available for browser-level interaction testing
 
-## Asset Credits
+## Resources And Licensing
 
-- Board skin palette notes:
-  - `Tropical Island` is based on Paul Tol's color-blind safe color scheme work.
-  - `Cartoon` is based on IBM's color-blind safe palette.
-  - `Polo Shirt` is based on the Okabe-Ito / Bang Wong color-blind palette.
-- Queen skin source direction: [3D Icons](https://3dicons.co/) or assets in a similar colorful 3D icon style. 3D Icons describes its assets as CC0 / Creative Commons Zero.
-- Sound effects: [Pixabay](https://pixabay.com/), under Pixabay's royalty-free content license.
+Queener uses a small set of external visual and audio references. The goal is to keep the game playful while choosing resources that are clear enough for public project use.
+
+- Board skin palettes are selected with color accessibility in mind. Most palettes are custom choices drafted with [Coolors](https://coolors.co/) and then adjusted through accessibility review, including color-distance checks for board readability. Some palette options are adapted from public color-blind safe palette references:
+  - Paul Tol's color scheme work
+  - IBM's color-blind safe palette
+  - the Okabe-Ito / Bang Wong color-blind palette
+- Queen icons and possible favicon directions may reference [3D Icons](https://3dicons.co/) or a similar colorful 3D icon style. 3D Icons describes its assets as CC0 / Creative Commons Zero, which is suitable for project artwork, but shared CC0 assets should not be treated as exclusive brand marks or registrable trademarks without further review.
+- UI icons and the favicon direction use [Tabler Icons](https://tabler.io/icons), which are licensed under MIT.
+- Sound effects come from [Pixabay](https://pixabay.com/) and are used under Pixabay's royalty-free content license.
