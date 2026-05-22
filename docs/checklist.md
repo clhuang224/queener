@@ -14,10 +14,6 @@ Use this checklist for concrete unfinished work. Each checkbox should describe a
 
 ## Hint Items
 
-- [ ] Add `GameSoundType.HINT`.
-- [ ] Add a hint sound asset under `src/assets/sounds/`.
-- [ ] Preload the hint sound in `preloadGameAssets`.
-- [ ] Play the hint sound when a hint is used successfully.
 - [ ] Replace the current hint alert modal with a non-blocking hint message.
 - [ ] Add a `QueenGame.revealQueenHint()` method for the current reveal-queen behavior.
 - [ ] Add a `QueenGame.revealRegionHint()` method that suggests one region where notes can be safely marked.

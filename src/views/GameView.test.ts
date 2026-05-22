@@ -276,6 +276,7 @@ describe('GameView', () => {
         title: 'Hint',
       }),
     )
+    expect(playGameSound).toHaveBeenCalledWith(GameSoundType.HINT)
     expect(hintButton.attributes('aria-label')).toBe('Hint used')
     expect(hintButton.attributes('disabled')).toBeDefined()
   })

@@ -61,6 +61,7 @@ const clickHint = async () => {
   const position = game.value.useHint()
 
   if (position) {
+    void playGameSound(GameSoundType.HINT)
     await openAlertModal({
       title: 'Hint',
       content: `Place a queen at (${position[0] + 1}, ${position[1] + 1})`,
