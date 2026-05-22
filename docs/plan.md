@@ -1,6 +1,6 @@
 # Development Plan
 
-This document captures the current planned direction of the project. The items are listed in intended planning order, though implementation details may still shift as the project evolves.
+This document captures Queener's product direction and planning context. Use [checklist.md](./checklist.md) for concrete follow-up tasks.
 
 ## Planning Principles
 
@@ -8,319 +8,94 @@ This document captures the current planned direction of the project. The items a
 - preserve a clear boundary between the UI layer and the game engine
 - favor reusable game logic over one-off UI-coupled implementations
 - add infrastructure when product needs become concrete, not only because it might be useful later
+- keep implementation checklists focused on unfinished work instead of using them as changelogs
 
 ## Implemented Baseline
 
-The current product baseline already includes:
+The current product baseline includes the playable single-player loop, hearts, settings, Reka-based non-board controls, asset preloading, sound volume control, per-run puzzle variants, declarative puzzle data, board skins, queen skins, board textures, and the current soft visual direction.
 
-- hearts that scale by board size
-- a settings page for board texture, board skin, and queen skin preferences
-- Reka UI as the unstyled accessibility primitive layer for non-board UI
-- per-run puzzle variants that rotate the board and remap region ids whenever a game starts or restarts
-- a fixed campaign structure backed by declarative puzzle data
+## Product Direction
 
-## 1. Core Product Milestones
+The immediate goal is to make the single-player experience feel complete and polished from level selection through win, loss, restart, replay, and next-level flow.
 
-The immediate goal is to turn the current prototype into a complete and polished single-player experience.
+Short-term product work should prioritize:
 
-Scope:
+- win and loss flow polish
+- tactile board feedback for notes, queens, mistakes, and hints
+- clearer hint behavior without blocking the player's flow
+- stronger keyboard and screen reader support for core board interactions
+- intentional puzzle progression and campaign structure
 
-- complete and polish the win and loss flow
-- establish a stronger visual baseline for the game
-- refine the fixed built-in puzzle campaign
-- improve restart, hint, and result feedback
-- make the main loop feel complete from level selection through replay or next-level navigation
+Longer-term work should expand from the single-player foundation into local leaderboard records, run replay, generated puzzles, and eventually backend-backed competition modes.
 
-Done when:
+## UI And Visual Direction
 
-- the full game loop feels complete from start to finish
-- players can clearly understand success, failure, restart, replay, and next-level flow
-- puzzle count and progression feel intentional rather than placeholder-driven
-- restart and replay flows feel polished rather than mechanical
+The current visual direction is `Soft Garden Puzzle`: a quiet, hand-made puzzle-book UI inspired by soft garden animation moods rather than literal cartoon styling.
 
-Notes:
+Design principles:
 
-- this phase should focus on product completeness rather than architecture expansion
-- puzzle variants should stay engine-owned in `QueenGame`; puzzle definition files should remain declarative source data
-
-## 2. UI And Visual Design
-
-The project should define a clearer visual direction instead of treating presentation as only a finishing step.
-
-Scope:
-
-- improve the overall look and feel of the game
-- establish consistent visual rules for layout, spacing, buttons, board presentation, and feedback states
-- improve the quality of win, loss, hint, and settings-related UI
-- continue applying Reka UI to non-board controls when the accessibility behavior is worth the abstraction
-
-Questions to answer:
-
-- which remaining non-board UI should move to Reka primitives, and which pieces are simpler as native HTML or project-owned components?
-- where should Queener define reusable visual styling on top of unstyled primitives?
-- what visual identity should Queener aim for beyond being functionally playable?
-
-Design considerations:
-
-- current visual exploration direction is `Soft Garden Puzzle`: a quiet, hand-made puzzle-book UI inspired by soft garden animation moods rather than literal cartoon styling
-- use low-saturation ivory, sage green, powder blue, pale pink, and warm graphite; avoid blue as the primary action color even when powder blue appears as a supporting color
+- use low-saturation ivory, sage green, powder blue, pale pink, and warm graphite
+- avoid blue as the primary action color even when powder blue appears as a supporting color
 - keep the outer app UI calm so board skins and queen skins remain the visual focus
-- avoid black outlines, heavy shadows, glossy gradients, or paper-card styling; use spacing, gentle borders, rounded shapes, and restrained color blocks for hierarchy
-- use shared semantic CSS variables in `App.vue` for page, surface, text, muted text, primary, accent, selected, border, focus, and radius values
-- apply the current visual direction across shared UI, settings, modals, and board-adjacent presentation after validating small spikes in `HomeView`, `LevelPicker`, and `BaseButton`
-- the game board and cell interaction layer are part of the product identity and should remain highly controllable
-- non-core UI such as settings, dialogs, and generic controls may benefit from Reka primitives when they need focus management, keyboard navigation, ARIA relationships, portals, or outside interaction handling
-- Reka is intentionally unstyled, so it should provide behavior and accessibility while Queener components keep ownership of visual design
-- simple display components, native button flows, and game-specific interactions should not be converted to Reka only for consistency
-- the board and cell gesture layer should not be generalized into Reka primitives; it should stay tied to the documented game interaction state machine
-
-Skin direction:
-
-- board skin palettes should generally start from palettes found on [Coolors](https://coolors.co/) and then be adjusted for board readability
-- all board skins should define quantitative color-difference checks for common color vision deficiencies, using a perceptual color space rather than raw RGB distance
-- standard visual skins may keep their intended mood and color family, but they should avoid palette entries that collapse below the minimum color-difference threshold in color vision deficiency simulations
-- at least three board skins should be designed for color-blind accessibility, with palettes that remain distinguishable without relying on normal red / green / blue perception
-- color-blind accessibility skins may use player-facing theme names, but their palette source or inspiration should remain documented separately
-- current color-blind accessibility palette sources are Paul Tol color schemes, IBM's color-blind safe palette, and the Okabe-Ito / Bang Wong palette
-- color-blind accessibility skins should prioritize luminance contrast and perceptual color separation
-- board textures should remain a separate accessibility setting from board skins so non-color region cues can be combined with any palette
-- board texture classes should be driven by `CellTextureType` values that match the corresponding texture class names
-- queen skins should move toward colorful icon-based assets for marked queens
-- queen skin sources should primarily use [3D Icons](https://3dicons.co/) or assets with a similar colorful 3D icon style
-- 3D Icons currently describes its icons as CC0 / Creative Commons Zero, with personal and commercial use allowed without attribution
-- marked queen icons should intentionally keep a sticker-like treatment with protective black and white outlines, because the icon must remain readable across highly varied board colors
-- the sticker-like marked queen treatment is considered decided for now and should not be softened unless the broader board visual system changes
-- note icon assets are authored directly as SVG files under `src/assets/noteIcons/`
-- note icon SVGs should use `viewBox="0 0 500 500"` so they scale consistently inside board cells and settings previews
-- note icon SVG strokes should generally use `stroke-width="80"` unless a specific shape needs optical adjustment
-- note states should use an outline version of the selected queen icon with a white or black edge treatment for contrast
-- wrong states should use a red-filled version of the selected queen icon so mistakes remain clearly distinguishable from notes and found queens
-- note / wrong rendering should use prepared SVG note icon assets when available, with note shown in white and wrong shown in red
-- missing note icon assets may temporarily use empty SVG placeholders so each `QueenSkinType` has a matching file
-- the long-term queen skin asset set should include prepared variants for found, note, and wrong states so outlines and fills can be tuned directly in the source image files
-
-Interaction polish:
-
-- marking a note, removing a note, marking a queen, and making a wrong guess should each have a small animation and sound effect so board interactions feel tactile
-- hint usage should get its own short sound effect so it feels distinct from note marking or correct queen placement
-- hint feedback should move away from blocking alert modals; prefer in-board visual feedback or a short non-blocking message so the game flow stays continuous
-- hints should eventually split into two item types: one that reveals a queen position, and one that identifies a region where the player can safely mark notes
-- win and loss should have short board-level feedback before opening the result modal; the current immediate modal transition feels too abrupt
-- result animations should be brief and should not block the player longer than needed
-- if a persisted queen skin is no longer available, such as a seasonal Halloween skin after its availability window ends, settings should fall back to a stable default skin, currently `Pink Crown`
-
-Accessibility direction:
-
-- board interactions should support keyboard play, including moving the focused cell, marking notes, and marking queens without requiring pointer input
-- the focused board cell should have a visible focus treatment that remains clear across all supported board skins
-- gameplay state should not rely on color alone; note, wrong, found, selected, and focused states should each have a non-color cue through icon shape, outline, motion, text alternative, or border treatment
-- animation polish should respect `prefers-reduced-motion`, especially for board feedback, win / loss transitions, and repeated cell interactions
-- sound effects should be optional and controllable from settings once audio polish is introduced
-- screen reader support should provide a practical baseline for board cells, including row, column, region, and current cell status, while recognizing that the core N-Queens spatial puzzle may not be fully suitable for every assistive technology workflow
+- avoid black outlines, heavy shadows, glossy gradients, or paper-card styling
+- use spacing, gentle borders, rounded shapes, and restrained color blocks for hierarchy
+- keep shared semantic CSS variables in `App.vue`
+- keep the board and cell interaction layer highly controllable because it is part of the product identity
 
-Evaluation criteria:
-
-- does the approach preserve a distinctive game feel?
-- does it reduce repeated work for non-board UI?
-- does it fit the expected scale of the project?
-- does it make future polish easier rather than harder?
+Reka UI should remain the behavior and accessibility layer for generic non-board controls when focus management, keyboard navigation, ARIA relationships, portals, or outside interaction handling are useful. Reka should not define the game's visual identity, and board/cell gestures should stay tied to the documented game interaction state machine.
 
-Done when:
+## Skin And Asset Direction
 
-- the project has a clear UI direction
-- the game feels intentionally designed rather than prototype-like
-- reusable non-board controls feel consistent without making the board or game-specific interactions generic
+Board skins should start from custom palette exploration, often drafted with [Coolors](https://coolors.co/), and then be adjusted for board readability and accessibility. Some accessibility-oriented palettes may be adapted from public color-blind safe palette references such as Paul Tol color schemes, IBM's color-blind safe palette, and the Okabe-Ito / Bang Wong palette.
 
-Notes:
+Board skin rules:
 
-- if a UI framework is adopted, it should support the product direction rather than overpower the game-specific board UI
+- all board skins should define quantitative color-difference checks for common color vision deficiencies
+- accessibility skins should prioritize luminance contrast and perceptual color separation
+- board textures should stay independent from board skins so non-color region cues can combine with any palette
+- texture class names should continue to match `CellTextureType` values
 
-## 3. Leaderboard And Run Replay
+Queen skin rules:
 
-Add local leaderboard and run replay support based on recorded player actions.
+- marked queen icons should keep the current sticker-like treatment with protective black and white outlines
+- queen skin assets may reference [3D Icons](https://3dicons.co/) or similar colorful 3D icon styles
+- note icon SVGs should use `viewBox="0 0 500 500"` for consistent scaling
+- note icon SVG strokes should generally use `stroke-width="80"` unless a shape needs optical adjustment
+- long-term queen skin work should include prepared found, note, and wrong variants so contrast can be tuned directly in source assets
 
-Scope:
+## Accessibility Direction
 
-- create a `userStore` that owns the local player identity
-- generate a random username the first time a player enters the game
-- allow the username to be edited from settings
-- record every meaningful run action, including `markNote`, `removeNote`, `markQueen`, and `hint`
-- store each action with a run-relative timestamp in milliseconds, shaped roughly like `{ action: ActionType.MARK_NOTE, actionAtMillisecond: 1234, position: [1, 1] }`
-- save completed run records in IndexedDB
-- design the IndexedDB table around fields such as `uid`, `level`, `puzzle`, `puzzleVariant`, `record`, `startedAt`, `endedAt`, `user`, and `score`
-- store the original `puzzle` and active `puzzleVariant` so replay can reproduce the exact board direction, rotation, and region mapping from that run
-- add a leaderboard entry point from `LevelPicker` for the selected level
-- show the leaderboard for a level using locally stored run records
-- replay a completed run as a time-lapse after the game ends
-- add a setting that lets players disable end-of-game replay
-- calculate leaderboard score from a 1000-point model: 700 time score, 200 remaining hearts bonus, and 100 remaining hints bonus
-- make time score decay from full score at a size-based target time to zero at a size-based timeout time
-- use remaining hearts and remaining hints as ratios so future hint item counts can scale without changing the score model
-- introduce `QueenGameRunRecorder` for action capture, `QueenGameRunScorer` for score calculation, and `QueenGameReplayPlayer` for playback
+Accessibility work should focus on practical game access without pretending the spatial N-Queens puzzle is equally suitable for every workflow.
 
-Done when:
+Priorities:
 
-- each completed run can be saved with enough action history to replay it
-- local leaderboard entries can be shown per level
-- player identity is stable locally but editable from settings
-- scoring is deterministic and documented enough for leaderboard entries to be comparable
-- end-of-game replay can be turned off from settings
+- keyboard board interaction
+- visible focus treatment across all board skins
+- non-color cues for note, wrong, found, selected, and focused states
+- `prefers-reduced-motion` support for repeated interaction and result feedback
+- optional and controllable sound effects
+- screen reader labels for board cells with row, column, region, and current status
 
-Depends on:
+## Phase Overview
 
-- a stable run record schema
-- a stable score formula and board-size timing targets
-- IndexedDB storage utilities
-- a clear replay UI that does not obscure win / loss flow
+1. Core Product Polish
+2. Leaderboard And Run Replay
+3. Puzzle Generator
+4. Monorepo Structure
+5. Backend And Data Layer
+6. Ghost Competition Mode
+7. Realtime Competition Mode
+8. Broader Game Platform Direction
 
-Notes:
+These phases are planning order, not strict release boundaries. Product polish should continue alongside larger feature work when it improves the main game loop.
 
-- keep the first version local-only; backend sync can wait until the backend/data phase
-- action recording should stay close to game intent handling without moving core game rules out of `QueenGame`
-- avoid `QueenGamePlayer` as a class name because it is ambiguous with user identity; prefer recorder, scorer, and replay player names that describe responsibility directly
+## Later-Stage Direction
 
-## 4. Puzzle Generator
+Leaderboard and run replay should remain local-only at first. Backend sync, realtime competition, and broader game platform work should wait until the single-player game and run record model are stable.
 
-Build a lightweight puzzle generator that can produce puzzles with different difficulty levels.
-
-Scope:
-
-- generate puzzles with multiple difficulty levels
-- define what puzzle difficulty means in this project
-- preserve puzzle quality and intended play style
-
-Done when:
-
-- generated puzzles are usable in the product
-- difficulty levels are meaningful rather than arbitrary
-- generated output meets a minimum quality bar for gameplay
-
-Depends on:
-
-- a clearer definition of puzzle difficulty
-- a stable understanding of the intended player experience
-
-## 5. Monorepo Structure
-
-Evaluate moving the project to a monorepo structure.
-
-Scope:
-
-- separate the web app from reusable game logic
-- package the core engine so it can be reused outside the current frontend
-- create a structure that can support future tooling or additional games
-
-Done when:
-
-- the project has a clear package boundary between UI and reusable logic
-- the repository layout supports future expansion without unnecessary duplication
-
-Notes:
-
-- this should be treated as an architecture investment, not as an end in itself
-- if product needs do not yet justify the migration, it can be delayed
-
-## 6. Backend And Data Layer
-
-Evaluate an appropriate backend and database approach, ideally within the same monorepo if the project adopts that structure.
-
-Scope:
-
-- store puzzles
-- support a leaderboard
-- record completion time and player path history
-
-Done when:
-
-- the project has a practical persistence model for puzzles and run results
-- leaderboard and run-history data can be stored and retrieved reliably
-
-Depends on:
-
-- a stable run result model
-- a decision on whether monorepo migration happens first
-
-Notes:
-
-- the current preference is to keep the initial version lightweight and avoid mandatory user accounts
-- players may submit results with a self-entered display name
-
-## 7. Ghost Competition Mode
-
-Add a ghost mode based on previously recorded runs.
-
-Scope:
-
-- replay a recorded path alongside the current player run
-- compare completion times
-- show both paths together on the result screen
-
-Done when:
-
-- a player can race against a previously recorded run
-- the replay is clear enough to feel meaningful, not just technically present
-
-Depends on:
-
-- backend support for run recording
-- a stable representation of player path history
-
-## 8. Realtime Competition Mode
-
-Explore a realtime multiplayer mode built with sockets.
-
-Scope:
-
-- live competitive matches between online players
-- separate leaderboard records for realtime matches
-
-Done when:
-
-- online matches are playable end to end
-- realtime competition results can be recorded and distinguished from single-player runs
-
-Depends on:
-
-- backend foundation
-- networking architecture
-- a more mature game-session model
-
-Notes:
-
-- this should be treated as a later-stage expansion, not a near-term milestone
-
-## 8. Broader Game Platform Direction
-
-Longer term, the project may expand beyond Queener into a small game portal.
-
-Scope:
-
-- create a hub or entry portal
-- launch with Queener first
-- gradually add other games with compatible logic or audience overlap
-
-Potential future titles:
-
-- Sudoku
-- Minesweeper
-
-Done when:
-
-- the shared platform direction is clear
-- the project structure can support more than one game without forcing premature abstraction
-
-Depends on:
-
-- reusable engine boundaries
-- infrastructure and deployment planning
-
-Notes:
-
-- domain and migration planning should be evaluated early if this direction becomes serious
+Ghost competition should build on recorded run playback. Realtime competition should build on a more mature game-session model and backend foundation. A broader game portal should only be considered after Queener itself feels complete enough to justify shared platform infrastructure.
 
 ## Out Of Scope For Now
-
-The following items should not be treated as immediate deliverables unless priorities change:
 
 - mandatory account systems
 - large-scale backend architecture before product needs are clear
