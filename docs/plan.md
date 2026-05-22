@@ -20,6 +20,7 @@ The immediate goal is to make the single-player experience feel complete and pol
 
 Short-term product work should prioritize:
 
+- tutorial levels and guided rule teaching for first-time players
 - win and loss flow polish
 - tactile board feedback for notes, queens, mistakes, and hints
 - clearer hint behavior without blocking the player's flow
@@ -78,7 +79,7 @@ Priorities:
 
 ## Phase Overview
 
-1. Core Product Polish
+1. Core Product Polish, including tutorial mode
 2. Leaderboard And Run Replay
 3. Puzzle Generator
 4. Monorepo Structure

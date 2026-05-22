@@ -12,6 +12,24 @@ Use this checklist for concrete unfinished work. Each checkbox should describe a
 - [ ] Add tests for win result modal actions.
 - [ ] Add tests for loss result modal actions.
 
+## Tutorial Mode
+
+- [ ] Add tutorial puzzle definitions for teaching the basic Queener rules.
+- [ ] Add a tutorial entry point from the home screen.
+- [ ] Add a tutorial route or tutorial mode flag for guided play.
+- [ ] Add a tutorial overlay component that can highlight one board cell, row, column, or region.
+- [ ] Add tutorial step content for the one-queen-per-row rule.
+- [ ] Add tutorial step content for the one-queen-per-column rule.
+- [ ] Add tutorial step content for the one-queen-per-region rule.
+- [ ] Add tutorial step content for note marking.
+- [ ] Add tutorial step content for wrong guesses and hearts.
+- [ ] Add tutorial step content for hint usage.
+- [ ] Add tutorial controls for next, previous, skip, and finish.
+- [ ] Persist whether the tutorial has been completed.
+- [ ] Add a setting or home action for replaying the tutorial.
+- [ ] Add tests for tutorial step progression.
+- [ ] Add tests that tutorial overlays do not mutate `QueenGame` rules directly.
+
 ## Hint Items
 
 - [ ] Add a `QueenGame.revealQueenHint()` method for the current reveal-queen behavior.
