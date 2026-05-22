@@ -20,6 +20,7 @@ const props = defineProps<{
   boardSkin: BoardSkinType
   boardTextureEnabled: boolean
   game: QueenGamePublic
+  hintedPosition: Position | null
 }>()
 
 const boardRef = ref<HTMLDivElement | null>(null)
@@ -47,6 +48,10 @@ const getCellTextureClass = (region: number) => {
 const isInteractiveCell = ([row, column]: Position) => {
   const status = props.game.board[row]?.[column]?.status
   return status === 'empty' || status === 'note'
+}
+
+const isHintedCell = ([row, column]: Position) => {
+  return props.hintedPosition?.[0] === row && props.hintedPosition[1] === column
 }
 
 const getBoardElementFromPoint = (clientX: number, clientY: number) => {
@@ -118,6 +123,7 @@ const {
           :key="cell.getPosition().join('-')"
           :cell="cell"
           :cell-texture-class-name="getCellTextureClass(cell.getRegion())"
+          :is-hinted="isHintedCell(cell.getPosition())"
           :queen-icon="queenIcon"
           :queen-note-icon="queenNoteIcon"
           @pointer-down="handlePointerDown"

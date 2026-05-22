@@ -14,7 +14,6 @@ Use this checklist for concrete unfinished work. Each checkbox should describe a
 
 ## Hint Items
 
-- [ ] Replace the current hint alert modal with a non-blocking hint message.
 - [ ] Add a `QueenGame.revealQueenHint()` method for the current reveal-queen behavior.
 - [ ] Add a `QueenGame.revealRegionHint()` method that suggests one region where notes can be safely marked.
 - [ ] Add UI for choosing between reveal-queen and reveal-region hint items.

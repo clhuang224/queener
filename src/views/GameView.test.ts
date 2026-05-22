@@ -260,7 +260,7 @@ describe('GameView', () => {
     expect(wrongCell.text()).toBe('')
   })
 
-  it('shows a used hint state after hint is consumed', async () => {
+  it('shows a used hint state and animates the hinted cell after hint is consumed', async () => {
     openAlertModal.mockResolvedValue(undefined)
 
     const { wrapper } = mountGameView()
@@ -271,12 +271,10 @@ describe('GameView', () => {
     await hintButton.trigger('click')
     await wrapper.vm.$nextTick()
 
-    expect(openAlertModal).toHaveBeenCalledWith(
-      expect.objectContaining({
-        title: 'Hint',
-      }),
-    )
+    expect(openAlertModal).not.toHaveBeenCalled()
     expect(playGameSound).toHaveBeenCalledWith(GameSoundType.HINT)
+    expect(wrapper.find('.game-cell--hinted').exists()).toBe(true)
+    expect(wrapper.find('.game-cell--hinted').attributes('data-status')).toBe('found')
     expect(hintButton.attributes('aria-label')).toBe('Hint used')
     expect(hintButton.attributes('disabled')).toBeDefined()
   })

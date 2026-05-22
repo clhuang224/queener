@@ -7,6 +7,7 @@ import type { Position } from '@/modules/types/board'
 const props = defineProps<{
   cell: BoardCell
   cellTextureClassName: string
+  isHinted: boolean
   queenIcon: string
   queenNoteIcon: string
 }>()
@@ -40,7 +41,13 @@ const emitWhenInteractive = (event: 'pointerDown' | 'pointerEnter' | 'noteClick'
 <template>
   <div
     class="game-cell"
-    :class="[cellTextureClassName, { 'game-cell--locked': !isInteractive }]"
+    :class="[
+      cellTextureClassName,
+      {
+        'game-cell--hinted': isHinted,
+        'game-cell--locked': !isInteractive,
+      },
+    ]"
     :style="{ backgroundColor: cellColor }"
     :data-row="position[0]"
     :data-column="position[1]"
@@ -100,6 +107,30 @@ const emitWhenInteractive = (event: 'pointerDown' | 'pointerEnter' | 'noteClick'
   &:active {
     transform: none;
     border-color: var(--color-border);
+  }
+}
+
+.game-cell--hinted :deep(.queen-icon) {
+  animation: hint-tilt 0.48s ease-out;
+}
+
+@keyframes hint-tilt {
+  0% {
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+
+  45% {
+    transform: translateY(-12%) rotate(-10deg) scale(1.18);
+  }
+
+  100% {
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .game-cell--hinted :deep(.queen-icon) {
+    animation: none;
   }
 }
 

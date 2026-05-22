@@ -10,6 +10,7 @@ import { TOTAL_LEVELS, getPuzzleByLevel } from '@/modules/puzzles/simple'
 import { useSkinStore } from '@/modules/stores/skin'
 import { useGlobalModalStore } from '@/modules/stores/globalModal'
 import { useLevelStore } from '@/modules/stores/level'
+import type { Position } from '@/modules/types/board'
 import { playGameSound } from '@/modules/utils/playGameSound'
 import { GameSoundType } from '@/modules/enums/GameSoundType'
 import { IconBulb, IconBulbOff, IconHome, IconRefresh } from '@tabler/icons-vue'
@@ -32,6 +33,7 @@ const game = ref(new QueenGame(getPuzzleByLevel(activeLevel.value)))
 const hasNextLevel = computed(() => activeLevel.value < TOTAL_LEVELS)
 const isHandlingResult = ref(false)
 const isWaitingSound = ref(false)
+const hintedPosition = ref<Position | null>(null)
 const boardPanelStyle = computed(() => ({
   '--board-panel-max-size': `${game.value.getSize() * 62 + 40}px`,
 }))
@@ -51,6 +53,7 @@ watch(
     activeLevel.value = playableLevel.activeLevel
     levelStore.setSelectedLevel(playableLevel.activeLevel)
     game.value = new QueenGame(getPuzzleByLevel(playableLevel.activeLevel))
+    hintedPosition.value = null
     isHandlingResult.value = false
     isWaitingSound.value = false
   },
@@ -61,11 +64,8 @@ const clickHint = async () => {
   const position = game.value.useHint()
 
   if (position) {
+    hintedPosition.value = position
     void playGameSound(GameSoundType.HINT)
-    await openAlertModal({
-      title: 'Hint',
-      content: `Place a queen at (${position[0] + 1}, ${position[1] + 1})`,
-    })
     return
   }
 
@@ -94,6 +94,7 @@ const clickRestart = async () => {
       content: 'Are you sure you want to restart this puzzle?',
     })
     game.value.resetGame()
+    hintedPosition.value = null
   } catch {
     return
   }
@@ -101,6 +102,7 @@ const clickRestart = async () => {
 
 const restartAfterResult = () => {
   game.value.resetGame()
+  hintedPosition.value = null
 }
 
 const goHome = async () => {
@@ -221,6 +223,7 @@ watch(
         :queen-skin="queenSkin"
         :board-skin="boardSkin"
         :board-texture-enabled="boardTextureEnabled"
+        :hinted-position="hintedPosition"
       />
     </BasePanel>
     <BaseButton
