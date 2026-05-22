@@ -377,6 +377,18 @@ Prefer project-owned components and native HTML when the component is simple, di
 
 Treat Reka as the behavior and accessibility layer for generic app controls. Keep visual styling in Queener components and SCSS so the UI framework supports the product instead of defining its personality.
 
+### CSS Selector Conventions
+
+Vue component styles are usually scoped, but class naming should still describe component structure and state clearly.
+
+Prefer classes for styling hooks:
+
+- use readable component-local class names such as `game-cell`, `board-skin-option`, or `setting-panel`
+- use modifier-style classes for visual states such as `base-button--icon`, `hint--used`, or `game-cell--locked`
+- keep `data-*` attributes for tests, semantic state exposure, or integration hooks instead of using them as ordinary CSS selectors
+
+Only style against `data-*` attributes when the attribute is owned by a third-party primitive or browser behavior and there is no clearer class hook. Reka state attributes such as `data-state='checked'` are acceptable because they are part of the primitive's public styling API.
+
 ## 5. Model And File Placement Rules
 
 When deciding where a new shape or helper should live, use this quick guide:
