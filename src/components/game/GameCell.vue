@@ -20,21 +20,36 @@ const emit = defineEmits<{
 
 const cellColor = computed(() => `var(--cell-color-${props.cell.getRegion()})`)
 const position = computed(() => props.cell.getPosition())
+const isInteractive = computed(() => props.cell.status === 'empty' || props.cell.status === 'note')
+
+const emitWhenInteractive = (event: 'pointerDown' | 'pointerEnter' | 'noteClick' | 'markQueen') => {
+  if (!isInteractive.value) return
+
+  if (event === 'pointerDown') {
+    emit('pointerDown', position.value)
+  } else if (event === 'pointerEnter') {
+    emit('pointerEnter', position.value)
+  } else if (event === 'noteClick') {
+    emit('noteClick', position.value)
+  } else {
+    emit('markQueen', position.value)
+  }
+}
 </script>
 
 <template>
   <div
     class="game-cell"
-    :class="cellTextureClassName"
+    :class="[cellTextureClassName, { 'game-cell--locked': !isInteractive }]"
     :style="{ backgroundColor: cellColor }"
     :data-row="position[0]"
     :data-column="position[1]"
     :data-status="props.cell.status"
     :data-test="`cell-${position[0]}-${position[1]}`"
-    @dblclick="emit('markQueen', position)"
-    @pointerdown="emit('pointerDown', position)"
-    @pointerenter="emit('pointerEnter', position)"
-    @click="emit('noteClick', position)"
+    @dblclick="emitWhenInteractive('markQueen')"
+    @pointerdown="emitWhenInteractive('pointerDown')"
+    @pointerenter="emitWhenInteractive('pointerEnter')"
+    @click="emitWhenInteractive('noteClick')"
   >
     <template v-if="props.cell.isQueen() && props.cell.status === 'found'">
       <QueenIcon status="found" :icon="queenIcon" :note-icon="queenNoteIcon" />
@@ -74,6 +89,17 @@ const position = computed(() => props.cell.getPosition())
   }
   &:active {
     transform: translateY(0);
+  }
+}
+
+.game-cell--locked {
+  cursor: default;
+  pointer-events: none;
+
+  &:hover,
+  &:active {
+    transform: none;
+    border-color: var(--color-border);
   }
 }
 

@@ -15,6 +15,7 @@ type TouchMoveEvent = {
 type UseGameBoardGesturesOptions = {
   clickDelayMs?: number
   getElementFromPoint: ElementFromPoint
+  isInteractive: (position: Position) => boolean
   isNote: (position: Position) => boolean
   markNote: (position: Position) => void
   markQueen: (position: Position) => void
@@ -26,6 +27,7 @@ type DragNoteAction = 'mark' | 'remove'
 export const useGameBoardGestures = ({
   clickDelayMs = 250,
   getElementFromPoint,
+  isInteractive,
   isNote,
   markNote,
   markQueen,
@@ -64,6 +66,8 @@ export const useGameBoardGestures = ({
   }
 
   const applySingleClickNoteAction = (position: Position) => {
+    if (!isInteractive(position)) return
+
     if (isNote(position)) {
       removeNote(position)
     } else {
@@ -79,6 +83,8 @@ export const useGameBoardGestures = ({
   }
 
   const applyDraggedNoteAction = (position: Position) => {
+    if (!isInteractive(position)) return
+
     const key = getPositionKey(position)
     if (draggedPositions.has(key)) return
 
@@ -99,6 +105,8 @@ export const useGameBoardGestures = ({
   }
 
   const handlePointerDown = (position: Position) => {
+    if (!isInteractive(position)) return
+
     isPointerDown.value = true
     isDragging.value = false
     suppressNextClick.value = false
@@ -108,6 +116,7 @@ export const useGameBoardGestures = ({
   }
 
   const handlePointerEnter = (position: Position) => {
+    if (!isInteractive(position)) return
     if (!isPointerDown.value || dragStartPosition === null) return
 
     const startKey = getPositionKey(dragStartPosition)
@@ -145,6 +154,8 @@ export const useGameBoardGestures = ({
       return
     }
 
+    if (!isInteractive(position)) return
+
     if (
       pendingNotePosition !== null &&
       getPositionKey(pendingNotePosition) !== getPositionKey(position)
@@ -161,6 +172,8 @@ export const useGameBoardGestures = ({
   }
 
   const handleMarkQueen = (position: Position) => {
+    if (!isInteractive(position)) return
+
     clearPendingNote()
     markQueen(position)
   }

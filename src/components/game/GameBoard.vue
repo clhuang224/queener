@@ -44,6 +44,11 @@ const getCellTextureClass = (region: number) => {
   return boardTextureTypes.value[region] ?? ''
 }
 
+const isInteractiveCell = ([row, column]: Position) => {
+  const status = props.game.board[row]?.[column]?.status
+  return status === 'empty' || status === 'note'
+}
+
 const getBoardElementFromPoint = (clientX: number, clientY: number) => {
   const element = document.elementFromPoint(clientX, clientY)
   if (!(element instanceof Element)) return null
@@ -84,6 +89,7 @@ const {
   handleTouchMove,
 } = useGameBoardGestures({
   getElementFromPoint: getBoardElementFromPoint,
+  isInteractive: isInteractiveCell,
   isNote: (position) => props.game.isNote(position),
   markNote: markNoteWithSound,
   markQueen: markQueenWithSound,

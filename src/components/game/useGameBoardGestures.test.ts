@@ -37,6 +37,10 @@ const setupGestures = () => {
   const gestures = scope.run(() =>
     useGameBoardGestures({
       getElementFromPoint,
+      isInteractive: ([row, column]) => {
+        const status = game.board[row]?.[column]?.status
+        return status === 'empty' || status === 'note'
+      },
       isNote: (position) => game.isNote(position),
       markNote: (position) => game.markNote(position),
       markQueen: (position) => game.markQueen(position),
@@ -60,6 +64,13 @@ const getQueenPositions = (game: QueenGame) => {
   return game.board
     .flat()
     .filter((cell) => cell.isQueen())
+    .map((cell) => cell.getPosition())
+}
+
+const getWrongPositions = (game: QueenGame) => {
+  return game.board
+    .flat()
+    .filter((cell) => !cell.isQueen())
     .map((cell) => cell.getPosition())
 }
 
@@ -109,6 +120,40 @@ describe('useGameBoardGestures', () => {
 
     expect(game.board[queenPosition[0]]![queenPosition[1]]!.status).toBe('found')
     expect(game.board[queenPosition[0]]![queenPosition[1]]!.isFound()).toBe(true)
+    stop()
+  })
+
+  it('ignores note clicks on found or wrong cells', () => {
+    const { game, gestures, stop } = setupGestures()
+    const queenPosition = getQueenPositions(game)[0]!
+    const wrongPosition = getWrongPositions(game)[0]!
+
+    game.markQueen(queenPosition)
+    game.markQueen(wrongPosition)
+
+    gestures.handleNoteClick(queenPosition)
+    gestures.handleNoteClick(wrongPosition)
+    vi.advanceTimersByTime(300)
+
+    expect(game.board[queenPosition[0]]![queenPosition[1]]!.status).toBe('found')
+    expect(game.board[wrongPosition[0]]![wrongPosition[1]]!.status).toBe('wrong')
+    stop()
+  })
+
+  it('ignores queen marking on found or wrong cells', () => {
+    const { game, gestures, stop } = setupGestures()
+    const queenPosition = getQueenPositions(game)[0]!
+    const wrongPosition = getWrongPositions(game)[0]!
+
+    game.markQueen(queenPosition)
+    game.markQueen(wrongPosition)
+
+    gestures.handleMarkQueen(queenPosition)
+    gestures.handleMarkQueen(wrongPosition)
+
+    expect(game.hearts).toBe(game.maxHearts - 1)
+    expect(game.board[queenPosition[0]]![queenPosition[1]]!.status).toBe('found')
+    expect(game.board[wrongPosition[0]]![wrongPosition[1]]!.status).toBe('wrong')
     stop()
   })
 
@@ -175,6 +220,28 @@ describe('useGameBoardGestures', () => {
     expect(preventDefault).toHaveBeenCalled()
     expect(game.board[0]![0]!.status).toBe('note')
     expect(game.board[0]![1]!.status).toBe('note')
+    stop()
+  })
+
+  it('does not drag notes from or onto found or wrong cells', () => {
+    const { game, gestures, stop } = setupGestures()
+    const queenPosition = getQueenPositions(game)[0]!
+    const wrongPosition = getWrongPositions(game)[0]!
+
+    game.markQueen(queenPosition)
+    game.markQueen(wrongPosition)
+
+    gestures.handlePointerDown(queenPosition)
+    gestures.handlePointerEnter([1, 0])
+    gestures.handlePointerEnd()
+
+    gestures.handlePointerDown([1, 0])
+    gestures.handlePointerEnter(wrongPosition)
+    gestures.handlePointerEnd()
+
+    expect(game.board[queenPosition[0]]![queenPosition[1]]!.status).toBe('found')
+    expect(game.board[wrongPosition[0]]![wrongPosition[1]]!.status).toBe('wrong')
+    expect(game.board[1]![0]!.status).toBe('empty')
     stop()
   })
 })
