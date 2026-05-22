@@ -60,8 +60,6 @@ Use this checklist for concrete unfinished work. Each checkbox should describe a
 - [ ] Add a setting for disabling end-of-game replay.
 - [ ] Persist the replay setting.
 - [ ] Add tests for replay setting persistence.
-- [ ] Fall back to `Pink Crown` when a saved queen skin is no longer available.
-- [ ] Add tests for unavailable queen skin fallback.
 
 ## Board Skins
 
