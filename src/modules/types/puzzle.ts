@@ -12,3 +12,15 @@ export interface Puzzle {
   regions: number[][]
   queens: Position[]
 }
+
+export type PuzzleDirection = 0 | 90 | 180 | 270
+
+export interface PuzzleVariantMetadata {
+  direction: PuzzleDirection
+  regionMap: Record<number, number>
+}
+
+export interface PuzzleVariant {
+  puzzle: Puzzle
+  metadata: PuzzleVariantMetadata
+}

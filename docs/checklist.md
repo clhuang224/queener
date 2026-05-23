@@ -95,15 +95,10 @@ Use this checklist for concrete unfinished work. Each checkbox should describe a
 
 ## Run Records
 
-- [ ] Add an `ActionType` enum for run recording.
-- [ ] Add a `RunActionRecord` type with action, timestamp, and position.
-- [ ] Add a `CompletedRunRecord` type with puzzle, puzzle variant, action records, timestamps, user, and score.
-- [ ] Add `QueenGameRunRecorder`.
 - [ ] Record note marking actions.
 - [ ] Record note removal actions.
 - [ ] Record queen marking actions.
 - [ ] Record hint actions.
-- [ ] Add unit tests for `QueenGameRunRecorder`.
 - [ ] Update `docs/state.md` with the run record schema.
 
 ## Scoring
@@ -132,7 +127,6 @@ Use this checklist for concrete unfinished work. Each checkbox should describe a
 
 ## Run Replay
 
-- [ ] Add `QueenGameReplayPlayer`.
 - [ ] Recreate a board from a stored puzzle variant.
 - [ ] Replay recorded actions with run-relative timing.
 - [ ] Add a speed multiplier for replay playback.

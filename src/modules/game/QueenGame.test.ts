@@ -144,6 +144,14 @@ describe('QueenGame puzzle transformation', () => {
 
     const game = new QueenGame(TEST_PUZZLE)
 
+    expect(game.getPuzzleVariantMetadata()).toEqual({
+      direction: 90,
+      regionMap: {
+        0: 0,
+        1: 1,
+        2: 2,
+      },
+    })
     expect(game.board.map((row) => row.map((cell) => cell.getRegion()))).toEqual([
       [2, 2, 0],
       [2, 1, 0],
