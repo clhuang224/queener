@@ -270,7 +270,96 @@ stateDiagram-v2
 - Hint state is independent from hearts, but it still participates in the broader game-session flow.
 - This is a good example of an orthogonal state dimension: the hint can change from available to used while the broader game session still remains in `Playing`.
 
-## 5. Combined Modeling View
+## 5. Run Event Log
+
+The run event log records selected state transitions that happen during one active puzzle run. It is runtime memory today and is intended to become the input for scoring, end-of-game replay, and local leaderboard storage.
+
+Type:
+
+- event log
+- transition history
+
+Implementation:
+
+- [src/modules/enums/ActionType.ts](../src/modules/enums/ActionType.ts)
+- [src/modules/types/run.ts](../src/modules/types/run.ts)
+- [src/modules/game/QueenGameRunRecorder.ts](../src/modules/game/QueenGameRunRecorder.ts)
+- [src/modules/game/QueenGameRunReplay.ts](../src/modules/game/QueenGameRunReplay.ts)
+- [src/views/useGameRun.ts](../src/views/useGameRun.ts)
+
+### Recorded Transitions
+
+| Source State / Event | Resulting State Change | Recorded Action |
+| --- | --- | --- |
+| `BoardCell.empty` + successful `markNote()` | `empty -> note` | `ActionType.MARK_NOTE` |
+| `BoardCell.note` + successful `removeNote()` | `note -> empty` | `ActionType.REMOVE_NOTE` |
+| interactive `markQueen(correct cell)` | `empty/note -> found` | `ActionType.MARK_QUEEN` |
+| interactive `markQueen(wrong cell)` | `empty/note -> wrong` | `ActionType.MARK_QUEEN` |
+| `Hint Availability.Available` + successful `useHint()` | `Available -> Used`; one queen cell becomes `found` | `ActionType.HINT` |
+
+### Non-Recorded Transitions
+
+| Source State / Event | Reason |
+| --- | --- |
+| note or queen attempts on `found` / `wrong` cells | locked cells are no longer interactive in the UI |
+| `useHint()` after the hint has already been used | no state change occurs |
+| route changes, restarts, and result-modal actions | these start or end runs but are not player board actions |
+| sound playback and modal display | presentation side effects, not game-state transitions |
+
+### Action Record
+
+Each player action record is stored with a run-relative timestamp and the target board position:
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `action` | `ActionType` | the player action that was applied |
+| `actionAtMillisecond` | `number` | milliseconds elapsed since the current run recorder was created |
+| `position` | `Position` | `[row, column]` for the affected board cell |
+
+Current action values:
+
+| Action Type | Value | Recorded When |
+| --- | --- | --- |
+| `ActionType.MARK_NOTE` | `mark-note` | a cell successfully changes from `empty` to `note` |
+| `ActionType.REMOVE_NOTE` | `remove-note` | a cell successfully changes from `note` to `empty` |
+| `ActionType.MARK_QUEEN` | `mark-queen` | the player attempts to mark a queen on an interactive cell |
+| `ActionType.HINT` | `hint` | a hint successfully reveals a queen |
+
+### Completed Run Record
+
+A completed run record is the planned storage shape for leaderboard and replay data:
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `uid` | `string` | unique id for this completed run |
+| `level` | `number` | campaign level number |
+| `puzzle` | `Puzzle` | original puzzle source data, not the transformed active board |
+| `puzzleVariantMetadata` | `PuzzleVariantMetadata` | per-run direction and region remap used to build the active board |
+| `record` | `RunActionRecord[]` | ordered player action log |
+| `startedAt` | `Date` | wall-clock run start time |
+| `endedAt` | `Date` | wall-clock run end time |
+| `user` | `RunUser` | user identity used for leaderboard display |
+| `score` | `number` | calculated score for leaderboard sorting |
+
+### Puzzle Variant Metadata
+
+Puzzle variants are stored as metadata instead of a full transformed puzzle:
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `direction` | `0 | 90 | 180 | 270` | board rotation used for this run |
+| `regionMap` | `Record<number, number>` | source region id to active region id mapping |
+
+The original `puzzle` remains the canonical leaderboard identity. The variant metadata only describes how that puzzle was presented during one run. This keeps fixed campaign levels, future generated puzzles, and future timed challenge boards easier to compare and group.
+
+### Notes
+
+- `QueenGameRunRecorder` records actions after the gameplay action successfully changes state, except queen marking, which records the player's interactive queen attempt whether it is correct or wrong.
+- `actionAtMillisecond` is relative to the run start, while `startedAt` and `endedAt` remain wall-clock `Date` values on the completed run.
+- `QueenGameRunReplay` is a deterministic cursor over the action log. Playback speed should be handled by the future replay UI/controller by passing scaled elapsed milliseconds into the replay cursor.
+- Current runtime records are reset when the player starts another level, restarts the current level, or chooses replay after a result modal. Persistent storage is a later local leaderboard task.
+
+## 6. Combined Modeling View
 
 For this project, the recommended mental model is:
 
@@ -290,7 +379,7 @@ Those combinations are real runtime situations, but they are better represented 
 - one or more orthogonal state machines
 - explicit value changes in the transition tables
 
-## 6. Hearts Counter
+## 7. Hearts Counter
 
 Hearts are modeled as a bounded value rather than a named enum, and the maximum depends on board size:
 

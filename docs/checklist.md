@@ -93,10 +93,6 @@ Use this checklist for concrete unfinished work. Each checkbox should describe a
 - [ ] Update `QueenIcon` or `GameCell` to use prepared state-specific image variants.
 - [ ] Add tests that every `QueenSkinType` has all required state assets.
 
-## Run Records
-
-- [ ] Update `docs/state.md` with the run record schema.
-
 ## Scoring
 
 - [ ] Add `QueenGameRunScorer`.
