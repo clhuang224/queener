@@ -23,6 +23,12 @@ const props = defineProps<{
   hintedPosition: Position | null
 }>()
 
+const emit = defineEmits<{
+  'mark-note': [position: Position]
+  'remove-note': [position: Position]
+  'mark-queen': [position: Position]
+}>()
+
 const boardRef = ref<HTMLDivElement | null>(null)
 const boardSize = computed(() => props.game.getSize())
 const queenIcon = computed(() => QUEEN_SKINS[props.queenSkin].icon)
@@ -65,6 +71,7 @@ const markNoteWithSound = (position: Position) => {
   const wasNote = props.game.isNote(position)
   props.game.markNote(position)
   if (!wasNote && props.game.isNote(position)) {
+    emit('mark-note', position)
     void playGameSound(GameSoundType.NOTE)
   }
 }
@@ -73,12 +80,14 @@ const removeNoteWithSound = (position: Position) => {
   const wasNote = props.game.isNote(position)
   props.game.removeNote(position)
   if (wasNote && !props.game.isNote(position)) {
+    emit('remove-note', position)
     void playGameSound(GameSoundType.NOTE)
   }
 }
 
 const markQueenWithSound = (position: Position) => {
   const hasQueen = props.game.markQueen(position)
+  emit('mark-queen', position)
 
   if (props.game.isWin() || props.game.isGameOver()) return
 

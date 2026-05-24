@@ -95,10 +95,6 @@ Use this checklist for concrete unfinished work. Each checkbox should describe a
 
 ## Run Records
 
-- [ ] Record note marking actions.
-- [ ] Record note removal actions.
-- [ ] Record queen marking actions.
-- [ ] Record hint actions.
 - [ ] Update `docs/state.md` with the run record schema.
 
 ## Scoring

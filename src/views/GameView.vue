@@ -5,8 +5,7 @@ import { useRouter } from 'vue-router'
 import BaseButton from '@/components/common/BaseButton.vue'
 import BasePanel from '@/components/common/BasePanel.vue'
 import GameBoard from '@/components/game/GameBoard.vue'
-import QueenGame from '@/modules/game/QueenGame'
-import { TOTAL_LEVELS, getPuzzleByLevel } from '@/modules/puzzles/simple'
+import { TOTAL_LEVELS } from '@/modules/puzzles/simple'
 import { useSkinStore } from '@/modules/stores/skin'
 import { useGlobalModalStore } from '@/modules/stores/globalModal'
 import { useLevelStore } from '@/modules/stores/level'
@@ -14,6 +13,7 @@ import type { Position } from '@/modules/types/board'
 import { playGameSound } from '@/modules/utils/playGameSound'
 import { GameSoundType } from '@/modules/enums/GameSoundType'
 import { IconBulb, IconBulbOff, IconHome, IconRefresh } from '@tabler/icons-vue'
+import { useGameRun } from './useGameRun'
 
 const props = defineProps<{
   level: number
@@ -28,8 +28,16 @@ const { openAlertModal, openConfirmModal, openResultModal } = useGlobalModalStor
 
 skinStore.load()
 
-const activeLevel = ref(1)
-const game = ref(new QueenGame(getPuzzleByLevel(activeLevel.value)))
+const {
+  activeLevel,
+  game,
+  startLevel,
+  restartRun,
+  recordMarkNote,
+  recordRemoveNote,
+  recordMarkQueen,
+  recordHint,
+} = useGameRun()
 const hasNextLevel = computed(() => activeLevel.value < TOTAL_LEVELS)
 const isHandlingResult = ref(false)
 const isWaitingSound = ref(false)
@@ -50,9 +58,8 @@ watch(
       return
     }
 
-    activeLevel.value = playableLevel.activeLevel
     levelStore.setSelectedLevel(playableLevel.activeLevel)
-    game.value = new QueenGame(getPuzzleByLevel(playableLevel.activeLevel))
+    startLevel(playableLevel.activeLevel)
     hintedPosition.value = null
     isHandlingResult.value = false
     isWaitingSound.value = false
@@ -64,6 +71,7 @@ const clickHint = async () => {
   const position = game.value.useHint()
 
   if (position) {
+    recordHint(position)
     hintedPosition.value = position
     void playGameSound(GameSoundType.HINT)
     return
@@ -93,7 +101,7 @@ const clickRestart = async () => {
       title: 'Restart Level',
       content: 'Are you sure you want to restart this puzzle?',
     })
-    game.value.resetGame()
+    restartRun()
     hintedPosition.value = null
   } catch {
     return
@@ -101,7 +109,7 @@ const clickRestart = async () => {
 }
 
 const restartAfterResult = () => {
-  game.value.resetGame()
+  restartRun()
   hintedPosition.value = null
 }
 
@@ -224,6 +232,9 @@ watch(
         :board-skin="boardSkin"
         :board-texture-enabled="boardTextureEnabled"
         :hinted-position="hintedPosition"
+        @mark-note="recordMarkNote"
+        @remove-note="recordRemoveNote"
+        @mark-queen="recordMarkQueen"
       />
     </BasePanel>
     <BaseButton

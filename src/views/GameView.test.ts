@@ -11,6 +11,30 @@ import { GameSoundType } from '@/modules/enums/GameSoundType'
 import { QueenSkinType } from '@/modules/enums/QueenSkinType'
 import type { QueenGamePublic } from '@/modules/game/QueenGame'
 
+const runRecorderMock = vi.hoisted(() => {
+  const instances: Array<{
+    markNote: ReturnType<typeof vi.fn>
+    removeNote: ReturnType<typeof vi.fn>
+    markQueen: ReturnType<typeof vi.fn>
+    hint: ReturnType<typeof vi.fn>
+  }> = []
+  const create = vi.fn(function QueenGameRunRecorderMock() {
+    const recorder = {
+      markNote: vi.fn(),
+      removeNote: vi.fn(),
+      markQueen: vi.fn(),
+      hint: vi.fn(),
+    }
+    instances.push(recorder)
+    return recorder
+  })
+
+  return {
+    create,
+    instances,
+  }
+})
+
 const push = vi.fn()
 const openAlertModal = vi.fn()
 const openConfirmModal = vi.fn()
@@ -36,6 +60,10 @@ vi.mock('@/modules/stores/globalModal', () => ({
 
 vi.mock('@/modules/utils/playGameSound', () => ({
   playGameSound,
+}))
+
+vi.mock('@/modules/game/QueenGameRunRecorder', () => ({
+  default: runRecorderMock.create,
 }))
 
 const mountGameView = () => {
@@ -91,6 +119,10 @@ const findCell = (wrapper: ReturnType<typeof mount>, row: number, column: number
     )
 }
 
+const getActiveRunRecorder = () => {
+  return runRecorderMock.instances[runRecorderMock.instances.length - 1]!
+}
+
 const createDeferred = () => {
   let resolve!: () => void
   const promise = new Promise<void>((done) => {
@@ -108,6 +140,8 @@ describe('GameView', () => {
     openResultModal.mockReset()
     playGameSound.mockReset()
     playGameSound.mockResolvedValue(undefined)
+    runRecorderMock.create.mockClear()
+    runRecorderMock.instances.length = 0
   })
 
   it('restarts the current level after confirmation', async () => {
@@ -277,5 +311,37 @@ describe('GameView', () => {
     expect(wrapper.find('.game-cell--hinted').attributes('data-status')).toBe('found')
     expect(hintButton.attributes('aria-label')).toBe('Hint used')
     expect(hintButton.attributes('disabled')).toBeDefined()
+  })
+
+  it('records player actions during the current run', async () => {
+    const { wrapper } = mountGameView()
+    const recorder = getActiveRunRecorder()
+    const gameBoard = wrapper.findComponent(GameBoard)
+
+    gameBoard.vm.$emit('mark-note', [0, 1])
+    gameBoard.vm.$emit('remove-note', [0, 1])
+    gameBoard.vm.$emit('mark-queen', [0, 0])
+
+    const hintButton = wrapper
+      .findAll('button')
+      .find((button) => button.attributes('aria-label') === 'Use hint')!
+    await hintButton.trigger('click')
+
+    expect(recorder.markNote).toHaveBeenCalledWith([0, 1])
+    expect(recorder.removeNote).toHaveBeenCalledWith([0, 1])
+    expect(recorder.markQueen).toHaveBeenCalledWith([0, 0])
+    expect(recorder.hint).toHaveBeenCalledWith(expect.any(Array))
+  })
+
+  it('starts a fresh run recorder after restart', async () => {
+    openConfirmModal.mockResolvedValue(undefined)
+
+    const { wrapper, restartButton } = mountGameView()
+    const recorderCount = runRecorderMock.instances.length
+
+    await restartButton.trigger('click')
+    await wrapper.vm.$nextTick()
+
+    expect(runRecorderMock.instances).toHaveLength(recorderCount + 1)
   })
 })
