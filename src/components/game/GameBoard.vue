@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import GameCell from '@/components/game/GameCell.vue'
 import type { QueenGamePublic } from '@/modules/game/QueenGame'
-import HeartCounter from '../common/HeartCounter.vue'
 import { CELL_TEXTURES } from '@/modules/constants/cellTextures'
 import { useGameBoardGestures } from './useGameBoardGestures'
 import { computed, ref } from 'vue'
@@ -124,7 +123,6 @@ const {
     @touchend="handlePointerEnd"
     @touchcancel="handlePointerEnd"
   >
-    <HeartCounter :hearts="game.hearts" :max-hearts="game.maxHearts" />
     <div class="board-cells">
       <template v-for="(row, rowIndex) in game.board" :key="rowIndex">
         <GameCell
@@ -148,12 +146,10 @@ const {
 <style scoped lang="scss">
 .game-board {
   --board-gap: 6px;
-  --board-padding: 12px;
 
   touch-action: manipulation;
   width: 100%;
   max-width: var(--board-max-size);
-  padding: var(--board-padding);
   box-sizing: border-box;
 }
 
@@ -169,7 +165,6 @@ const {
 @media (max-width: 480px) {
   .game-board {
     --board-gap: 4px;
-    --board-padding: 8px;
   }
 }
 </style>

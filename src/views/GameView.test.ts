@@ -195,6 +195,12 @@ describe('GameView', () => {
     )
   })
 
+  it('shows the run time timer', () => {
+    const { wrapper } = mountGameView()
+
+    expect(wrapper.find('[aria-label="Run time"]').text()).toBe('00:00.000')
+  })
+
   it('shows win result actions and navigates to next level', async () => {
     openResultModal.mockResolvedValue('next')
 

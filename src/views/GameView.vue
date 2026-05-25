@@ -4,6 +4,7 @@ import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import BaseButton from '@/components/common/BaseButton.vue'
 import BasePanel from '@/components/common/BasePanel.vue'
+import HeartCounter from '@/components/common/HeartCounter.vue'
 import GameBoard from '@/components/game/GameBoard.vue'
 import { TOTAL_LEVELS } from '@/modules/puzzles/simple'
 import { useSkinStore } from '@/modules/stores/skin'
@@ -37,6 +38,8 @@ const {
   recordRemoveNote,
   recordMarkQueen,
   recordHint,
+  formattedRunTime,
+  finishRun,
 } = useGameRun()
 const hasNextLevel = computed(() => activeLevel.value < TOTAL_LEVELS)
 const isHandlingResult = ref(false)
@@ -139,6 +142,7 @@ watch(
     if (!gameOver || isHandlingResult.value) return
 
     isHandlingResult.value = true
+    finishRun()
     isWaitingSound.value = true
     await playGameSound(GameSoundType.LOSE)
     isWaitingSound.value = false
@@ -167,6 +171,7 @@ watch(
     if (!win || isHandlingResult.value) return
 
     isHandlingResult.value = true
+    finishRun()
     isWaitingSound.value = true
     levelStore.completeLevel(activeLevel.value)
     await playGameSound(GameSoundType.WIN)
@@ -202,30 +207,36 @@ watch(
 <template>
   <div class="game">
     <div v-if="isWaitingSound" class="interaction-overlay" data-test="result-lock-overlay"></div>
-    <div class="page-actions">
-      <BaseButton
-        icon
-        variant="ghost"
-        class="restart"
-        :disabled="isHandlingResult"
-        aria-label="Restart level"
-        @click="clickRestart"
-      >
-        <IconRefresh />
-      </BaseButton>
-      <BaseButton
-        icon
-        variant="ghost"
-        class="quit"
-        :disabled="isHandlingResult"
-        aria-label="Quit to home"
-        @click="clickQuit"
-      >
-        <IconHome />
-      </BaseButton>
-    </div>
-    <p class="level-title">Level {{ activeLevel }}</p>
+    <header class="game-header">
+      <h2 class="level-title">Level {{ activeLevel }}</h2>
+      <div class="page-actions">
+        <BaseButton
+          icon
+          variant="ghost"
+          class="restart"
+          :disabled="isHandlingResult"
+          aria-label="Restart level"
+          @click="clickRestart"
+        >
+          <IconRefresh />
+        </BaseButton>
+        <BaseButton
+          icon
+          variant="ghost"
+          class="quit"
+          :disabled="isHandlingResult"
+          aria-label="Quit to home"
+          @click="clickQuit"
+        >
+          <IconHome />
+        </BaseButton>
+      </div>
+    </header>
     <BasePanel class="board-panel" :style="boardPanelStyle">
+      <div class="board-hud">
+        <HeartCounter :hearts="game.hearts" :max-hearts="game.maxHearts" />
+        <p class="run-timer" aria-label="Run time">{{ formattedRunTime }}</p>
+      </div>
       <GameBoard
         :game="game"
         :queen-skin="queenSkin"
@@ -257,15 +268,28 @@ watch(
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   height: 100%;
 }
 
-.page-actions {
-  position: fixed;
-  top: 24px;
-  right: 24px;
+.game-header {
+  width: 100%;
+  height: 64px;
   display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+
+  &::before {
+    content: '';
+    flex: 1;
+  }
+}
+
+.page-actions {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 8px;
   gap: 8px;
 }
 
@@ -274,12 +298,14 @@ watch(
 }
 
 .board-panel {
-  --panel-padding: 8px;
+  --panel-padding: 12px;
   width: var(--board-panel-max-size);
   max-width: calc(100% - 32px);
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+  gap: 8px;
 }
 
 .hint {
@@ -289,10 +315,30 @@ watch(
 }
 
 .level-title {
-  margin: 0 0 16px;
+  flex: 1;
+  margin: 0;
   font-size: 24px;
   font-weight: 700;
+  text-align: center;
   color: var(--color-text);
+}
+
+.board-hud {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 4px 8px;
+}
+
+.run-timer {
+  min-width: 88px;
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 18px;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
 }
 
 .interaction-overlay {
@@ -300,12 +346,5 @@ watch(
   inset: 0;
   z-index: 1;
   cursor: wait;
-}
-
-@media (max-width: 480px) {
-  .page-actions {
-    top: 16px;
-    right: 16px;
-  }
 }
 </style>

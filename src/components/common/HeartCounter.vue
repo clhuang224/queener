@@ -24,13 +24,15 @@ defineProps({
 
 <style scoped lang="scss">
 .hearts {
-  width: 100%;
   display: flex;
-  justify-content: center;
-  margin-bottom: 10px;
+  align-items: center;
   font-size: 40px;
+
   .heart {
     color: #e53e3e;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 }
 </style>
