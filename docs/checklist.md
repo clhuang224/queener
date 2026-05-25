@@ -95,16 +95,6 @@ Use this checklist for concrete unfinished work. Each checkbox should describe a
 
 ## Scoring
 
-- [ ] Add `QueenGameRunScorer`.
-- [ ] Add a 1000-point score model.
-- [ ] Add a 700-point time score.
-- [ ] Add a 200-point remaining hearts bonus.
-- [ ] Add a 100-point remaining hints bonus.
-- [ ] Add board-size target time constants.
-- [ ] Add board-size timeout time constants.
-- [ ] Add unit tests for score calculation.
-- [ ] Add unit tests for score clamping at zero.
-
 ## Local Leaderboard
 
 - [ ] Choose an IndexedDB helper approach.
