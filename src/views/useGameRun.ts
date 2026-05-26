@@ -3,6 +3,7 @@ import QueenGame from '@/modules/game/QueenGame'
 import QueenGameRunRecorder from '@/modules/game/QueenGameRunRecorder'
 import { getPuzzleByLevel } from '@/modules/puzzles/simple'
 import type { Position } from '@/modules/types/board'
+import type { RunReplayData } from '@/modules/types/run'
 import { formatRunTime } from '@/modules/utils/formatRunTime'
 
 const TIMER_UPDATE_INTERVAL_MS = 33
@@ -81,6 +82,13 @@ export const useGameRun = (initialLevel = 1, now: Now = () => Date.now()) => {
     runRecorder.value.hint(position)
   }
 
+  const createReplayData = (): RunReplayData => ({
+    level: activeLevel.value,
+    puzzle: getPuzzleByLevel(activeLevel.value),
+    puzzleVariantMetadata: game.value.getPuzzleVariantMetadata(),
+    record: runRecorder.value.getRecords(),
+  })
+
   startClock()
 
   if (getCurrentScope()) {
@@ -102,5 +110,6 @@ export const useGameRun = (initialLevel = 1, now: Now = () => Date.now()) => {
     recordRemoveNote,
     recordMarkQueen,
     recordHint,
+    createReplayData,
   }
 }

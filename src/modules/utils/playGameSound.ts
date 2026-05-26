@@ -25,7 +25,14 @@ export const GAME_SOUND_SOURCES = getEnumValues(GameSoundType).reduce(
   {} as Record<GameSoundType, string>,
 )
 
-export const playGameSound = (sound: GameSoundType): Promise<void> => {
+interface PlayGameSoundOptions {
+  playbackRate?: number
+}
+
+export const playGameSound = (
+  sound: GameSoundType,
+  options: PlayGameSoundOptions = {},
+): Promise<void> => {
   if (typeof Audio === 'undefined') return Promise.resolve()
 
   const soundVolume = getStoredSoundVolume()
@@ -34,6 +41,7 @@ export const playGameSound = (sound: GameSoundType): Promise<void> => {
   return new Promise((resolve) => {
     const audio = new Audio(GAME_SOUND_SOURCES[sound])
     audio.volume = soundVolume / 100
+    audio.playbackRate = options.playbackRate ?? 1
     let isDone = false
 
     const finish = () => {

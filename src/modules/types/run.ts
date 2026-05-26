@@ -24,3 +24,10 @@ export interface CompletedRunRecord {
   user: RunUser
   score: number
 }
+
+export interface RunReplayData {
+  level: number
+  puzzle: Puzzle
+  puzzleVariantMetadata: PuzzleVariantMetadata
+  record: RunActionRecord[]
+}

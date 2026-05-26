@@ -2,10 +2,12 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import GameView from './GameView.vue'
 import GameBoard from '@/components/game/GameBoard.vue'
+import GameRunReplayBoard from '@/components/game/GameRunReplayBoard.vue'
 import { installStorageMock } from '@/test/localStorage'
 import { createTestingPinia } from '@/test/pinia'
 import { BOARD_SKINS } from '@/modules/constants/boardSkins'
 import { QUEEN_SKINS } from '@/modules/constants/queenSkins'
+import { ActionType } from '@/modules/enums/ActionType'
 import { BoardSkinType } from '@/modules/enums/BoardSkinType'
 import { GameSoundType } from '@/modules/enums/GameSoundType'
 import { QueenSkinType } from '@/modules/enums/QueenSkinType'
@@ -17,6 +19,7 @@ const runRecorderMock = vi.hoisted(() => {
     removeNote: ReturnType<typeof vi.fn>
     markQueen: ReturnType<typeof vi.fn>
     hint: ReturnType<typeof vi.fn>
+    getRecords: ReturnType<typeof vi.fn>
   }> = []
   const create = vi.fn(function QueenGameRunRecorderMock() {
     const recorder = {
@@ -24,6 +27,7 @@ const runRecorderMock = vi.hoisted(() => {
       removeNote: vi.fn(),
       markQueen: vi.fn(),
       hint: vi.fn(),
+      getRecords: vi.fn(() => []),
     }
     instances.push(recorder)
     return recorder
@@ -131,6 +135,23 @@ const createDeferred = () => {
   return { promise, resolve }
 }
 
+const getReplayRecords = () => [
+  {
+    action: ActionType.MARK_QUEEN,
+    actionAtMillisecond: 1000,
+    position: [0, 0] as [number, number],
+  },
+]
+
+const finishResultReplay = async (wrapper: ReturnType<typeof mount>) => {
+  const replayBoard = wrapper.findComponent(GameRunReplayBoard)
+  expect(replayBoard.exists()).toBe(true)
+
+  replayBoard.vm.$emit('finished')
+  await Promise.resolve()
+  await wrapper.vm.$nextTick()
+}
+
 describe('GameView', () => {
   beforeEach(() => {
     installStorageMock()
@@ -205,12 +226,24 @@ describe('GameView', () => {
     openResultModal.mockResolvedValue('next')
 
     const { wrapper } = mountGameView()
+    getActiveRunRecorder().getRecords.mockReturnValue(getReplayRecords())
 
     for (const [row, column] of getQueenPositions(wrapper)) {
       await findCell(wrapper, row, column)!.trigger('dblclick')
     }
     await wrapper.vm.$nextTick()
     await Promise.resolve()
+
+    expect(wrapper.find('[data-test="result-replay-overlay"]').exists()).toBe(true)
+    expect(wrapper.findComponent(GameBoard).exists()).toBe(true)
+    expect(wrapper.findComponent(GameRunReplayBoard).attributes('style')).toContain(
+      '--replay-cell-opacity: 0.58',
+    )
+    wrapper.findComponent(GameRunReplayBoard).vm.$emit('timeUpdate', 1000)
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('[aria-label="Replay run time"]').text()).toBe('00:01.000')
+    expect(openResultModal).not.toHaveBeenCalled()
+    await finishResultReplay(wrapper)
 
     expect(playGameSound).toHaveBeenCalledWith(GameSoundType.WIN)
     expect(openResultModal).toHaveBeenCalledWith({
@@ -233,11 +266,14 @@ describe('GameView', () => {
 
   it('waits for the win sound before showing the result modal', async () => {
     const sound = createDeferred()
+    const modal = createDeferred()
     playGameSound.mockImplementation((soundName) => {
       return soundName === GameSoundType.WIN ? sound.promise : Promise.resolve()
     })
+    openResultModal.mockReturnValue(modal.promise)
 
     const { wrapper } = mountGameView()
+    getActiveRunRecorder().getRecords.mockReturnValue(getReplayRecords())
 
     for (const [row, column] of getQueenPositions(wrapper)) {
       await findCell(wrapper, row, column)!.trigger('dblclick')
@@ -245,8 +281,14 @@ describe('GameView', () => {
     await wrapper.vm.$nextTick()
     await Promise.resolve()
 
+    expect(wrapper.findComponent(GameRunReplayBoard).exists()).toBe(true)
+    expect(openResultModal).not.toHaveBeenCalled()
+
+    await finishResultReplay(wrapper)
+
     expect(playGameSound).toHaveBeenCalledWith(GameSoundType.WIN)
     expect(wrapper.find('[data-test="result-lock-overlay"]').exists()).toBe(true)
+    expect(wrapper.find('[data-test="result-replay-overlay"]').exists()).toBe(true)
     expect(openResultModal).not.toHaveBeenCalled()
 
     sound.resolve()
@@ -259,6 +301,13 @@ describe('GameView', () => {
       }),
     )
     expect(wrapper.find('[data-test="result-lock-overlay"]').exists()).toBe(false)
+    expect(wrapper.find('[data-test="result-replay-overlay"]').exists()).toBe(true)
+
+    modal.resolve()
+    await Promise.resolve()
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.find('[data-test="result-replay-overlay"]').exists()).toBe(false)
   })
 
   it('loads the next puzzle when the route level changes', async () => {
@@ -278,6 +327,7 @@ describe('GameView', () => {
     openResultModal.mockResolvedValue('retry')
 
     const { wrapper } = mountGameView()
+    getActiveRunRecorder().getRecords.mockReturnValue(getReplayRecords())
     const wrongPositions = getWrongPositions(wrapper).slice(0, 2)
     const wrongCell = findCell(wrapper, ...wrongPositions[0]!)!
 
@@ -287,6 +337,9 @@ describe('GameView', () => {
     await wrapper.vm.$nextTick()
     await Promise.resolve()
     await wrapper.vm.$nextTick()
+
+    expect(openResultModal).not.toHaveBeenCalled()
+    await finishResultReplay(wrapper)
 
     expect(playGameSound).toHaveBeenCalledWith(GameSoundType.LOSE)
     expect(openResultModal).toHaveBeenCalledWith({

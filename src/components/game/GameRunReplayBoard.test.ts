@@ -4,6 +4,15 @@ import GameRunReplayBoard from './GameRunReplayBoard.vue'
 import { ActionType } from '@/modules/enums/ActionType'
 import type { Puzzle } from '@/modules/types/puzzle'
 import type { RunActionRecord } from '@/modules/types/run'
+import { GameSoundType } from '@/modules/enums/GameSoundType'
+
+const { playGameSound } = vi.hoisted(() => ({
+  playGameSound: vi.fn(),
+}))
+
+vi.mock('@/modules/utils/playGameSound', () => ({
+  playGameSound,
+}))
 
 const TEST_PUZZLE: Puzzle = {
   id: 'test-puzzle',
@@ -61,10 +70,27 @@ const mountReplayBoard = () => {
   })
 }
 
+const mountEmptyReplayBoard = () => {
+  return mount(GameRunReplayBoard, {
+    props: {
+      puzzle: TEST_PUZZLE,
+      puzzleVariantMetadata: {
+        direction: 0,
+        regionMap: {
+          0: 0,
+          1: 1,
+        },
+      },
+      records: [],
+    },
+  })
+}
+
 describe('GameRunReplayBoard', () => {
   beforeEach(() => {
     vi.useFakeTimers()
     vi.setSystemTime(new Date('2026-05-26T00:00:00.000Z'))
+    playGameSound.mockReset()
   })
 
   afterEach(() => {
@@ -79,23 +105,40 @@ describe('GameRunReplayBoard', () => {
     expect(wrapper.findAll('.replay-cell')).toHaveLength(4)
   })
 
-  it('plays records at 2x speed by default', async () => {
+  it('plays records at 3x speed by default', async () => {
     const wrapper = mountReplayBoard()
 
-    vi.advanceTimersByTime(264)
+    vi.advanceTimersByTime(198)
     await wrapper.vm.$nextTick()
     expect(wrapper.find('[data-test="replay-cell-0-1"]').attributes('data-status')).toBe('note')
 
-    vi.advanceTimersByTime(264)
+    vi.advanceTimersByTime(165)
     await wrapper.vm.$nextTick()
     expect(wrapper.find('[data-test="replay-cell-0-1"]').attributes('data-status')).toBe('empty')
 
-    vi.advanceTimersByTime(264)
+    vi.advanceTimersByTime(165)
     await wrapper.vm.$nextTick()
     expect(wrapper.find('[data-test="replay-cell-0-0"]').attributes('data-status')).toBe('found')
 
-    vi.advanceTimersByTime(264)
+    vi.advanceTimersByTime(165)
     await wrapper.vm.$nextTick()
     expect(wrapper.find('[data-test="replay-cell-1-0"]').attributes('data-status')).toBe('wrong')
+    expect(playGameSound).toHaveBeenNthCalledWith(1, GameSoundType.NOTE, { playbackRate: 3 })
+    expect(playGameSound).toHaveBeenNthCalledWith(2, GameSoundType.NOTE, { playbackRate: 3 })
+    expect(playGameSound).toHaveBeenNthCalledWith(3, GameSoundType.CORRECT, { playbackRate: 3 })
+    expect(playGameSound).toHaveBeenNthCalledWith(4, GameSoundType.WRONG, { playbackRate: 3 })
+    const timeUpdates = wrapper.emitted('timeUpdate') ?? []
+    expect(timeUpdates[timeUpdates.length - 1]).toEqual([2000])
+    expect(wrapper.emitted('finished')).toHaveLength(1)
+  })
+
+  it('finishes once without starting a timer when there are no records', async () => {
+    const wrapper = mountEmptyReplayBoard()
+
+    await wrapper.vm.$nextTick()
+    vi.advanceTimersByTime(1000)
+
+    expect(wrapper.emitted('finished')).toHaveLength(1)
+    expect(playGameSound).not.toHaveBeenCalled()
   })
 })

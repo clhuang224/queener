@@ -6,13 +6,16 @@ import BaseButton from '@/components/common/BaseButton.vue'
 import BasePanel from '@/components/common/BasePanel.vue'
 import HeartCounter from '@/components/common/HeartCounter.vue'
 import GameBoard from '@/components/game/GameBoard.vue'
+import GameRunReplayBoard from '@/components/game/GameRunReplayBoard.vue'
 import { TOTAL_LEVELS } from '@/modules/puzzles/simple'
 import { useSkinStore } from '@/modules/stores/skin'
 import { useGlobalModalStore } from '@/modules/stores/globalModal'
 import { useLevelStore } from '@/modules/stores/level'
 import type { Position } from '@/modules/types/board'
+import type { RunReplayData } from '@/modules/types/run'
 import { playGameSound } from '@/modules/utils/playGameSound'
 import { GameSoundType } from '@/modules/enums/GameSoundType'
+import { formatRunTime } from '@/modules/utils/formatRunTime'
 import { IconBulb, IconBulbOff, IconHome, IconRefresh } from '@tabler/icons-vue'
 import { useGameRun } from './useGameRun'
 
@@ -40,14 +43,27 @@ const {
   recordHint,
   formattedRunTime,
   finishRun,
+  createReplayData,
 } = useGameRun()
 const hasNextLevel = computed(() => activeLevel.value < TOTAL_LEVELS)
 const isHandlingResult = ref(false)
 const isWaitingSound = ref(false)
+const isReplayingResult = ref(false)
+const replayData = ref<RunReplayData | null>(null)
+const replayRunTimeMs = ref(0)
+const pendingResult = ref<'win' | 'loss' | null>(null)
 const hintedPosition = ref<Position | null>(null)
 const boardPanelStyle = computed(() => ({
   '--board-panel-max-size': `${game.value.getSize() * 62 + 40}px`,
 }))
+const formattedReplayRunTime = computed(() => formatRunTime(replayRunTimeMs.value))
+
+const clearResultReplay = () => {
+  isReplayingResult.value = false
+  replayData.value = null
+  replayRunTimeMs.value = 0
+  pendingResult.value = null
+}
 
 watch(
   () => props.level,
@@ -66,6 +82,7 @@ watch(
     hintedPosition.value = null
     isHandlingResult.value = false
     isWaitingSound.value = false
+    clearResultReplay()
   },
   { immediate: true },
 )
@@ -114,6 +131,7 @@ const clickRestart = async () => {
 const restartAfterResult = () => {
   restartRun()
   hintedPosition.value = null
+  clearResultReplay()
 }
 
 const goHome = async () => {
@@ -136,32 +154,91 @@ const goToNextLevel = async () => {
 const isHintUsed = computed(() => game.value.isHintUsed())
 const hintButtonLabel = computed(() => (isHintUsed.value ? 'Hint used' : 'Use hint'))
 
+const openLossResult = async () => {
+  isWaitingSound.value = true
+  await playGameSound(GameSoundType.LOSE)
+  isWaitingSound.value = false
+
+  const action = await openResultModal({
+    title: 'Game Over',
+    content: 'Out of hearts. What would you like to do?',
+    actions: [
+      { label: 'Play Again', payload: 'retry' },
+      { label: 'Home', payload: 'home' },
+    ],
+  })
+  clearResultReplay()
+
+  if (action === 'retry') {
+    restartAfterResult()
+  } else if (action === 'home') {
+    await goHome()
+  }
+}
+
+const openWinResult = async () => {
+  isWaitingSound.value = true
+  levelStore.completeLevel(activeLevel.value)
+  await playGameSound(GameSoundType.WIN)
+  isWaitingSound.value = false
+
+  const actions = [
+    { label: 'Play Again', payload: 'retry' },
+    { label: 'Home', payload: 'home' },
+  ]
+  if (hasNextLevel.value) {
+    actions.unshift({ label: 'Next Level', payload: 'next' })
+  }
+
+  const action = await openResultModal({
+    title: 'Congratulations!',
+    content: 'You solved the puzzle. What would you like to do next?',
+    actions,
+  })
+  clearResultReplay()
+
+  if (action === 'next') {
+    await goToNextLevel()
+  } else if (action === 'retry') {
+    restartAfterResult()
+  } else if (action === 'home') {
+    await goHome()
+  }
+}
+
+const startResultReplay = (result: 'win' | 'loss') => {
+  finishRun()
+  replayData.value = createReplayData()
+  replayRunTimeMs.value = 0
+  pendingResult.value = result
+  isReplayingResult.value = true
+}
+
+const handleReplayTimeUpdate = (runTimeMs: number) => {
+  replayRunTimeMs.value = runTimeMs
+}
+
+const handleReplayFinished = async () => {
+  if (!pendingResult.value) return
+
+  const result = pendingResult.value
+
+  if (result === 'win') {
+    await openWinResult()
+  } else {
+    await openLossResult()
+  }
+
+  isHandlingResult.value = false
+}
+
 watch(
   () => game.value.isGameOver(),
   async (gameOver) => {
     if (!gameOver || isHandlingResult.value) return
 
     isHandlingResult.value = true
-    finishRun()
-    isWaitingSound.value = true
-    await playGameSound(GameSoundType.LOSE)
-    isWaitingSound.value = false
-    const action = await openResultModal({
-      title: 'Game Over',
-      content: 'Out of hearts. What would you like to do?',
-      actions: [
-        { label: 'Play Again', payload: 'retry' },
-        { label: 'Home', payload: 'home' },
-      ],
-    })
-
-    if (action === 'retry') {
-      restartAfterResult()
-    } else if (action === 'home') {
-      await goHome()
-    }
-
-    isHandlingResult.value = false
+    startResultReplay('loss')
   },
 )
 
@@ -171,35 +248,7 @@ watch(
     if (!win || isHandlingResult.value) return
 
     isHandlingResult.value = true
-    finishRun()
-    isWaitingSound.value = true
-    levelStore.completeLevel(activeLevel.value)
-    await playGameSound(GameSoundType.WIN)
-    isWaitingSound.value = false
-
-    const actions = [
-      { label: 'Play Again', payload: 'retry' },
-      { label: 'Home', payload: 'home' },
-    ]
-    if (hasNextLevel.value) {
-      actions.unshift({ label: 'Next Level', payload: 'next' })
-    }
-
-    const action = await openResultModal({
-      title: 'Congratulations!',
-      content: 'You solved the puzzle. What would you like to do next?',
-      actions,
-    })
-
-    if (action === 'next') {
-      await goToNextLevel()
-    } else if (action === 'retry') {
-      restartAfterResult()
-    } else if (action === 'home') {
-      await goHome()
-    }
-
-    isHandlingResult.value = false
+    startResultReplay('win')
   },
 )
 </script>
@@ -252,13 +301,36 @@ watch(
       icon
       class="hint"
       :class="{ 'hint--used': isHintUsed }"
-      :disabled="isHintUsed || isHandlingResult"
+      :disabled="isHintUsed || isHandlingResult || isReplayingResult"
       :aria-label="hintButtonLabel"
       @click="clickHint"
     >
       <IconBulbOff v-if="isHintUsed" />
       <IconBulb v-else />
     </BaseButton>
+    <div
+      v-if="isReplayingResult && replayData"
+      class="result-replay-overlay"
+      data-test="result-replay-overlay"
+    >
+      <BasePanel class="result-replay-panel">
+        <h2 class="result-replay-title">Replay</h2>
+        <p class="result-replay-timer" aria-label="Replay run time">
+          {{ formattedReplayRunTime }}
+        </p>
+        <GameRunReplayBoard
+          :puzzle="replayData.puzzle"
+          :puzzle-variant-metadata="replayData.puzzleVariantMetadata"
+          :records="replayData.record"
+          :queen-skin="queenSkin"
+          :board-skin="boardSkin"
+          :board-texture-enabled="boardTextureEnabled"
+          style="--replay-cell-opacity: 0.58"
+          @time-update="handleReplayTimeUpdate"
+          @finished="handleReplayFinished"
+        />
+      </BasePanel>
+    </div>
   </div>
 </template>
 
@@ -346,5 +418,44 @@ watch(
   inset: 0;
   z-index: 1;
   cursor: wait;
+}
+
+.result-replay-overlay {
+  position: fixed;
+  z-index: 8;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.result-replay-panel {
+  --panel-padding: 24px;
+
+  width: 100%;
+  height: 100%;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: var(--color-surface);
+  border: 0;
+  border-radius: 0;
+}
+
+.result-replay-title {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 28px;
+  line-height: 1.2;
+}
+
+.result-replay-timer {
+  margin: -6px 0 4px;
+  color: var(--color-text-muted);
+  font-size: 18px;
+  font-variant-numeric: tabular-nums;
 }
 </style>
