@@ -109,13 +109,9 @@ Use this checklist for concrete unfinished work. Each checkbox should describe a
 
 ## Run Replay
 
-- [ ] Recreate a board from a stored puzzle variant.
-- [ ] Replay recorded actions with run-relative timing.
-- [ ] Add a speed multiplier for replay playback.
 - [ ] Add replay controls for play and pause.
 - [ ] Show replay after a completed run when replay is enabled.
 - [ ] Skip replay after a completed run when replay is disabled.
-- [ ] Add unit tests for replay state progression.
 
 ## Puzzle Generator
 

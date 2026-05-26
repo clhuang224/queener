@@ -1,9 +1,8 @@
 import type { Position } from '@/modules/types/board'
 import BoardCell from './BoardCell'
-import type { Puzzle, PuzzleDirection, PuzzleVariant, PuzzleVariantMetadata } from '@/modules/types/puzzle'
+import type { Puzzle, PuzzleVariantMetadata } from '@/modules/types/puzzle'
 import { randomInteger } from '@/modules/utils/random'
-
-const PUZZLE_DIRECTIONS: PuzzleDirection[] = [0, 90, 180, 270]
+import { createRandomPuzzleVariant } from './puzzleVariant'
 
 export default class QueenGame {
   private puzzle: Puzzle
@@ -16,7 +15,7 @@ export default class QueenGame {
 
   constructor(puzzle: Puzzle) {
     this.puzzle = puzzle
-    const puzzleVariant = this.createPuzzleVariant(puzzle)
+    const puzzleVariant = createRandomPuzzleVariant(puzzle)
     this.activePuzzle = puzzleVariant.puzzle
     this.activePuzzleVariantMetadata = puzzleVariant.metadata
     this.hintUsed = false
@@ -46,92 +45,6 @@ export default class QueenGame {
         return cell
       }),
     )
-  }
-
-  private createPuzzleVariant(puzzle: Puzzle): PuzzleVariant {
-    const direction = PUZZLE_DIRECTIONS[randomInteger(0, PUZZLE_DIRECTIONS.length - 1)]!
-    const rotatedPuzzle = this.rotatePuzzle(puzzle, direction)
-    return this.remapPuzzleRegions(rotatedPuzzle, direction)
-  }
-
-  private rotatePuzzle(puzzle: Puzzle, direction: PuzzleDirection): Puzzle {
-    if (direction === 0) {
-      return {
-        ...puzzle,
-        regions: puzzle.regions.map((row) => [...row]),
-        queens: puzzle.queens.map((position) => [...position]),
-      }
-    }
-
-    return {
-      ...puzzle,
-      regions: this.rotateRegions(puzzle.regions, direction),
-      queens: puzzle.queens.map((position) =>
-        this.rotatePosition(position, puzzle.rules.size, direction),
-      ),
-    }
-  }
-
-  private rotateRegions(regions: number[][], direction: PuzzleDirection): number[][] {
-    const size = regions.length
-    const inverseDirection = this.getInverseDirection(direction)
-
-    return Array.from({ length: size }, (_, row) =>
-      Array.from({ length: size }, (_, column) => {
-        const [sourceRow, sourceColumn] = this.rotatePosition([row, column], size, inverseDirection)
-        return regions[sourceRow]![sourceColumn]!
-      }),
-    )
-  }
-
-  private rotatePosition([row, column]: Position, size: number, direction: PuzzleDirection): Position {
-    let rotatedRow = row
-    let rotatedColumn = column
-
-    for (let turn = 0; turn < direction / 90; turn++) {
-      const nextRow = rotatedColumn
-      const nextColumn = size - rotatedRow - 1
-      rotatedRow = nextRow
-      rotatedColumn = nextColumn
-    }
-
-    return [rotatedRow, rotatedColumn]
-  }
-
-  private getInverseDirection(direction: PuzzleDirection): PuzzleDirection {
-    return ((360 - direction) % 360) as PuzzleDirection
-  }
-
-  private remapPuzzleRegions(puzzle: Puzzle, direction: PuzzleDirection): PuzzleVariant {
-    const regionIds = [...new Set(puzzle.regions.flat())]
-    const shuffledRegionIds = [...regionIds]
-
-    for (let index = shuffledRegionIds.length - 1; index > 0; index--) {
-      const swapIndex = randomInteger(0, index)
-      const currentRegion = shuffledRegionIds[index]!
-      shuffledRegionIds[index] = shuffledRegionIds[swapIndex]!
-      shuffledRegionIds[swapIndex] = currentRegion
-    }
-
-    const regionMap = new Map(
-      regionIds.map((regionId, index) => [regionId, shuffledRegionIds[index]!]),
-    )
-    const regionMapRecord: Record<number, number> = {}
-    for (const [sourceRegion, targetRegion] of regionMap) {
-      regionMapRecord[sourceRegion] = targetRegion
-    }
-
-    return {
-      puzzle: {
-        ...puzzle,
-        regions: puzzle.regions.map((row) => row.map((region) => regionMap.get(region)!)),
-        queens: puzzle.queens.map((position) => [...position]),
-      },
-      metadata: {
-        direction,
-        regionMap: regionMapRecord,
-      },
-    }
   }
 
   public getSize(): number {
@@ -193,7 +106,7 @@ export default class QueenGame {
   }
 
   public resetGame(): void {
-    const puzzleVariant = this.createPuzzleVariant(this.puzzle)
+    const puzzleVariant = createRandomPuzzleVariant(this.puzzle)
     this.activePuzzle = puzzleVariant.puzzle
     this.activePuzzleVariantMetadata = puzzleVariant.metadata
     this.board = this.createBoard(this.activePuzzle)
