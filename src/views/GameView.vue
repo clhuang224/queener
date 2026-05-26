@@ -7,6 +7,7 @@ import BasePanel from '@/components/common/BasePanel.vue'
 import HeartCounter from '@/components/common/HeartCounter.vue'
 import GameBoard from '@/components/game/GameBoard.vue'
 import GameRunReplayBoard from '@/components/game/GameRunReplayBoard.vue'
+import { BOARD_SKINS } from '@/modules/constants/boardSkins'
 import { TOTAL_LEVELS } from '@/modules/puzzles/simple'
 import { useSkinStore } from '@/modules/stores/skin'
 import { useGlobalModalStore } from '@/modules/stores/globalModal'
@@ -16,6 +17,7 @@ import type { RunReplayData } from '@/modules/types/run'
 import { playGameSound } from '@/modules/utils/playGameSound'
 import { GameSoundType } from '@/modules/enums/GameSoundType'
 import { formatRunTime } from '@/modules/utils/formatRunTime'
+import { pickDistributedColors } from '@/modules/utils/pickDistributedColors'
 import { IconBulb, IconBulbOff, IconHome, IconRefresh } from '@tabler/icons-vue'
 import { useGameRun } from './useGameRun'
 
@@ -56,7 +58,35 @@ const hintedPosition = ref<Position | null>(null)
 const boardPanelStyle = computed(() => ({
   '--board-panel-max-size': `${game.value.getSize() * 62 + 40}px`,
 }))
-const formattedReplayRunTime = computed(() => formatRunTime(replayRunTimeMs.value))
+const replaySwatchIndexes = computed(() => {
+  const size = replayData.value?.puzzle.rules.size ?? game.value.getSize()
+
+  return Array.from({ length: size }, (_, index) => index)
+})
+const replaySwatchTrackIndexes = computed(() => [
+  ...replaySwatchIndexes.value,
+  ...replaySwatchIndexes.value,
+])
+const replayDurationMs = computed(() => {
+  return (
+    replayData.value?.record.reduce((duration, record) => {
+      return Math.max(duration, record.actionAtMillisecond)
+    }, 0) ?? 0
+  )
+})
+const formattedReplayDuration = computed(() => formatRunTime(replayDurationMs.value))
+const replaySwatchStyle = computed(() => {
+  const size = replayData.value?.puzzle.rules.size ?? game.value.getSize()
+  const colors = pickDistributedColors(BOARD_SKINS[boardSkin.value], size)
+  const progress =
+    replayDurationMs.value > 0 ? Math.min(replayRunTimeMs.value / replayDurationMs.value, 1) : 0
+  const translate = -50 + progress * 50
+
+  return {
+    '--replay-swatch-translate': `${translate}%`,
+    ...Object.fromEntries(colors.map((color, index) => [`--replay-swatch-color-${index}`, color])),
+  }
+})
 
 const clearResultReplay = () => {
   isReplayingResult.value = false
@@ -315,9 +345,6 @@ watch(
     >
       <BasePanel class="result-replay-panel">
         <h2 class="result-replay-title">Replay</h2>
-        <p class="result-replay-timer" aria-label="Replay run time">
-          {{ formattedReplayRunTime }}
-        </p>
         <GameRunReplayBoard
           :puzzle="replayData.puzzle"
           :puzzle-variant-metadata="replayData.puzzleVariantMetadata"
@@ -329,12 +356,26 @@ watch(
           @time-update="handleReplayTimeUpdate"
           @finished="handleReplayFinished"
         />
+        <div class="result-replay-scale">
+          <span class="result-replay-scale__time">00:00.000</span>
+          <div class="result-replay-swatch" :style="replaySwatchStyle" aria-hidden="true">
+            <div class="result-replay-swatch__track">
+              <span
+                v-for="(colorIndex, trackIndex) in replaySwatchTrackIndexes"
+                :key="`${colorIndex}-${trackIndex}`"
+                class="result-replay-swatch__color"
+                :class="`result-replay-swatch__color--${colorIndex}`"
+              ></span>
+            </div>
+          </div>
+          <span class="result-replay-scale__time">{{ formattedReplayDuration }}</span>
+        </div>
       </BasePanel>
     </div>
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .game {
   position: relative;
   display: flex;
@@ -457,5 +498,47 @@ watch(
   color: var(--color-text-muted);
   font-size: 18px;
   font-variant-numeric: tabular-nums;
+}
+
+.result-replay-scale {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.result-replay-scale__time {
+  min-width: 32px;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.result-replay-swatch {
+  width: min(120px, 56vw);
+  height: 10px;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  opacity: 0.56;
+}
+
+.result-replay-swatch__track {
+  display: flex;
+  width: 200%;
+  height: 100%;
+  transform: translateX(var(--replay-swatch-translate, -50%));
+  transition: transform 0.08s linear;
+}
+
+.result-replay-swatch__color {
+  flex: 1 0 0;
+  min-width: 0;
+}
+
+@for $index from 0 through 9 {
+  .result-replay-swatch__color--#{$index} {
+    background: var(--replay-swatch-color-#{$index});
+  }
 }
 </style>
