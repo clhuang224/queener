@@ -21,6 +21,8 @@ import { pickRandomItems } from '@/modules/utils/pickRandomItems'
 
 const PLAYBACK_INTERVAL_MS = 33
 const CELL_SIZE_PX = 62
+const DEFAULT_SPEED = 3
+const DEFAULT_MAX_DURATION_MS = 60_000
 
 const props = withDefaults(
   defineProps<{
@@ -31,13 +33,15 @@ const props = withDefaults(
     boardSkin?: BoardSkin
     boardTextureEnabled?: boolean
     speed?: number
+    maxDurationMs?: number
     scale?: number
   }>(),
   {
     queenSkin: QueenSkinType.PINK_CROWN,
     boardSkin: BoardSkinType.LAKE,
     boardTextureEnabled: false,
-    speed: 3,
+    speed: DEFAULT_SPEED,
+    maxDurationMs: DEFAULT_MAX_DURATION_MS,
     scale: 0.5,
   },
 )
@@ -58,6 +62,12 @@ const queenIcon = computed(() => QUEEN_SKINS[props.queenSkin].icon)
 const queenNoteIcon = computed(() => QUEEN_SKINS[props.queenSkin].noteIcon)
 const boardTextureTypes = computed(() => {
   return props.boardTextureEnabled ? pickRandomItems(CELL_TEXTURES, boardSize.value) : []
+})
+const playbackSpeed = computed(() => {
+  const durationMs = replay.value.getDurationMillisecond()
+  if (durationMs <= 0) return props.speed
+
+  return Math.max(props.speed, durationMs / props.maxDurationMs)
 })
 
 const boardStyle = computed(() => ({
@@ -108,12 +118,12 @@ const stopPlayback = () => {
 
 const playRecordSound = (record: RunActionRecord, cell: BoardCell) => {
   if (record.action === ActionType.HINT) {
-    void playGameSound(GameSoundType.HINT, { playbackRate: props.speed })
+    void playGameSound(GameSoundType.HINT, { playbackRate: playbackSpeed.value })
   } else if (record.action === ActionType.MARK_NOTE || record.action === ActionType.REMOVE_NOTE) {
-    void playGameSound(GameSoundType.NOTE, { playbackRate: props.speed })
+    void playGameSound(GameSoundType.NOTE, { playbackRate: playbackSpeed.value })
   } else {
     void playGameSound(cell.isQueen() ? GameSoundType.CORRECT : GameSoundType.WRONG, {
-      playbackRate: props.speed,
+      playbackRate: playbackSpeed.value,
     })
   }
 }
@@ -135,7 +145,7 @@ const applyRecord = (record: RunActionRecord) => {
 }
 
 const tickPlayback = () => {
-  const elapsedMs = (Date.now() - playbackStartedAt) * props.speed
+  const elapsedMs = (Date.now() - playbackStartedAt) * playbackSpeed.value
   emit('timeUpdate', Math.min(elapsedMs, replay.value.getDurationMillisecond()))
 
   for (const record of replay.value.getNextActions(elapsedMs)) {
@@ -160,7 +170,7 @@ const startPlayback = () => {
 }
 
 watch(
-  () => [props.puzzle, props.puzzleVariantMetadata, props.records, props.speed],
+  () => [props.puzzle, props.puzzleVariantMetadata, props.records, props.speed, props.maxDurationMs],
   startPlayback,
   { immediate: true },
 )
