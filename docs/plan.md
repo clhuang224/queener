@@ -1,6 +1,6 @@
 # Development Plan
 
-This document captures Queener's product direction and planning context. Use [checklist.md](./checklist.md) for concrete follow-up tasks.
+This document captures Queener's product direction, platform direction, and implementation priorities. Use [checklist.md](./checklist.md) for concrete follow-up tasks, and use [architecture.md](./architecture.md) for current architecture boundaries and the next repository target.
 
 ## Planning Principles
 
@@ -9,6 +9,7 @@ This document captures Queener's product direction and planning context. Use [ch
 - favor reusable game logic over one-off UI-coupled implementations
 - add infrastructure when product needs become concrete, not only because it might be useful later
 - keep implementation checklists focused on unfinished work instead of using them as changelogs
+- choose tools that match Queener's product needs and current project constraints
 
 ## Implemented Baseline
 
@@ -27,7 +28,80 @@ Short-term product work should prioritize:
 - stronger keyboard and screen reader support for core board interactions
 - intentional puzzle progression and campaign structure
 
-Longer-term work should expand from the single-player foundation into local leaderboard records, run replay, generated puzzles, and eventually backend-backed competition modes.
+Longer-term work should expand from the single-player foundation into local leaderboard records, run replay, backend-backed persistence, ghost runs, and eventually competition modes.
+
+## Platform Direction
+
+Queener should stay Bun-first as it grows beyond the current single Vue app.
+
+The next platform direction is:
+
+- monorepo: Bun workspace
+- frontend app core: Vue + Vite
+- backend: Elysia
+- database: PostgreSQL
+- ORM: Prisma
+- mobile packaging: Capacitor
+
+This direction keeps the project aligned with how it started while leaving room for persistence, app packaging, and future competition features.
+
+Rationale:
+
+- Bun workspace keeps package management and backend runtime choices coherent
+- Vue + Vite remains the fastest path for the existing custom game UI
+- Elysia fits the first backend scope without turning the project into a heavy server framework exercise
+- PostgreSQL and Prisma are enough for users, completed runs, replays, and leaderboards
+- Capacitor matches the product's mobile direction because the current UI should be reused rather than rewritten
+
+## Backend Direction
+
+The first backend should be small and persistence-oriented.
+
+Elysia is the preferred framework because it keeps the backend close to Bun and fits a small API surface centered on users, runs, replays, and leaderboards.
+
+The first backend scope should cover:
+
+- guest user creation and naming
+- completed run upload
+- replay retrieval
+- per-level leaderboard queries
+- storage for future ghost-run selection
+
+The backend should not become the live gameplay authority in the first phase. `QueenGame` should remain the place where gameplay rules are executed during active play. Backend validation can be added later around persisted runs and leaderboard trust.
+
+## App Strategy
+
+Queener is a strong fit for an eventual app version because the game loop is self-contained, interaction-heavy, and friendly to repeat play.
+
+The recommended app strategy is:
+
+- keep the main product UI as a Vue web app
+- package the mobile app with Capacitor
+- treat the first app release as a mobile hybrid build backed by the same web interface and backend APIs
+
+Capacitor is preferred because it matches the current product shape:
+
+- the project already has a custom game UI rather than standard form-heavy screens
+- the fastest path to an app is to preserve the existing web interface
+- mobile packaging should add a shell around the current app instead of forcing a UI rewrite
+
+## Tauri Evaluation
+
+Tauri is not the primary mobile app strategy for this project.
+
+Tauri should instead be treated as a future desktop packaging option.
+
+Why Tauri is not the first choice here:
+
+- the current app packaging priority is mobile hybrid delivery
+- Capacitor is a more direct fit for mobile webview packaging
+- Tauri adds value more clearly when the project is targeting a desktop app shell
+
+Why Tauri still matters later:
+
+- Queener is also a good candidate for a desktop puzzle app
+- a desktop shell could benefit from lightweight web-based packaging
+- Tauri can stay on the roadmap as a desktop-specific evaluation once the mobile path is stable
 
 ## UI And Visual Direction
 
@@ -81,24 +155,29 @@ Priorities:
 
 1. Core Product Polish, including tutorial mode
 2. Leaderboard And Run Replay
-3. Puzzle Generator
-4. Monorepo Structure
-5. Backend And Data Layer
-6. Ghost Competition Mode
-7. Realtime Competition Mode
-8. Broader Game Platform Direction
+3. Bun Workspace Migration
+4. Elysia Backend And PostgreSQL Persistence
+5. Puzzle Generator
+6. Mobile Hybrid Packaging With Capacitor
+7. Ghost Competition Mode
+8. Realtime Competition Mode
+9. Desktop Packaging Evaluation
 
 These phases are planning order, not strict release boundaries. Product polish should continue alongside larger feature work when it improves the main game loop.
 
 ## Later-Stage Direction
 
-Leaderboard and run replay should remain local-only at first. Backend sync, realtime competition, and broader game platform work should wait until the single-player game and run record model are stable.
+Leaderboard and run replay should remain local-first until the persistence model is stable enough to sync confidently.
 
-Ghost competition should build on recorded run playback. Realtime competition should build on a more mature game-session model and backend foundation. A broader game portal should only be considered after Queener itself feels complete enough to justify shared platform infrastructure.
+Backend persistence should land before competition features. Ghost competition should build on recorded run playback and stored leaderboard history. Realtime competition should wait for a more mature backend model, clearer session rules, and a stronger understanding of which game state must become authoritative.
+
+Desktop packaging should be evaluated only after the mobile hybrid path is understood well enough to avoid solving both app-shell problems at once.
 
 ## Out Of Scope For Now
 
 - mandatory account systems
 - large-scale backend architecture before product needs are clear
+- forcing the backend to become the active gameplay authority in the first pass
 - realtime multiplayer as a near-term feature
+- desktop packaging before the mobile hybrid direction is validated
 - turning the project into a multi-game portal before Queener itself feels complete
