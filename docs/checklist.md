@@ -4,13 +4,8 @@ Use this checklist for concrete unfinished work. Each checkbox should describe a
 
 ## Game Flow
 
-- [ ] Add a win result action for starting the next level.
-- [ ] Add a win result action for replaying the same level.
-- [ ] Add a loss result action for replaying the same level.
 - [ ] Add a short board success state before opening the win result modal.
 - [ ] Add a short board failure state before opening the loss result modal.
-- [ ] Add tests for win result modal actions.
-- [ ] Add tests for loss result modal actions.
 
 ## Tutorial Mode
 
@@ -93,8 +88,6 @@ Use this checklist for concrete unfinished work. Each checkbox should describe a
 - [ ] Update `QueenIcon` or `GameCell` to use prepared state-specific image variants.
 - [ ] Add tests that every `QueenSkinType` has all required state assets.
 
-## Scoring
-
 ## Local Leaderboard
 
 - [ ] Choose an IndexedDB helper approach.
@@ -110,7 +103,6 @@ Use this checklist for concrete unfinished work. Each checkbox should describe a
 ## Run Replay
 
 - [ ] Add replay controls for play and pause.
-- [ ] Show replay after a completed run when replay is enabled.
 - [ ] Skip replay after a completed run when replay is disabled.
 
 ## Puzzle Generator
@@ -125,9 +117,7 @@ Use this checklist for concrete unfinished work. Each checkbox should describe a
 
 ## Architecture And Data
 
-- [ ] Add an architecture note that lists which `QueenGame` files would move into a reusable package.
-- [ ] Draft a monorepo package layout if engine reuse becomes necessary.
-- [ ] Decide whether backend work should wait until after monorepo migration.
+- [ ] Draft the first `apps/api` folder structure before adding backend routes.
 - [ ] Draft backend data models for puzzles, users, runs, and leaderboard entries.
 - [ ] Add a backend leaderboard sync plan after local leaderboard records are stable.
 

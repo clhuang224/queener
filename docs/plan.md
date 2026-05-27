@@ -28,16 +28,19 @@ Short-term product work should prioritize:
 - stronger keyboard and screen reader support for core board interactions
 - intentional puzzle progression and campaign structure
 
-Longer-term work should expand from the single-player foundation into local leaderboard records, run replay, backend-backed persistence, ghost runs, and eventually competition modes.
+Longer-term work should expand from the single-player foundation into local leaderboard records, replay controls and settings, backend-backed persistence, ghost runs, and eventually competition modes.
 
 ## Platform Direction
 
-Queener should stay Bun-first as it grows beyond the current single Vue app.
+Queener should stay Bun-first as it grows beyond the current web app.
 
-The next platform direction is:
+The current platform foundation is:
 
-- monorepo: Bun workspace
+- workspace: Bun workspace
 - frontend app core: Vue + Vite
+
+The next platform additions are:
+
 - backend: Elysia
 - database: PostgreSQL
 - ORM: Prisma
@@ -154,8 +157,8 @@ Priorities:
 ## Phase Overview
 
 1. Core Product Polish, including tutorial mode
-2. Leaderboard And Run Replay
-3. Bun Workspace Migration
+2. Local Leaderboard And Replay Settings
+3. Shared Package Extraction When Needed
 4. Elysia Backend And PostgreSQL Persistence
 5. Puzzle Generator
 6. Mobile Hybrid Packaging With Capacitor

@@ -17,8 +17,8 @@ Type:
 
 Implementation:
 
-- [src/components/game/GameBoard.vue](../src/components/game/GameBoard.vue)
-- [src/components/game/GameCell.vue](../src/components/game/GameCell.vue)
+- [apps/web/src/components/game/GameBoard.vue](../apps/web/src/components/game/GameBoard.vue)
+- [apps/web/src/components/game/GameCell.vue](../apps/web/src/components/game/GameCell.vue)
 
 ### Transition Table
 
@@ -113,8 +113,8 @@ Type:
 
 Implementation:
 
-- [src/modules/game/BoardCell.ts](../src/modules/game/BoardCell.ts)
-- [src/modules/game/QueenGame.ts](../src/modules/game/QueenGame.ts)
+- [apps/web/src/modules/game/BoardCell.ts](../apps/web/src/modules/game/BoardCell.ts)
+- [apps/web/src/modules/game/QueenGame.ts](../apps/web/src/modules/game/QueenGame.ts)
 
 ### Transition Table
 
@@ -169,9 +169,9 @@ Type:
 
 Implementation:
 
-- [src/modules/game/QueenGame.ts](../src/modules/game/QueenGame.ts)
-- [src/components/game/GameBoard.vue](../src/components/game/GameBoard.vue)
-- [src/views/GameView.vue](../src/views/GameView.vue)
+- [apps/web/src/modules/game/QueenGame.ts](../apps/web/src/modules/game/QueenGame.ts)
+- [apps/web/src/components/game/GameBoard.vue](../apps/web/src/components/game/GameBoard.vue)
+- [apps/web/src/views/GameView.vue](../apps/web/src/views/GameView.vue)
 
 The current code computes this state from other values instead of storing it explicitly:
 
@@ -239,8 +239,8 @@ Type:
 
 Implementation:
 
-- [src/modules/game/QueenGame.ts](../src/modules/game/QueenGame.ts)
-- [src/views/GameView.vue](../src/views/GameView.vue)
+- [apps/web/src/modules/game/QueenGame.ts](../apps/web/src/modules/game/QueenGame.ts)
+- [apps/web/src/views/GameView.vue](../apps/web/src/views/GameView.vue)
 
 ### Transition Table
 
@@ -281,11 +281,11 @@ Type:
 
 Implementation:
 
-- [src/modules/enums/ActionType.ts](../src/modules/enums/ActionType.ts)
-- [src/modules/types/run.ts](../src/modules/types/run.ts)
-- [src/modules/game/QueenGameRunRecorder.ts](../src/modules/game/QueenGameRunRecorder.ts)
-- [src/modules/game/QueenGameRunReplay.ts](../src/modules/game/QueenGameRunReplay.ts)
-- [src/views/useGameRun.ts](../src/views/useGameRun.ts)
+- [apps/web/src/modules/enums/ActionType.ts](../apps/web/src/modules/enums/ActionType.ts)
+- [apps/web/src/modules/types/run.ts](../apps/web/src/modules/types/run.ts)
+- [apps/web/src/modules/game/QueenGameRunRecorder.ts](../apps/web/src/modules/game/QueenGameRunRecorder.ts)
+- [apps/web/src/modules/game/QueenGameRunReplay.ts](../apps/web/src/modules/game/QueenGameRunReplay.ts)
+- [apps/web/src/views/useGameRun.ts](../apps/web/src/views/useGameRun.ts)
 
 ### Recorded Transitions
 
@@ -397,9 +397,9 @@ Type:
 
 Implementation:
 
-- [src/modules/game/QueenGame.ts](../src/modules/game/QueenGame.ts)
-- [src/components/game/GameBoard.vue](../src/components/game/GameBoard.vue)
-- [src/components/common/HeartCounter.vue](../src/components/common/HeartCounter.vue)
+- [apps/web/src/modules/game/QueenGame.ts](../apps/web/src/modules/game/QueenGame.ts)
+- [apps/web/src/components/game/GameBoard.vue](../apps/web/src/components/game/GameBoard.vue)
+- [apps/web/src/components/common/HeartCounter.vue](../apps/web/src/components/common/HeartCounter.vue)
 
 ### Transition Table
 

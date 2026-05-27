@@ -22,11 +22,10 @@ queener/
           utils/
         router/
       cypress/
-  cypress/
   docs/
 ```
 
-The workspace boundary exists now, but most domain code still intentionally lives inside apps/web. That is the correct tradeoff at the current stage: there is only one active consumer, so forcing early package extraction would add overhead without reducing duplication.
+The workspace boundary exists now, but most domain code still intentionally lives inside `apps/web`. That is the correct tradeoff at the current stage: there is only one active consumer, so forcing early package extraction would add overhead without reducing duplication.
 
 The current runtime architecture is intentionally simple:
 
@@ -44,7 +43,7 @@ UI code should not duplicate core gameplay rules. When the game changes hearts, 
 
 ## Current Responsibilities
 
-### `src/views`
+### `apps/web/src/views`
 
 Views compose pages and coordinate route-level behavior.
 
@@ -57,7 +56,7 @@ Current examples:
 
 Views can coordinate stores, router state, and engine instances, but they should avoid becoming the place where board rules are implemented.
 
-### `src/components`
+### `apps/web/src/components`
 
 Components render reusable UI and feature-specific UI blocks.
 
@@ -70,7 +69,7 @@ Important groups:
 
 Board and cell components may handle input mechanics, but gameplay decisions should flow back to `QueenGame`.
 
-### `src/modules/game`
+### `apps/web/src/modules/game`
 
 This is the engine and game-domain layer.
 
@@ -87,7 +86,7 @@ It owns:
 
 This layer is the first candidate for extraction into shared packages once another app or service actually consumes it.
 
-### `src/modules/types`
+### `apps/web/src/modules/types`
 
 This folder contains shared TypeScript shapes used across the app.
 
@@ -100,19 +99,19 @@ Examples:
 
 Types that become API contracts should eventually move into a shared package instead of staying web-app local.
 
-### `src/modules/puzzles`
+### `apps/web/src/modules/puzzles`
 
 Puzzle data stays declarative. Puzzle definitions are source data, not the exact board arrangement for every run.
 
 `QueenGame` may rotate the puzzle and remap regions for a specific run. That transformation should not mutate the puzzle source.
 
-### `src/modules/constants`
+### `apps/web/src/modules/constants`
 
 Constants hold shared runtime values such as board skins, queen skins, sound types, and texture choices.
 
 These constants are still web-app local today. Some may stay there permanently if they only affect presentation.
 
-### `src/modules/stores`
+### `apps/web/src/modules/stores`
 
 Stores hold app-level state that must outlive a single component.
 
@@ -126,7 +125,7 @@ Good fits:
 
 Core gameplay rules should not move into Pinia unless there is a stronger architectural reason.
 
-### `src/modules/utils`
+### `apps/web/src/modules/utils`
 
 Utilities should stay small, pure, and reusable.
 
@@ -185,13 +184,13 @@ queener/
   docs/
 ```
 
-This is now a partially realized target. New frontend code should follow apps/web/src, and package extraction should happen only when a second real consumer appears.
+This is now a partially realized target. New frontend code should follow `apps/web/src`, and package extraction should happen only when a second real consumer appears.
 
 ## Target Workspace Roles
 
 ### `apps/web`
 
-The existing Vue app should move here.
+The existing Vue app lives here.
 
 It should own:
 
@@ -231,7 +230,7 @@ Likely candidates:
 - puzzle variant helpers
 - puzzle validation helpers
 
-Extract this only when the API or another app target needs it. Right now `QueenGame`, `BoardCell`, puzzle variant helpers, and most of apps/web/src/modules should stay where they are.
+Extract this only when the API or another app target needs it. Right now `QueenGame`, `BoardCell`, puzzle variant helpers, and most of `apps/web/src/modules` should stay where they are.
 
 ### `packages/types`
 
@@ -245,7 +244,7 @@ Likely candidates:
 - leaderboard entry models
 - replay metadata
 
-Until those contracts are shared beyond the web app, local types should remain in apps/web/src/modules/types.
+Until those contracts are shared beyond the web app, local types should remain in `apps/web/src/modules/types`.
 
 ### `packages/replay`
 
