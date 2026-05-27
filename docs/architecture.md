@@ -1,29 +1,32 @@
 # Architecture
 
-This document describes Queener's current architecture and the next repository direction.
-
-The project is still a single Vue application today. The monorepo sections are the intended migration target, not a description of files that already exist.
+This document describes Queener's current architecture and the active repository direction.
 
 ## Current Shape
 
-Queener is currently organized as one Vue 3 + Vite app.
+Queener is now organized as a Bun workspace with one active frontend app.
 
 ```text
 queener/
-  src/
-    views/
-    components/
-    modules/
-      game/
-      types/
-      puzzles/
-      constants/
-      stores/
-      utils/
-    router/
+  apps/
+    web/
+      src/
+        views/
+        components/
+        modules/
+          game/
+          types/
+          puzzles/
+          constants/
+          stores/
+          utils/
+        router/
+      cypress/
   cypress/
   docs/
 ```
+
+The workspace boundary exists now, but most domain code still intentionally lives inside apps/web. That is the correct tradeoff at the current stage: there is only one active consumer, so forcing early package extraction would add overhead without reducing duplication.
 
 The current runtime architecture is intentionally simple:
 
@@ -82,7 +85,7 @@ It owns:
 - replay helpers
 - scoring helpers
 
-This layer is the first candidate for extraction into shared packages during the monorepo migration.
+This layer is the first candidate for extraction into shared packages once another app or service actually consumes it.
 
 ### `src/modules/types`
 
@@ -163,7 +166,7 @@ The replay UI is presentation-only. It should not become a second gameplay engin
 
 ## Next Repository Direction
 
-The next architecture phase should migrate this repository to a Bun workspace.
+The current workspace is intentionally shallow. The next architecture phase is not more moving for its own sake; it is selective extraction only when package boundaries become useful.
 
 Target shape:
 
@@ -182,7 +185,7 @@ queener/
   docs/
 ```
 
-This is a migration target. Until the workspace exists, new code should still follow the current `src/` structure.
+This is now a partially realized target. New frontend code should follow apps/web/src, and package extraction should happen only when a second real consumer appears.
 
 ## Target Workspace Roles
 
@@ -228,7 +231,7 @@ Likely candidates:
 - puzzle variant helpers
 - puzzle validation helpers
 
-Extract this only when the API or another app target needs it. Do not create a package boundary before there is an actual consumer.
+Extract this only when the API or another app target needs it. Right now `QueenGame`, `BoardCell`, puzzle variant helpers, and most of apps/web/src/modules should stay where they are.
 
 ### `packages/types`
 
@@ -241,6 +244,8 @@ Likely candidates:
 - completed run summaries
 - leaderboard entry models
 - replay metadata
+
+Until those contracts are shared beyond the web app, local types should remain in apps/web/src/modules/types.
 
 ### `packages/replay`
 

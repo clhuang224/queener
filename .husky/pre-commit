@@ -1,2 +1,9 @@
-bun run lint
-bun run type-check
+#!/usr/bin/env sh
+
+if git diff --cached --quiet -- apps/web package.json bun.lock .github/workflows/ci.yml .github/workflows/web-ci.yml .github/actions/setup-bun; then
+	echo "No staged web changes; skip web pre-commit checks."
+	exit 0
+fi
+
+bun run web:lint
+bun run web:type-check

@@ -1,2 +1,19 @@
-bun run test:unit
-bun run test:e2e
+#!/usr/bin/env sh
+
+push_range='@{upstream}...HEAD'
+
+if ! git rev-parse --verify '@{upstream}' >/dev/null 2>&1; then
+	if git rev-parse --verify 'HEAD~1' >/dev/null 2>&1; then
+		push_range='HEAD~1...HEAD'
+	else
+		push_range='HEAD'
+	fi
+fi
+
+if git diff --quiet "$push_range" -- apps/web package.json bun.lock .github/workflows/ci.yml .github/workflows/web-ci.yml .github/actions/setup-bun; then
+	echo "No web changes in push range; skip web pre-push checks."
+	exit 0
+fi
+
+bun run web:test:unit
+bun run web:test:e2e

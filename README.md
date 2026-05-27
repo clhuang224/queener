@@ -104,29 +104,21 @@ Generic app UI can use unstyled Reka UI primitives for accessibility-heavy behav
 ## Project Structure
 
 ```text
-src/
-├── assets/              # Visual assets such as icons and board texture styles
-├── components/
-│   ├── common/          # Shared UI such as buttons and heart display
-│   ├── game/            # Board and cell rendering components
-│   ├── home/            # Home screen components such as level picking
-│   └── setting/         # Settings UI and skin previews
-├── modules/             # Non-UI gameplay, data, stores, types, constants, and helpers
-│   ├── constants/       # Shared runtime constants such as board skin palettes
-│   ├── enums/           # Shared enum definitions
-│   ├── game/            # Core gameplay classes such as QueenGame and BoardCell
-│   ├── puzzles/         # Built-in puzzle definitions
-│   ├── stores/          # Pinia stores
-│   ├── types/           # Shared TypeScript models and aliases
-│   └── utils/           # Small reusable helpers
-├── router/              # Vue Router configuration
-├── views/               # Route-level screens
-├── App.vue              # Root app shell
-└── main.ts              # App bootstrap
+apps/
+└── web/
+   ├── src/
+   │   ├── assets/      # Visual assets such as icons and board texture styles
+   │   ├── components/  # Shared UI and game-specific Vue components
+   │   ├── modules/     # Current gameplay, data, stores, types, constants, and helpers
+   │   ├── router/      # Vue Router configuration
+   │   └── views/       # Route-level screens
+   ├── cypress/         # End-to-end tests
+   └── public/          # Static assets
 
-cypress/                 # End-to-end tests
-public/                  # Static assets
+docs/                    # Planning and architecture notes
 ```
+
+The repository now uses a Bun workspace layout. The existing gameplay modules remain inside apps/web/src/modules for now. The planned extraction candidates are game-domain logic, shared types, replay helpers, and scoring, but those boundaries should only become packages after a second real consumer exists.
 
 ## Development
 
@@ -142,7 +134,7 @@ bun install
 bun run dev
 ```
 
-The Vite development server starts at `http://localhost:5173`.
+This runs the web workspace from the repository root. The Vite development server starts at `http://localhost:5173`.
 
 ### Build
 

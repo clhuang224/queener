@@ -1,0 +1,17 @@
+name: Setup Bun Workspace
+description: Set up Bun and install workspace dependencies from the repository root.
+
+inputs:
+  bun-version:
+    description: Bun version to install.
+    required: false
+    default: latest
+
+runs:
+  using: composite
+  steps:
+    - uses: oven-sh/setup-bun@v1
+      with:
+        bun-version: ${{ inputs.bun-version }}
+    - run: bun install --frozen-lockfile
+      shell: bash
