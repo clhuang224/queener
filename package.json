@@ -14,7 +14,6 @@
     "web:test:unit": "bun run --filter @queener/web test:unit",
     "web:prepare": "bun run --filter @queener/web prepare",
     "web:test:e2e": "bun run --filter @queener/web test:e2e",
-    "web:test:e2e:dev": "bun run --filter @queener/web test:e2e:dev",
     "web:build-only": "bun run --filter @queener/web build-only",
     "web:type-check": "bun run --filter @queener/web type-check",
     "web:lint": "bun run --filter @queener/web lint",
