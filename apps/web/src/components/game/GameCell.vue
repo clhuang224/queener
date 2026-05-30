@@ -22,6 +22,17 @@ const emit = defineEmits<{
 const cellColor = computed(() => `var(--cell-color-${props.cell.getRegion()})`)
 const position = computed(() => props.cell.getPosition())
 const isInteractive = computed(() => props.cell.status === 'empty' || props.cell.status === 'note')
+const cellStatusLabel = computed(() => {
+  if (props.cell.status === 'found') return 'found queen'
+  if (props.cell.status === 'wrong') return 'wrong queen'
+  return props.cell.status
+})
+const cellAriaLabel = computed(() => {
+  const [row, column] = position.value
+  const region = props.cell.getRegion()
+
+  return `Row ${row + 1}, column ${column + 1}, region ${region + 1}, ${cellStatusLabel.value}`
+})
 
 const emitWhenInteractive = (event: 'pointerDown' | 'pointerEnter' | 'noteClick' | 'markQueen') => {
   if (!isInteractive.value) return
@@ -53,6 +64,7 @@ const emitWhenInteractive = (event: 'pointerDown' | 'pointerEnter' | 'noteClick'
     :data-column="position[1]"
     :data-status="props.cell.status"
     :data-test="`cell-${position[0]}-${position[1]}`"
+    :aria-label="cellAriaLabel"
     @dblclick="emitWhenInteractive('markQueen')"
     @pointerdown="emitWhenInteractive('pointerDown')"
     @pointerenter="emitWhenInteractive('pointerEnter')"

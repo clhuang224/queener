@@ -53,7 +53,6 @@ Use this checklist for concrete unfinished work. Each checkbox should describe a
 - [ ] Add visible focused-cell styling that works on light board skins.
 - [ ] Add visible focused-cell styling that works on dark board skins.
 - [ ] Add visible focused-cell styling that works when board texture is enabled.
-- [ ] Add accessible board cell labels with row, column, region, and cell status.
 - [ ] Add tests for keyboard cell navigation.
 - [ ] Add tests for keyboard note and queen actions.
 - [ ] Update `docs/state.md` with keyboard interaction transitions.
