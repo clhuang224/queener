@@ -22,7 +22,7 @@ import { pickRandomItems } from '@/modules/utils/pickRandomItems'
 const PLAYBACK_INTERVAL_MS = 33
 const CELL_SIZE_PX = 62
 const DEFAULT_SPEED = 3
-const DEFAULT_MAX_DURATION_MS = 60_000
+const DEFAULT_MAX_DURATION_MS = 15_000
 
 const props = withDefaults(
   defineProps<{

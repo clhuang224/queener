@@ -150,7 +150,7 @@ describe('GameRunReplayBoard', () => {
     expect(playGameSound).not.toHaveBeenCalled()
   })
 
-  it('raises playback speed so long replays finish under the max duration', async () => {
+  it('raises playback speed so long replays finish under the default max duration', async () => {
     const wrapper = mount(GameRunReplayBoard, {
       props: {
         puzzle: TEST_PUZZLE,
@@ -163,15 +163,14 @@ describe('GameRunReplayBoard', () => {
         },
         records: LONG_RECORDS,
         speed: 1,
-        maxDurationMs: 60_000,
       },
     })
 
-    vi.advanceTimersByTime(60_033)
+    vi.advanceTimersByTime(15_033)
     await wrapper.vm.$nextTick()
 
     expect(wrapper.find('[data-test="replay-cell-0-1"]').attributes('data-status')).toBe('note')
-    expect(playGameSound).toHaveBeenCalledWith(GameSoundType.NOTE, { playbackRate: 2 })
+    expect(playGameSound).toHaveBeenCalledWith(GameSoundType.NOTE, { playbackRate: 8 })
     expect(wrapper.emitted('finished')).toHaveLength(1)
   })
 })
