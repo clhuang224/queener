@@ -68,33 +68,47 @@ const resetSettings = () => {
     </header>
     <div class="setting-content">
       <BasePanel class="setting-panel">
-        <p class="setting-copy">Customize how Queener looks and feels here.</p>
-        <BoardSkinPreview
-          class="skin-preview"
-          :board-skin="boardSkin"
-          :board-texture-enabled="boardTextureEnabled"
-          :queen-skin="queenSkin"
-        />
-        <div class="skin-fields">
-          <QueenSkinField :queen-skin="queenSkin" @update:queen-skin="skinStore.setQueenSkin" />
-          <BoardSkinField :board-skin="boardSkin" @update:board-skin="skinStore.setBoardSkin" />
-          <SettingSwitchField
-            label="Board Texture"
-            label-id="board-texture-label"
-            :model-value="boardTextureEnabled"
-            @update:model-value="skinStore.setBoardTextureEnabled"
-          />
-          <SoundVolumeField
-            :sound-volume="soundVolume"
-            @update:sound-volume="audioStore.setSoundVolume"
-            @preview="previewSoundEffect"
-          />
-          <SettingSwitchField
-            label="End Replay"
-            label-id="end-replay-label"
-            :model-value="endReplayEnabled"
-            @update:model-value="gameplayStore.setEndReplayEnabled"
-          />
+        <div class="setting-fields">
+          <fieldset class="setting-group">
+            <legend class="setting-group-title">Appearance</legend>
+            <div class="setting-group-content">
+              <BoardSkinPreview
+                class="skin-preview"
+                :board-skin="boardSkin"
+                :board-texture-enabled="boardTextureEnabled"
+                :queen-skin="queenSkin"
+              />
+              <QueenSkinField :queen-skin="queenSkin" @update:queen-skin="skinStore.setQueenSkin" />
+              <BoardSkinField :board-skin="boardSkin" @update:board-skin="skinStore.setBoardSkin" />
+              <SettingSwitchField
+                label="Board Texture"
+                label-id="board-texture-label"
+                :model-value="boardTextureEnabled"
+                @update:model-value="skinStore.setBoardTextureEnabled"
+              />
+            </div>
+          </fieldset>
+          <fieldset class="setting-group">
+            <legend class="setting-group-title">Audio</legend>
+            <div class="setting-group-content">
+              <SoundVolumeField
+                :sound-volume="soundVolume"
+                @update:sound-volume="audioStore.setSoundVolume"
+                @preview="previewSoundEffect"
+              />
+            </div>
+          </fieldset>
+          <fieldset class="setting-group">
+            <legend class="setting-group-title">Results</legend>
+            <div class="setting-group-content">
+              <SettingSwitchField
+                label="Show Replay"
+                label-id="end-replay-label"
+                :model-value="endReplayEnabled"
+                @update:model-value="gameplayStore.setEndReplayEnabled"
+              />
+            </div>
+          </fieldset>
           <BaseButton
             variant="ghost"
             class="reset-button"
@@ -137,12 +151,39 @@ const resetSettings = () => {
   flex: 1 1 auto;
   min-height: 0;
   padding-bottom: 24px;
-  overflow-y: auto;
-  overscroll-behavior: contain;
+  overflow: hidden;
 }
 
 .setting-panel {
   width: 100%;
+  max-height: 100%;
+  display: flex;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-color: var(--color-border) transparent;
+  scrollbar-width: thin;
+}
+
+.setting-panel::-webkit-scrollbar {
+  width: 10px;
+}
+
+.setting-panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.setting-panel::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background: var(--color-border);
+  background-clip: content-box;
+}
+
+.setting-panel::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-muted);
+  background-clip: content-box;
 }
 
 h1 {
@@ -151,21 +192,49 @@ h1 {
   text-align: center;
 }
 
-.setting-copy {
-  margin: 0 0 20px;
-  color: var(--color-text-muted);
-}
-
 .back-button {
   --icon-button-size: 40px;
 }
 
 .skin-preview {
-  margin-bottom: 20px;
+  margin-bottom: 4px;
 }
 
-.skin-fields > * + * {
-  margin-top: 16px;
+.setting-fields {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  gap: 20px;
+  width: 100%;
+  min-height: 0;
+}
+
+.setting-group {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.setting-group {
+  padding: 8px 0 28px;
+  border-top: 1px solid var(--color-border);
+}
+
+.setting-group-title {
+  margin-bottom: 14px;
+  color: var(--color-primary);
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.setting-group-content {
+  display: grid;
+  gap: 16px;
 }
 
 .reset-button {

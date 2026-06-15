@@ -145,6 +145,11 @@ describe('SettingView', () => {
 
     expect(boardSkinLabels).toEqual(expectedBoardSkinLabels)
     expect(queenSkinLabels).toEqual(expectedQueenSkinLabels)
+    expect(wrapper.findAll('.setting-group-title').map((title) => title.text())).toEqual([
+      'Appearance',
+      'Audio',
+      'Results',
+    ])
     expect(
       wrapper
         .findAll('[role="switch"]')
