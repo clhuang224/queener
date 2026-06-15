@@ -166,11 +166,11 @@ describe('GameRunReplayBoard', () => {
       },
     })
 
-    vi.advanceTimersByTime(15_033)
+    vi.advanceTimersByTime(10_033)
     await wrapper.vm.$nextTick()
 
     expect(wrapper.find('[data-test="replay-cell-0-1"]').attributes('data-status')).toBe('note')
-    expect(playGameSound).toHaveBeenCalledWith(GameSoundType.NOTE, { playbackRate: 8 })
+    expect(playGameSound).toHaveBeenCalledWith(GameSoundType.NOTE, { playbackRate: 12 })
     expect(wrapper.emitted('finished')).toHaveLength(1)
   })
 })
