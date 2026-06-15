@@ -2,32 +2,34 @@
 import { SwitchRoot, SwitchThumb } from 'reka-ui'
 
 defineProps<{
-  boardTextureEnabled: boolean
+  label: string
+  labelId: string
+  modelValue: boolean
 }>()
 
 const emit = defineEmits<{
-  'update:boardTextureEnabled': [enabled: boolean]
+  'update:modelValue': [enabled: boolean]
 }>()
 </script>
 
 <template>
-  <section class="switch-field">
-    <p id="board-texture-label" class="field-label">Board Texture</p>
+  <section class="setting-switch-field">
+    <p :id="labelId" class="field-label">{{ label }}</p>
     <div class="switch-control">
       <SwitchRoot
-        class="texture-switch"
-        :model-value="boardTextureEnabled"
-        aria-labelledby="board-texture-label"
-        @update:model-value="emit('update:boardTextureEnabled', $event)"
+        class="setting-switch"
+        :model-value="modelValue"
+        :aria-labelledby="labelId"
+        @update:model-value="emit('update:modelValue', $event)"
       >
-        <SwitchThumb class="texture-switch-thumb" />
+        <SwitchThumb class="setting-switch-thumb" />
       </SwitchRoot>
     </div>
   </section>
 </template>
 
 <style scoped lang="scss">
-.switch-field {
+.setting-switch-field {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -47,7 +49,7 @@ const emit = defineEmits<{
   gap: 10px;
 }
 
-.texture-switch {
+.setting-switch {
   position: relative;
   width: 52px;
   height: 30px;
@@ -61,17 +63,17 @@ const emit = defineEmits<{
     border-color 0.2s ease;
 }
 
-.texture-switch[data-state='checked'] {
+.setting-switch[data-state='checked'] {
   border-color: var(--color-primary);
   background: var(--color-primary);
 }
 
-.texture-switch:focus-visible {
+.setting-switch:focus-visible {
   outline: 3px solid var(--color-focus);
   outline-offset: 3px;
 }
 
-.texture-switch-thumb {
+.setting-switch-thumb {
   display: block;
   width: 24px;
   height: 24px;
@@ -83,12 +85,12 @@ const emit = defineEmits<{
   transition: transform 0.2s ease;
 }
 
-.texture-switch-thumb[data-state='checked'] {
+.setting-switch-thumb[data-state='checked'] {
   transform: translateX(23px);
 }
 
 @media (max-width: 360px) {
-  .switch-field {
+  .setting-switch-field {
     align-items: flex-start;
     flex-direction: column;
   }

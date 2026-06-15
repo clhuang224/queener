@@ -6,9 +6,8 @@ import BaseButton from '@/components/common/BaseButton.vue'
 import BasePanel from '@/components/common/BasePanel.vue'
 import BoardSkinField from '@/components/setting/BoardSkinField.vue'
 import BoardSkinPreview from '@/components/setting/BoardSkinPreview.vue'
-import BoardTextureField from '@/components/setting/BoardTextureField.vue'
-import EndReplayField from '@/components/setting/EndReplayField.vue'
 import QueenSkinField from '@/components/setting/QueenSkinField.vue'
+import SettingSwitchField from '@/components/setting/SettingSwitchField.vue'
 import SoundVolumeField from '@/components/setting/SoundVolumeField.vue'
 import { GameSoundType } from '@/modules/enums/GameSoundType'
 import { useAudioStore } from '@/modules/stores/audio'
@@ -79,18 +78,22 @@ const resetSettings = () => {
         <div class="skin-fields">
           <QueenSkinField :queen-skin="queenSkin" @update:queen-skin="skinStore.setQueenSkin" />
           <BoardSkinField :board-skin="boardSkin" @update:board-skin="skinStore.setBoardSkin" />
-          <BoardTextureField
-            :board-texture-enabled="boardTextureEnabled"
-            @update:board-texture-enabled="skinStore.setBoardTextureEnabled"
+          <SettingSwitchField
+            label="Board Texture"
+            label-id="board-texture-label"
+            :model-value="boardTextureEnabled"
+            @update:model-value="skinStore.setBoardTextureEnabled"
           />
           <SoundVolumeField
             :sound-volume="soundVolume"
             @update:sound-volume="audioStore.setSoundVolume"
             @preview="previewSoundEffect"
           />
-          <EndReplayField
-            :end-replay-enabled="endReplayEnabled"
-            @update:end-replay-enabled="gameplayStore.setEndReplayEnabled"
+          <SettingSwitchField
+            label="End Replay"
+            label-id="end-replay-label"
+            :model-value="endReplayEnabled"
+            @update:model-value="gameplayStore.setEndReplayEnabled"
           />
           <BaseButton
             variant="ghost"
