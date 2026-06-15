@@ -11,6 +11,7 @@ import { ActionType } from '@/modules/enums/ActionType'
 import { BoardSkinType } from '@/modules/enums/BoardSkinType'
 import { GameSoundType } from '@/modules/enums/GameSoundType'
 import { QueenSkinType } from '@/modules/enums/QueenSkinType'
+import { END_REPLAY_ENABLED_STORAGE_KEY } from '@/modules/stores/gameplay'
 import type { QueenGamePublic } from '@/modules/game/QueenGame'
 
 const runRecorderMock = vi.hoisted(() => {
@@ -311,6 +312,34 @@ describe('GameView', () => {
     await wrapper.vm.$nextTick()
 
     expect(wrapper.find('[data-test="result-replay-overlay"]').exists()).toBe(false)
+  })
+
+  it('skips the result replay when end replay is disabled', async () => {
+    window.localStorage.setItem(END_REPLAY_ENABLED_STORAGE_KEY, 'false')
+    openResultModal.mockResolvedValue('next')
+
+    const { wrapper } = mountGameView()
+
+    for (const [row, column] of getQueenPositions(wrapper)) {
+      await findCell(wrapper, row, column)!.trigger('dblclick')
+    }
+    await wrapper.vm.$nextTick()
+    await Promise.resolve()
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.find('[data-test="result-replay-overlay"]').exists()).toBe(false)
+    expect(playGameSound).toHaveBeenCalledWith(GameSoundType.WIN)
+    expect(openResultModal).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: 'Congratulations!',
+      }),
+    )
+    expect(push).toHaveBeenCalledWith({
+      name: 'game',
+      params: {
+        level: '2',
+      },
+    })
   })
 
   it('loads the next puzzle when the route level changes', async () => {

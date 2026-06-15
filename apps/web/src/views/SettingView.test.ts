@@ -12,6 +12,7 @@ import { isQueenSkinAvailable, queenSkinMapName } from '@/modules/constants/quee
 import { BoardSkinType } from '@/modules/enums/BoardSkinType'
 import { GameSoundType } from '@/modules/enums/GameSoundType'
 import { QueenSkinType } from '@/modules/enums/QueenSkinType'
+import { END_REPLAY_ENABLED_STORAGE_KEY } from '@/modules/stores/gameplay'
 import { SOUND_VOLUME_STORAGE_KEY } from '@/modules/utils/soundVolume'
 import { getEnumValues } from '@/modules/utils/getEnumValues'
 import SettingView from './SettingView.vue'
@@ -59,6 +60,11 @@ describe('SettingView', () => {
     }
     const boardSkinGroup = findRadioGroup('Board skin')
     const queenSkinGroup = findRadioGroup('Queen skin')
+    const findSwitch = (labelId: string) => {
+      return wrapper
+        .findAll('[role="switch"]')
+        .find((switchControl) => switchControl.attributes('aria-labelledby') === labelId)!
+    }
     const rainbowBoardRadio = boardSkinGroup
       .findAll('[role="radio"]')
       .find(
@@ -69,7 +75,8 @@ describe('SettingView', () => {
       .find(
         (radio) => radio.attributes('aria-labelledby') === `board-skin-${BoardSkinType.AUTUMN}-label`,
       )!
-    const textureSwitch = wrapper.find('[role="switch"]')
+    const textureSwitch = findSwitch('board-texture-label')
+    const endReplaySwitch = findSwitch('end-replay-label')
     const blackCrownRadio = queenSkinGroup
       .findAll('[role="radio"]')
       .find(
@@ -79,14 +86,17 @@ describe('SettingView', () => {
 
     expect(rainbowBoardRadio.attributes('aria-checked')).toBe('true')
     expect(textureSwitch.attributes('aria-checked')).toBe('false')
+    expect(endReplaySwitch.attributes('aria-checked')).toBe('true')
     expect(blackCrownRadio.attributes('aria-checked')).toBe('false')
 
     await autumnBoardRadio.trigger('click')
     await textureSwitch.trigger('click')
+    await endReplaySwitch.trigger('click')
     await blackCrownRadio.trigger('click')
 
     expect(window.localStorage.getItem('queen-game-board-skin')).toBe(BoardSkinType.AUTUMN)
     expect(window.localStorage.getItem('queen-game-board-texture-enabled')).toBe('true')
+    expect(window.localStorage.getItem(END_REPLAY_ENABLED_STORAGE_KEY)).toBe('false')
     expect(window.localStorage.getItem('queen-game-queen-skin')).toBe(QueenSkinType.BLACK_CROWN)
     expect(wrapper.findAll('.preview-cell')).toHaveLength(BOARD_SKIN_COLOR_COUNT * 4)
     expect(wrapper.findAll('[data-state="found"]')).toHaveLength(BOARD_SKIN_COLOR_COUNT)
@@ -135,9 +145,11 @@ describe('SettingView', () => {
 
     expect(boardSkinLabels).toEqual(expectedBoardSkinLabels)
     expect(queenSkinLabels).toEqual(expectedQueenSkinLabels)
-    expect(wrapper.find('[role="switch"]').attributes('aria-labelledby')).toBe(
-      'board-texture-label',
-    )
+    expect(
+      wrapper
+        .findAll('[role="switch"]')
+        .map((switchControl) => switchControl.attributes('aria-labelledby')),
+    ).toEqual(['board-texture-label', 'end-replay-label'])
     expect(wrapper.findAll('.board-swatch-strip')).toHaveLength(expectedBoardSkinLabels.length)
     expect(wrapper.find('.board-swatch-strip').findAll('.board-swatch')).toHaveLength(
       BOARD_SKIN_COLOR_COUNT,
@@ -196,6 +208,7 @@ describe('SettingView', () => {
     window.localStorage.setItem('queen-game-board-texture-enabled', 'true')
     window.localStorage.setItem('queen-game-queen-skin', QueenSkinType.BLACK_CROWN)
     window.localStorage.setItem(SOUND_VOLUME_STORAGE_KEY, '35')
+    window.localStorage.setItem(END_REPLAY_ENABLED_STORAGE_KEY, 'false')
 
     const wrapper = mount(SettingView, {
       global: {
@@ -211,6 +224,7 @@ describe('SettingView', () => {
     expect(window.localStorage.getItem('queen-game-board-texture-enabled')).toBe('false')
     expect(window.localStorage.getItem('queen-game-queen-skin')).toBe(QueenSkinType.PINK_CROWN)
     expect(window.localStorage.getItem(SOUND_VOLUME_STORAGE_KEY)).toBe('80')
+    expect(window.localStorage.getItem(END_REPLAY_ENABLED_STORAGE_KEY)).toBe('true')
     expect(wrapper.text()).toContain('80%')
   })
 })

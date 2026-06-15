@@ -9,6 +9,7 @@ import GameBoard from '@/components/game/GameBoard.vue'
 import ReplayPanel from '@/components/game/ReplayPanel.vue'
 import { TOTAL_LEVELS } from '@/modules/puzzles/simple'
 import { useSkinStore } from '@/modules/stores/skin'
+import { useGameplayStore } from '@/modules/stores/gameplay'
 import { useGlobalModalStore } from '@/modules/stores/globalModal'
 import { useLevelStore } from '@/modules/stores/level'
 import type { Position } from '@/modules/types/board'
@@ -24,12 +25,15 @@ const props = defineProps<{
 
 const router = useRouter()
 const skinStore = useSkinStore()
+const gameplayStore = useGameplayStore()
 const levelStore = useLevelStore()
 const { boardSkin, boardTextureEnabled, queenSkin } = storeToRefs(skinStore)
+const { endReplayEnabled } = storeToRefs(gameplayStore)
 
 const { openAlertModal, openConfirmModal, openResultModal } = useGlobalModalStore()
 
 skinStore.load()
+gameplayStore.load()
 
 const {
   activeLevel,
@@ -205,11 +209,30 @@ const openWinResult = async () => {
 }
 
 const startResultReplay = (result: 'win' | 'loss') => {
-  finishRun()
   replayData.value = createReplayData()
   replayRunTimeMs.value = 0
   pendingResult.value = result
   isReplayingResult.value = true
+}
+
+const openResult = async (result: 'win' | 'loss') => {
+  if (result === 'win') {
+    await openWinResult()
+  } else {
+    await openLossResult()
+  }
+}
+
+const finishResult = async (result: 'win' | 'loss') => {
+  finishRun()
+
+  if (endReplayEnabled.value) {
+    startResultReplay(result)
+    return
+  }
+
+  await openResult(result)
+  isHandlingResult.value = false
 }
 
 const handleReplayTimeUpdate = (runTimeMs: number) => {
@@ -221,11 +244,7 @@ const handleReplayFinished = async () => {
 
   const result = pendingResult.value
 
-  if (result === 'win') {
-    await openWinResult()
-  } else {
-    await openLossResult()
-  }
+  await openResult(result)
 
   isHandlingResult.value = false
 }
@@ -236,7 +255,7 @@ watch(
     if (!gameOver || isHandlingResult.value) return
 
     isHandlingResult.value = true
-    startResultReplay('loss')
+    await finishResult('loss')
   },
 )
 
@@ -246,7 +265,7 @@ watch(
     if (!win || isHandlingResult.value) return
 
     isHandlingResult.value = true
-    startResultReplay('win')
+    await finishResult('win')
   },
 )
 </script>

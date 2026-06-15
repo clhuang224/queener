@@ -7,10 +7,12 @@ import BasePanel from '@/components/common/BasePanel.vue'
 import BoardSkinField from '@/components/setting/BoardSkinField.vue'
 import BoardSkinPreview from '@/components/setting/BoardSkinPreview.vue'
 import BoardTextureField from '@/components/setting/BoardTextureField.vue'
+import EndReplayField from '@/components/setting/EndReplayField.vue'
 import QueenSkinField from '@/components/setting/QueenSkinField.vue'
 import SoundVolumeField from '@/components/setting/SoundVolumeField.vue'
 import { GameSoundType } from '@/modules/enums/GameSoundType'
 import { useAudioStore } from '@/modules/stores/audio'
+import { useGameplayStore } from '@/modules/stores/gameplay'
 import { useSkinStore } from '@/modules/stores/skin'
 import { playGameSound } from '@/modules/utils/playGameSound'
 import { randomInteger } from '@/modules/utils/random'
@@ -20,12 +22,15 @@ import { getEnumValues } from '@/modules/utils/getEnumValues'
 const router = useRouter()
 const skinStore = useSkinStore()
 const audioStore = useAudioStore()
+const gameplayStore = useGameplayStore()
 const { boardSkin, boardTextureEnabled, queenSkin } = storeToRefs(skinStore)
 const { soundVolume } = storeToRefs(audioStore)
+const { endReplayEnabled } = storeToRefs(gameplayStore)
 
 onMounted(() => {
   skinStore.load()
   audioStore.load()
+  gameplayStore.load()
 })
 
 const goHome = async () => {
@@ -49,6 +54,7 @@ const previewSoundEffect = () => {
 const resetSettings = () => {
   skinStore.resetSkinSettings()
   audioStore.resetAudioSettings()
+  gameplayStore.resetGameplaySettings()
 }
 </script>
 
@@ -63,7 +69,7 @@ const resetSettings = () => {
     </header>
     <div class="setting-content">
       <BasePanel class="setting-panel">
-        <p class="setting-copy">Customize your board and queen skins here.</p>
+        <p class="setting-copy">Customize how Queener looks and feels here.</p>
         <BoardSkinPreview
           class="skin-preview"
           :board-skin="boardSkin"
@@ -81,6 +87,10 @@ const resetSettings = () => {
             :sound-volume="soundVolume"
             @update:sound-volume="audioStore.setSoundVolume"
             @preview="previewSoundEffect"
+          />
+          <EndReplayField
+            :end-replay-enabled="endReplayEnabled"
+            @update:end-replay-enabled="gameplayStore.setEndReplayEnabled"
           />
           <BaseButton
             variant="ghost"

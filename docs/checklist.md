@@ -64,9 +64,6 @@ Use this checklist for concrete unfinished work. Each checkbox should describe a
 - [ ] Generate a random username when no saved username exists.
 - [ ] Add tests for generated username persistence.
 - [ ] Add tests for editing the username from settings.
-- [ ] Add a setting for disabling end-of-game replay.
-- [ ] Persist the replay setting.
-- [ ] Add tests for replay setting persistence.
 
 ## Board Skins
 
@@ -102,7 +99,6 @@ Use this checklist for concrete unfinished work. Each checkbox should describe a
 ## Run Replay
 
 - [ ] Add replay controls for play and pause.
-- [ ] Skip replay after a completed run when replay is disabled.
 
 ## Puzzle Generator
 
