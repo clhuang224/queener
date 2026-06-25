@@ -67,11 +67,8 @@ Use this checklist for concrete unfinished work. Each checkbox should describe a
 
 ## Board Skins
 
-- [ ] Add a color-difference utility for board palette checks.
-- [ ] Add tests for board palette color-distance thresholds.
 - [ ] Add simulated color vision deficiency checks for board palettes.
 - [ ] Add tests that accessibility board skins pass the color vision checks.
-- [ ] Document board palette acceptance thresholds in `AGENTS.md`.
 - [ ] Add a small visual preview fixture for board skin palette audits.
 
 ## Queen And Note Assets

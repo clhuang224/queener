@@ -81,6 +81,8 @@ Board skin notes:
 - board texture should remain independent from board skin
 - texture class names should match `CellTextureType` values
 - keep pattern CSS definitions centralized in `src/assets/texture.module.scss`
+- board palette audit tests should use the color-distance helpers in `src/modules/utils/colorDistance.ts`
+- current CIELAB delta E thresholds are at least `15` for accessibility board skins and at least `8` for baseline board skins
 
 ### `src/modules/stores`
 
