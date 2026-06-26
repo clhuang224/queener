@@ -59,11 +59,6 @@ Use this checklist for concrete unfinished work. Each checkbox should describe a
 
 ## Settings
 
-- [ ] Add a username field for future leaderboard records.
-- [ ] Persist the username in a `userStore`.
-- [ ] Generate a random username when no saved username exists.
-- [ ] Add tests for generated username persistence.
-- [ ] Add tests for editing the username from settings.
 
 ## Board Skins
 

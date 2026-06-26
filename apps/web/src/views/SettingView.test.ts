@@ -13,6 +13,7 @@ import { BoardSkinType } from '@/modules/enums/BoardSkinType'
 import { GameSoundType } from '@/modules/enums/GameSoundType'
 import { QueenSkinType } from '@/modules/enums/QueenSkinType'
 import { END_REPLAY_ENABLED_STORAGE_KEY } from '@/modules/stores/gameplay'
+import { USERNAME_STORAGE_KEY } from '@/modules/stores/user'
 import { SOUND_VOLUME_STORAGE_KEY } from '@/modules/utils/soundVolume'
 import { getEnumValues } from '@/modules/utils/getEnumValues'
 import SettingView from './SettingView.vue'
@@ -38,6 +39,8 @@ describe('SettingView', () => {
     installResizeObserverMock()
     push.mockReset()
     playGameSound.mockReset()
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-06-26T00:00:00.123Z'))
     vi.spyOn(Math, 'random').mockReturnValue(0)
   })
 
@@ -77,6 +80,7 @@ describe('SettingView', () => {
       )!
     const textureSwitch = findSwitch('board-texture-label')
     const endReplaySwitch = findSwitch('end-replay-label')
+    const usernameInput = wrapper.get<HTMLInputElement>('#username-input')
     const blackCrownRadio = queenSkinGroup
       .findAll('[role="radio"]')
       .find(
@@ -87,8 +91,11 @@ describe('SettingView', () => {
     expect(rainbowBoardRadio.attributes('aria-checked')).toBe('true')
     expect(textureSwitch.attributes('aria-checked')).toBe('false')
     expect(endReplaySwitch.attributes('aria-checked')).toBe('true')
+    expect(usernameInput.element.value).toBe('Queener-1782432000123')
     expect(blackCrownRadio.attributes('aria-checked')).toBe('false')
 
+    usernameInput.element.value = 'Ada'
+    await usernameInput.trigger('change')
     await autumnBoardRadio.trigger('click')
     await textureSwitch.trigger('click')
     await endReplaySwitch.trigger('click')
@@ -97,6 +104,7 @@ describe('SettingView', () => {
     expect(window.localStorage.getItem('queen-game-board-skin')).toBe(BoardSkinType.AUTUMN)
     expect(window.localStorage.getItem('queen-game-board-texture-enabled')).toBe('true')
     expect(window.localStorage.getItem(END_REPLAY_ENABLED_STORAGE_KEY)).toBe('false')
+    expect(window.localStorage.getItem(USERNAME_STORAGE_KEY)).toBe('Ada')
     expect(window.localStorage.getItem('queen-game-queen-skin')).toBe(QueenSkinType.BLACK_CROWN)
     expect(wrapper.findAll('.preview-cell')).toHaveLength(BOARD_SKIN_COLOR_COUNT * 4)
     expect(wrapper.findAll('[data-state="found"]')).toHaveLength(BOARD_SKIN_COLOR_COUNT)
@@ -110,7 +118,6 @@ describe('SettingView', () => {
   })
 
   it('shows skin options in enum order with unavailable queen skins hidden', () => {
-    vi.useFakeTimers()
     vi.setSystemTime(new Date(2026, 4, 3))
 
     const wrapper = mount(SettingView, {
@@ -146,6 +153,7 @@ describe('SettingView', () => {
     expect(boardSkinLabels).toEqual(expectedBoardSkinLabels)
     expect(queenSkinLabels).toEqual(expectedQueenSkinLabels)
     expect(wrapper.findAll('.setting-group-title').map((title) => title.text())).toEqual([
+      'Player',
       'Appearance',
       'Audio',
       'Results',
@@ -214,6 +222,7 @@ describe('SettingView', () => {
     window.localStorage.setItem('queen-game-queen-skin', QueenSkinType.BLACK_CROWN)
     window.localStorage.setItem(SOUND_VOLUME_STORAGE_KEY, '35')
     window.localStorage.setItem(END_REPLAY_ENABLED_STORAGE_KEY, 'false')
+    window.localStorage.setItem(USERNAME_STORAGE_KEY, 'Lynn')
 
     const wrapper = mount(SettingView, {
       global: {
@@ -230,6 +239,7 @@ describe('SettingView', () => {
     expect(window.localStorage.getItem('queen-game-queen-skin')).toBe(QueenSkinType.PINK_CROWN)
     expect(window.localStorage.getItem(SOUND_VOLUME_STORAGE_KEY)).toBe('80')
     expect(window.localStorage.getItem(END_REPLAY_ENABLED_STORAGE_KEY)).toBe('true')
+    expect(window.localStorage.getItem(USERNAME_STORAGE_KEY)).toBe('Queener-1782432000123')
     expect(wrapper.text()).toContain('80%')
   })
 })

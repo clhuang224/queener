@@ -9,10 +9,12 @@ import BoardSkinPreview from '@/components/setting/BoardSkinPreview.vue'
 import QueenSkinField from '@/components/setting/QueenSkinField.vue'
 import SettingSwitchField from '@/components/setting/SettingSwitchField.vue'
 import SoundVolumeField from '@/components/setting/SoundVolumeField.vue'
+import UsernameField from '@/components/setting/UsernameField.vue'
 import { GameSoundType } from '@/modules/enums/GameSoundType'
 import { useAudioStore } from '@/modules/stores/audio'
 import { useGameplayStore } from '@/modules/stores/gameplay'
 import { useSkinStore } from '@/modules/stores/skin'
+import { useUserStore } from '@/modules/stores/user'
 import { playGameSound } from '@/modules/utils/playGameSound'
 import { randomInteger } from '@/modules/utils/random'
 import { IconChevronLeft, IconRestore } from '@tabler/icons-vue'
@@ -22,9 +24,13 @@ const router = useRouter()
 const skinStore = useSkinStore()
 const audioStore = useAudioStore()
 const gameplayStore = useGameplayStore()
+const userStore = useUserStore()
 const { boardSkin, boardTextureEnabled, queenSkin } = storeToRefs(skinStore)
 const { soundVolume } = storeToRefs(audioStore)
 const { endReplayEnabled } = storeToRefs(gameplayStore)
+const { username } = storeToRefs(userStore)
+
+userStore.load()
 
 onMounted(() => {
   skinStore.load()
@@ -54,6 +60,7 @@ const resetSettings = () => {
   skinStore.resetSkinSettings()
   audioStore.resetAudioSettings()
   gameplayStore.resetGameplaySettings()
+  userStore.resetUserSettings()
 }
 </script>
 
@@ -69,6 +76,12 @@ const resetSettings = () => {
     <div class="setting-content">
       <BasePanel class="setting-panel">
         <div class="setting-fields">
+          <fieldset class="setting-group">
+            <legend class="setting-group-title">Player</legend>
+            <div class="setting-group-content">
+              <UsernameField :username="username" @update:username="userStore.setUsername" />
+            </div>
+          </fieldset>
           <fieldset class="setting-group">
             <legend class="setting-group-title">Appearance</legend>
             <div class="setting-group-content">
