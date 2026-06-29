@@ -65,6 +65,7 @@ const emitWhenInteractive = (event: 'pointerDown' | 'pointerEnter' | 'noteClick'
     :data-status="props.cell.status"
     :data-test="`cell-${position[0]}-${position[1]}`"
     :aria-label="cellAriaLabel"
+    :tabindex="isInteractive ? 0 : undefined"
     @dblclick="emitWhenInteractive('markQueen')"
     @pointerdown="emitWhenInteractive('pointerDown')"
     @pointerenter="emitWhenInteractive('pointerEnter')"
@@ -108,6 +109,16 @@ const emitWhenInteractive = (event: 'pointerDown' | 'pointerEnter' | 'noteClick'
   }
   &:active {
     transform: translateY(0);
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    border-color: var(--color-primary);
+    outline: 3px solid var(--color-focus);
+    outline-offset: 3px;
   }
 }
 

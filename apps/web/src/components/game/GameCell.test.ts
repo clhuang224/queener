@@ -42,4 +42,22 @@ describe('GameCell', () => {
       'Row 2, column 2, region 2, wrong queen',
     )
   })
+
+  it('makes only interactive cells keyboard-focusable', () => {
+    const emptyCell = new BoardCell(0, 0, 0, false)
+
+    const noteCell = new BoardCell(0, 1, 0, false)
+    noteCell.markNote()
+
+    const foundCell = new BoardCell(1, 0, 1, true)
+    foundCell.markQueen()
+
+    const wrongCell = new BoardCell(1, 1, 1, false)
+    wrongCell.markQueen()
+
+    expect(mountGameCell(emptyCell).attributes('tabindex')).toBe('0')
+    expect(mountGameCell(noteCell).attributes('tabindex')).toBe('0')
+    expect(mountGameCell(foundCell).attributes('tabindex')).toBeUndefined()
+    expect(mountGameCell(wrongCell).attributes('tabindex')).toBeUndefined()
+  })
 })

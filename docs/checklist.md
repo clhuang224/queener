@@ -46,7 +46,6 @@ Use this checklist for concrete unfinished work. Each checkbox should describe a
 
 ## Board Keyboard Accessibility
 
-- [ ] Make board cells keyboard-focusable.
 - [ ] Add arrow-key navigation between board cells.
 - [ ] Add keyboard shortcut for marking or removing a note on the focused cell.
 - [ ] Add keyboard shortcut for marking a queen on the focused cell.
