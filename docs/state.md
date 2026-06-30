@@ -201,7 +201,7 @@ Modeling note:
 | `Playing`     | `markQueen(correct final queen)`                   | `Won`      | found queens `N - 1 -> N`                                                             | reveal final queen                        |
 | `Playing`     | `markQueen(wrong cell)` and hearts remain          | `Playing`  | hearts `n -> n - 1`                                                                   | decrement hearts                          |
 | `Playing`     | `markQueen(wrong cell)` and hearts reach `0`       | `Lost`     | hearts `1 -> 0`                                                                       | decrement hearts and trigger loss UI flow |
-| `Playing`     | `useHint()` with hint available                    | `Playing`  | hint state `Available -> Used`; found queens `n -> n + 1`                             | reveal one queen and mark hint as used    |
+| `Playing`     | `revealQueenHint()` with hint available                    | `Playing`  | hint state `Available -> Used`; found queens `n -> n + 1`                             | reveal one queen and mark hint as used    |
 | `Playing`     | `resetGame()`                                      | `Playing`  | hearts `current -> maxHearts`; hint state `current -> Available`; found queens `current -> 0` | rebuild board, reset session values       |
 | `Won`         | `resetGame()`                                      | `Playing`  | hearts `current -> maxHearts`; hint state `current -> Available`; found queens `current -> 0` | start a fresh game                        |
 | `Lost`        | `resetGame()`                                      | `Playing`  | hearts `current -> maxHearts`; hint state `current -> Available`; found queens `current -> 0` | start a fresh game                        |
@@ -214,7 +214,7 @@ stateDiagram-v2
 
   Playing --> Playing: markQueen success / foundQueens++
   Playing --> Playing: markQueen failed [hearts > 1] / hearts--
-  Playing --> Playing: useHint [hint available]
+  Playing --> Playing: revealQueenHint [hint available]
   Playing --> Won: markQueen final success
   Playing --> Lost: markQueen failed [hearts == 1] / hearts=0
 
@@ -246,9 +246,9 @@ Implementation:
 
 | Current State | Event                                     | Next State  | Value Change               | Action                     |
 | ------------- | ----------------------------------------- | ----------- | -------------------------- | -------------------------- |
-| `Available`   | `useHint()` with unfound queens remaining | `Used`      | `hintUsed: false -> true`  | reveal one queen           |
-| `Available`   | `useHint()` with no remaining queens      | `Available` | `hintUsed: false -> false` | return `null`              |
-| `Used`        | `useHint()`                               | `Used`      | `hintUsed: true -> true`   | return `null`              |
+| `Available`   | `revealQueenHint()` with unfound queens remaining | `Used`      | `hintUsed: false -> true`  | reveal one queen           |
+| `Available`   | `revealQueenHint()` with no remaining queens      | `Available` | `hintUsed: false -> false` | return `null`              |
+| `Used`        | `revealQueenHint()`                               | `Used`      | `hintUsed: true -> true`   | return `null`              |
 | `Available`   | `resetGame()`                             | `Available` | `hintUsed: false -> false` | no change from fresh state |
 | `Used`        | `resetGame()`                             | `Available` | `hintUsed: true -> false`  | restore hint availability  |
 
@@ -257,9 +257,9 @@ Implementation:
 ```mermaid
 stateDiagram-v2
   [*] --> Available
-  Available --> Used: useHint success
-  Available --> Available: useHint no-op
-  Used --> Used: useHint no-op
+  Available --> Used: revealQueenHint success
+  Available --> Available: revealQueenHint no-op
+  Used --> Used: revealQueenHint no-op
   Used --> Available: resetGame
   Available --> Available: resetGame
 ```
@@ -295,14 +295,14 @@ Implementation:
 | `BoardCell.note` + successful `removeNote()` | `note -> empty` | `ActionType.REMOVE_NOTE` |
 | interactive `markQueen(correct cell)` | `empty/note -> found` | `ActionType.MARK_QUEEN` |
 | interactive `markQueen(wrong cell)` | `empty/note -> wrong` | `ActionType.MARK_QUEEN` |
-| `Hint Availability.Available` + successful `useHint()` | `Available -> Used`; one queen cell becomes `found` | `ActionType.HINT` |
+| `Hint Availability.Available` + successful `revealQueenHint()` | `Available -> Used`; one queen cell becomes `found` | `ActionType.HINT` |
 
 ### Non-Recorded Transitions
 
 | Source State / Event | Reason |
 | --- | --- |
 | note or queen attempts on `found` / `wrong` cells | locked cells are no longer interactive in the UI |
-| `useHint()` after the hint has already been used | no state change occurs |
+| `revealQueenHint()` after the hint has already been used | no state change occurs |
 | route changes, restarts, and result-modal actions | these start or end runs but are not player board actions |
 | sound playback and modal display | presentation side effects, not game-state transitions |
 

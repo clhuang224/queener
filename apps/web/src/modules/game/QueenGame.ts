@@ -80,7 +80,7 @@ export default class QueenGame {
     return hasQueen
   }
 
-  public useHint(): Position | null {
+  public revealQueenHint(): Position | null {
     if (this.hintUsed) return null
     const queens = this.activePuzzle.queens.filter(
       ([row, column]) => !this.board[row]![column]!.isFound(),
@@ -91,6 +91,10 @@ export default class QueenGame {
     this.board[position[0]]![position[1]]!.markQueen()
     this.hintUsed = true
     return position
+  }
+
+  public useHint(): Position | null {
+    return this.revealQueenHint()
   }
 
   public isHintUsed(): boolean {

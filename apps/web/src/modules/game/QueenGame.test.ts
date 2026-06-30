@@ -84,18 +84,25 @@ describe.each(SIMPLE_PUZZLES)('QueenGame', (puzzle) => {
     })
 
     describe('hint', () => {
-      it('should reveal a queen', () => {
+      it('should reveal a queen hint', () => {
         const game = new QueenGame(puzzle)
-        const [row, col] = game.useHint()!
+        const [row, col] = game.revealQueenHint()!
         expect(game.isHintUsed()).toBe(true)
         expect(game.board[row]![col]!.isFound()).toBe(true)
       })
-      it('hint should be null after being used', () => {
+      it('queen hint should be null after being used', () => {
         const game = new QueenGame(puzzle)
-        game.useHint()
-        const hint = game.useHint()
+        game.revealQueenHint()
+        const hint = game.revealQueenHint()
         expect(game.isHintUsed()).toBe(true)
         expect(hint).toBeNull()
+      })
+      it('keeps useHint as the current reveal-queen hint alias', () => {
+        const game = new QueenGame(puzzle)
+        const [row, col] = game.useHint()!
+
+        expect(game.isHintUsed()).toBe(true)
+        expect(game.board[row]![col]!.isFound()).toBe(true)
       })
     })
 
@@ -114,7 +121,7 @@ describe.each(SIMPLE_PUZZLES)('QueenGame', (puzzle) => {
         const game = new QueenGame(puzzle)
         const [row, col] = getQueenPositions(game)[0]!
         game.markQueen([row, col])
-        game.useHint()
+        game.revealQueenHint()
         game.resetGame()
         expect(game.hearts).toBe(expectedHearts)
         expect(game.board.flat().some((cell) => cell.isFound())).toBe(false)

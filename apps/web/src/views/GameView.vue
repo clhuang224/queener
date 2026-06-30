@@ -16,7 +16,7 @@ import type { Position } from '@/modules/types/board'
 import type { RunReplayData } from '@/modules/types/run'
 import { playGameSound } from '@/modules/utils/playGameSound'
 import { GameSoundType } from '@/modules/enums/GameSoundType'
-import { IconBulb, IconBulbOff, IconHome, IconRefresh } from '@tabler/icons-vue'
+import { IconCrown, IconCrownOff, IconHome, IconRefresh } from '@tabler/icons-vue'
 import { useGameRun } from './useGameRun'
 
 const props = defineProps<{
@@ -90,7 +90,7 @@ watch(
 )
 
 const clickHint = async () => {
-  const position = game.value.useHint()
+  const position = game.value.revealQueenHint()
 
   if (position) {
     recordHint(position)
@@ -322,8 +322,8 @@ watch(
       :aria-label="hintButtonLabel"
       @click="clickHint"
     >
-      <IconBulbOff v-if="isHintUsed" />
-      <IconBulb v-else />
+      <IconCrownOff v-if="isHintUsed" />
+      <IconCrown v-else />
     </BaseButton>
     <div
       v-if="isReplayingResult && replayData"
