@@ -30,7 +30,6 @@ Use this checklist for concrete unfinished work. Each checkbox should describe a
 - [ ] Add a `QueenGame.revealRegionHint()` method that suggests one region where notes can be safely marked.
 - [ ] Add UI for choosing between reveal-queen and reveal-region hint items.
 - [ ] Use the bulb icon for the future reveal-region hint item.
-- [ ] Add tests for reveal-queen hint behavior.
 - [ ] Add tests for reveal-region hint behavior.
 - [ ] Update `docs/state.md` with the two hint item states.
 
