@@ -2,7 +2,9 @@
 import QueenIcon from '@/components/common/QueenIcon.vue'
 import type BoardCell from '@/modules/game/BoardCell'
 import { computed } from 'vue'
-import type { Position } from '@/modules/types/board'
+import { useGameCellInputEvents } from './useGameCellInputEvents'
+import { CELL_INPUT_EVENT_NAMES } from './gameInputEvents'
+import type { CellInputEmit } from './gameInputEvents'
 
 const props = defineProps<{
   cell: BoardCell
@@ -12,18 +14,7 @@ const props = defineProps<{
   queenNoteIcon: string
 }>()
 
-type CellInteraction =
-  | 'pressStart'
-  | 'pressEnter'
-  | 'pressClick'
-  | 'pressDoubleClick'
-  | 'pressEnd'
-type CellFocusDirection = 'up' | 'down' | 'left' | 'right'
-
-const emit = defineEmits<{
-  (event: CellInteraction, position: Position): void
-  (event: 'moveFocus', position: Position, direction: CellFocusDirection): void
-}>()
+const emit = defineEmits(CELL_INPUT_EVENT_NAMES) as CellInputEmit
 
 const cellColor = computed(() => `var(--cell-color-${props.cell.getRegion()})`)
 const position = computed(() => props.cell.getPosition())
@@ -40,50 +31,7 @@ const cellAriaLabel = computed(() => {
   return `Row ${row + 1}, column ${column + 1}, region ${region + 1}, ${cellStatusLabel.value}`
 })
 
-const emitPressIntent = (event: CellInteraction) => {
-  if (event !== 'pressEnd' && !isInteractive.value) return
-  emit(event, position.value)
-}
-
-const isSpaceKey = (event: KeyboardEvent) => event.key === ' ' || event.code === 'Space'
-const focusDirectionByKey: Partial<Record<string, CellFocusDirection>> = {
-  ArrowUp: 'up',
-  ArrowDown: 'down',
-  ArrowLeft: 'left',
-  ArrowRight: 'right',
-}
-
-const handleKeydown = (event: KeyboardEvent) => {
-  const direction = focusDirectionByKey[event.key]
-  if (direction !== undefined) {
-    event.preventDefault()
-    emit('moveFocus', position.value, direction)
-    return
-  }
-
-  if (!isSpaceKey(event)) return
-
-  event.preventDefault()
-  if (event.repeat) return
-
-  emitPressIntent('pressStart')
-}
-
-const handleKeyup = (event: KeyboardEvent) => {
-  if (!isSpaceKey(event)) return
-
-  event.preventDefault()
-  emitPressIntent('pressClick')
-  emitPressIntent('pressEnd')
-}
-
-const inputPressHandlers = {
-  pointerDown: () => emitPressIntent('pressStart'),
-  pointerEnter: () => emitPressIntent('pressEnter'),
-  click: () => emitPressIntent('pressClick'),
-  doubleClick: () => emitPressIntent('pressDoubleClick'),
-  focus: () => emitPressIntent('pressEnter'),
-}
+const cellInput = useGameCellInputEvents({ emit, isInteractive, position })
 </script>
 
 <template>
@@ -103,13 +51,7 @@ const inputPressHandlers = {
     :data-test="`cell-${position[0]}-${position[1]}`"
     :aria-label="cellAriaLabel"
     tabindex="0"
-    @dblclick="inputPressHandlers.doubleClick"
-    @pointerdown="inputPressHandlers.pointerDown"
-    @pointerenter="inputPressHandlers.pointerEnter"
-    @click="inputPressHandlers.click"
-    @focus="inputPressHandlers.focus"
-    @keydown="handleKeydown"
-    @keyup="handleKeyup"
+    v-on="cellInput.nativeListeners"
   >
     <template v-if="props.cell.isQueen() && props.cell.status === 'found'">
       <QueenIcon status="found" :icon="queenIcon" :note-icon="queenNoteIcon" />

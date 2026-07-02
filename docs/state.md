@@ -19,6 +19,8 @@ Implementation:
 
 - [apps/web/src/components/game/GameBoard.vue](../apps/web/src/components/game/GameBoard.vue)
 - [apps/web/src/components/game/GameCell.vue](../apps/web/src/components/game/GameCell.vue)
+- [apps/web/src/components/game/gameInputEvents.ts](../apps/web/src/components/game/gameInputEvents.ts)
+- [apps/web/src/components/game/useGameCellInputEvents.ts](../apps/web/src/components/game/useGameCellInputEvents.ts)
 - [apps/web/src/components/game/useGameBoardInputEvents.ts](../apps/web/src/components/game/useGameBoardInputEvents.ts)
 - [apps/web/src/components/game/useGameBoardGestures.ts](../apps/web/src/components/game/useGameBoardGestures.ts)
 

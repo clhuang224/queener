@@ -1,8 +1,7 @@
 import type { Ref } from 'vue'
 import type { Position } from '@/modules/types/board'
 import type { TouchMoveEvent } from './useGameBoardGestures'
-
-export type CellFocusDirection = 'up' | 'down' | 'left' | 'right'
+import type { CellFocusDirection } from './gameInputEvents'
 
 const moveOffsetByDirection: Record<CellFocusDirection, Position> = {
   up: [-1, 0],
