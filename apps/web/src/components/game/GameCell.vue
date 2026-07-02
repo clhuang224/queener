@@ -41,7 +41,7 @@ const cellAriaLabel = computed(() => {
 })
 
 const emitPressIntent = (event: CellInteraction) => {
-  if (!isInteractive.value) return
+  if (event !== 'pressEnd' && !isInteractive.value) return
   emit(event, position.value)
 }
 

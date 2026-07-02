@@ -142,6 +142,21 @@ describe('GameBoard', () => {
     expect(wrapper.emitted('mark-note')).toBeUndefined()
   })
 
+  it('does not keep dragging notes after double Space marks a queen', async () => {
+    const { wrapper } = mountGameBoard()
+    const queenCell = findCell(wrapper, 0, 0)
+
+    await focusCell(queenCell)
+    await pressSpace(queenCell)
+    await pressSpace(queenCell)
+    await queenCell.trigger('keydown', { key: 'ArrowDown' })
+    await wrapper.vm.$nextTick()
+
+    expectActiveCell(1, 0)
+    expect(wrapper.emitted('mark-queen')).toEqual([[[0, 0]]])
+    expect(wrapper.emitted('mark-note')).toBeUndefined()
+  })
+
   it('uses held Space as a keyboard drag note action across focused cells', async () => {
     const { wrapper } = mountGameBoard()
     const startCell = findCell(wrapper, 0, 1)
