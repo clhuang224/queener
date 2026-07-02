@@ -3,6 +3,7 @@ import GameCell from '@/components/game/GameCell.vue'
 import type { QueenGamePublic } from '@/modules/game/QueenGame'
 import { CELL_TEXTURES } from '@/modules/constants/cellTextures'
 import { useGameBoardGestures } from './useGameBoardGestures'
+import { useGameBoardInputEvents } from './useGameBoardInputEvents'
 import { computed, ref } from 'vue'
 import { BOARD_SKINS } from '@/modules/constants/boardSkins'
 import { QUEEN_SKINS } from '@/modules/constants/queenSkins'
@@ -13,8 +14,6 @@ import { playGameSound } from '@/modules/utils/playGameSound'
 import { pickDistributedColors } from '@/modules/utils/pickDistributedColors'
 import { pickRandomItems } from '@/modules/utils/pickRandomItems'
 import { GameSoundType } from '@/modules/enums/GameSoundType'
-
-type CellFocusDirection = 'up' | 'down' | 'left' | 'right'
 
 const props = defineProps<{
   queenSkin: QueenSkinType
@@ -61,34 +60,7 @@ const isHintedCell = ([row, column]: Position) => {
   return props.hintedPosition?.[0] === row && props.hintedPosition[1] === column
 }
 
-const getBoardElementFromPoint = (clientX: number, clientY: number) => {
-  const element = document.elementFromPoint(clientX, clientY)
-  if (!(element instanceof Element)) return null
-  if (!boardRef.value?.contains(element)) return null
-  return element
-}
-
-const focusCell = ([row, column]: Position, direction: CellFocusDirection) => {
-  const [rowOffset, columnOffset] =
-    direction === 'up'
-      ? [-1, 0]
-      : direction === 'down'
-        ? [1, 0]
-        : direction === 'left'
-          ? [0, -1]
-          : [0, 1]
-
-  const nextRow = row + rowOffset
-  const nextColumn = column + columnOffset
-
-  if (nextRow < 0 || nextRow >= boardSize.value || nextColumn < 0 || nextColumn >= boardSize.value) {
-    return
-  }
-
-  boardRef.value
-    ?.querySelector<HTMLElement>(`[data-row="${nextRow}"][data-column="${nextColumn}"]`)
-    ?.focus()
-}
+const boardInput = useGameBoardInputEvents({ boardRef, boardSize })
 
 const markNoteWithSound = (position: Position) => {
   const wasNote = props.game.isNote(position)
@@ -125,12 +97,17 @@ const {
   handlePressStart,
   handleTouchMove,
 } = useGameBoardGestures({
-  getElementFromPoint: getBoardElementFromPoint,
+  getElementFromPoint: boardInput.getElementFromPoint,
   isInteractive: isInteractiveCell,
   isNote: (position) => props.game.isNote(position),
   markNote: markNoteWithSound,
   markQueen: markQueenWithSound,
   removeNote: removeNoteWithSound,
+})
+
+const boardNativeListeners = boardInput.createBoardNativeListeners({
+  pressEnd: handlePressEnd,
+  touchMove: handleTouchMove,
 })
 </script>
 
@@ -140,12 +117,7 @@ const {
     class="game-board"
     data-test="game-board"
     :style="boardStyle"
-    @pointerup="handlePressEnd"
-    @pointercancel="handlePressEnd"
-    @mouseleave="handlePressEnd"
-    @touchmove="handleTouchMove"
-    @touchend="handlePressEnd"
-    @touchcancel="handlePressEnd"
+    v-on="boardNativeListeners"
   >
     <div class="board-cells">
       <template v-for="(row, rowIndex) in game.board" :key="rowIndex">
@@ -162,7 +134,7 @@ const {
           @press-click="handlePressClick"
           @press-double-click="handlePressDoubleClick"
           @press-end="handlePressEnd"
-          @move-focus="focusCell"
+          @move-focus="boardInput.moveFocus"
         />
       </template>
     </div>

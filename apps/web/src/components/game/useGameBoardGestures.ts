@@ -7,7 +7,7 @@ type TouchPoint = {
   clientY: number
 }
 
-type TouchMoveEvent = {
+export type TouchMoveEvent = {
   preventDefault: () => void
   touches: ArrayLike<TouchPoint>
 }

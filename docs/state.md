@@ -19,10 +19,12 @@ Implementation:
 
 - [apps/web/src/components/game/GameBoard.vue](../apps/web/src/components/game/GameBoard.vue)
 - [apps/web/src/components/game/GameCell.vue](../apps/web/src/components/game/GameCell.vue)
+- [apps/web/src/components/game/useGameBoardInputEvents.ts](../apps/web/src/components/game/useGameBoardInputEvents.ts)
+- [apps/web/src/components/game/useGameBoardGestures.ts](../apps/web/src/components/game/useGameBoardGestures.ts)
 
 ### Input Event Mapping
 
-`GameCell` normalizes low-level input into press-oriented business events before `GameBoard` interprets gameplay behavior.
+`GameCell` normalizes cell-level input into press-oriented business events before `GameBoard` interprets gameplay behavior.
 
 | Business Event | Touch Input | Mouse Input | Keyboard Input | Emitted Intent |
 | -------------- | ----------- | ----------- | -------------- | -------------- |
@@ -32,6 +34,14 @@ Implementation:
 | press enter | active touch resolved by board `touchmove` | `pointerenter` | focus enters another cell while Space is held | `pressEnter(position)` |
 | press end | `touchend` / `touchcancel` | `pointerup` / `pointercancel` / `mouseleave` | `Space keyup` after a drag | `pressEnd()` |
 | focus move | not used | not used | arrow keydown | `moveFocus(position, direction)` |
+
+`GameBoard` normalizes board-level input and focus movement before passing events to the gesture state machine.
+
+| Business Event | Touch Input | Mouse Input | Keyboard Input | Handler |
+| -------------- | ----------- | ----------- | -------------- | ------- |
+| press end | `touchend` / `touchcancel` | `pointerup` / `pointercancel` / `mouseleave` | Space keyup forwarded from `GameCell` | `handlePressEnd()` |
+| press move | `touchmove` resolved with `document.elementFromPoint(...)` | cell `pointerenter` forwarded from `GameCell` | focus entering a cell while Space is held | `handlePressEnter(position)` |
+| focus move | not used | not used | arrow keydown forwarded from `GameCell` | `moveFocus(position, direction)` |
 
 ### Transition Table
 
@@ -107,8 +117,8 @@ stateDiagram-v2
 | `GameCell` | `dblclick` | `pressDoubleClick` -> `handlePressDoubleClick(position)` -> `QueenGame.markQueen(position)` | cancel pending note and mark a queen |
 | `GameCell` | `pointerenter` or focus while Space is held | `pressEnter` -> `handlePressEnter(position)` | drive drag progression from pointer or keyboard input |
 | `GameCell` | arrow keydown | `focusCell(position, direction)` | move focus to the next cell in that direction |
-| `.game-board` | `touchmove` | `handleTouchMove(event)` -> `getPositionFromPoint(...)` -> `handlePressEnter(position)` | drive mobile drag progression by resolving the touched cell from screen coordinates |
-| `.game-board` | `pointerup` / `pointercancel` / `mouseleave` / `touchend` / `touchcancel` | `handlePressEnd()` -> `resetPressSession()` | finish the current press or drag session |
+| `.game-board` native listeners | `touchmove` | `handleTouchMove(event)` -> `getPositionFromPoint(...)` -> `handlePressEnter(position)` | drive mobile drag progression by resolving the touched cell from screen coordinates |
+| `.game-board` native listeners | `pointerup` / `pointercancel` / `mouseleave` / `touchend` / `touchcancel` | `handlePressEnd()` -> `resetPressSession()` | finish the current press or drag session |
 
 ### Notes
 
