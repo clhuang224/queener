@@ -12,11 +12,20 @@ const props = defineProps<{
   queenNoteIcon: string
 }>()
 
+type CellInteraction =
+  | 'pointerDown'
+  | 'pointerEnter'
+  | 'noteClick'
+  | 'markQueen'
+  | 'pressStart'
+  | 'pressEnter'
+  | 'pressClick'
+  | 'pressEnd'
+type CellFocusDirection = 'up' | 'down' | 'left' | 'right'
+
 const emit = defineEmits<{
-  pointerDown: [position: Position]
-  pointerEnter: [position: Position]
-  noteClick: [position: Position]
-  markQueen: [position: Position]
+  (event: CellInteraction, position: Position): void
+  (event: 'moveFocus', position: Position, direction: CellFocusDirection): void
 }>()
 
 const cellColor = computed(() => `var(--cell-color-${props.cell.getRegion()})`)
@@ -34,18 +43,43 @@ const cellAriaLabel = computed(() => {
   return `Row ${row + 1}, column ${column + 1}, region ${region + 1}, ${cellStatusLabel.value}`
 })
 
-const emitWhenInteractive = (event: 'pointerDown' | 'pointerEnter' | 'noteClick' | 'markQueen') => {
+const emitWhenInteractive = (event: CellInteraction) => {
   if (!isInteractive.value) return
+  emit(event, position.value)
+}
 
-  if (event === 'pointerDown') {
-    emit('pointerDown', position.value)
-  } else if (event === 'pointerEnter') {
-    emit('pointerEnter', position.value)
-  } else if (event === 'noteClick') {
-    emit('noteClick', position.value)
-  } else {
-    emit('markQueen', position.value)
+const isSpaceKey = (event: KeyboardEvent) => event.key === ' ' || event.code === 'Space'
+const focusDirectionByKey: Partial<Record<string, CellFocusDirection>> = {
+  ArrowUp: 'up',
+  ArrowDown: 'down',
+  ArrowLeft: 'left',
+  ArrowRight: 'right',
+}
+
+const handleKeydown = (event: KeyboardEvent) => {
+  const direction = focusDirectionByKey[event.key]
+  if (direction !== undefined) {
+    event.preventDefault()
+    if (isInteractive.value) {
+      emit('moveFocus', position.value, direction)
+    }
+    return
   }
+
+  if (!isSpaceKey(event)) return
+
+  event.preventDefault()
+  if (event.repeat) return
+
+  emitWhenInteractive('pressStart')
+}
+
+const handleKeyup = (event: KeyboardEvent) => {
+  if (!isSpaceKey(event)) return
+
+  event.preventDefault()
+  emitWhenInteractive('pressClick')
+  emitWhenInteractive('pressEnd')
 }
 </script>
 
@@ -70,6 +104,9 @@ const emitWhenInteractive = (event: 'pointerDown' | 'pointerEnter' | 'noteClick'
     @pointerdown="emitWhenInteractive('pointerDown')"
     @pointerenter="emitWhenInteractive('pointerEnter')"
     @click="emitWhenInteractive('noteClick')"
+    @focus="emitWhenInteractive('pressEnter')"
+    @keydown="handleKeydown"
+    @keyup="handleKeyup"
   >
     <template v-if="props.cell.isQueen() && props.cell.status === 'found'">
       <QueenIcon status="found" :icon="queenIcon" :note-icon="queenNoteIcon" />

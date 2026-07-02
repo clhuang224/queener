@@ -45,15 +45,9 @@ Use this checklist for concrete unfinished work. Each checkbox should describe a
 
 ## Board Keyboard Accessibility
 
-- [ ] Add arrow-key navigation between board cells.
-- [ ] Add keyboard shortcut for marking or removing a note on the focused cell.
-- [ ] Add keyboard shortcut for marking a queen on the focused cell.
 - [ ] Add visible focused-cell styling that works on light board skins.
 - [ ] Add visible focused-cell styling that works on dark board skins.
 - [ ] Add visible focused-cell styling that works when board texture is enabled.
-- [ ] Add tests for keyboard cell navigation.
-- [ ] Add tests for keyboard note and queen actions.
-- [ ] Update `docs/state.md` with keyboard interaction transitions.
 
 ## Settings
 

@@ -31,9 +31,12 @@ const TEST_PUZZLE: Puzzle = {
   ],
 }
 
+const mountedWrappers: Array<ReturnType<typeof mount>> = []
+
 const mountGameBoard = () => {
   const game = new QueenGame(TEST_PUZZLE)
   const wrapper = mount(GameBoard, {
+    attachTo: document.body,
     props: {
       game,
       queenSkin: QueenSkinType.PINK_CROWN,
@@ -42,6 +45,7 @@ const mountGameBoard = () => {
       hintedPosition: null,
     },
   })
+  mountedWrappers.push(wrapper)
 
   return {
     game,
@@ -53,6 +57,21 @@ const findCell = (wrapper: ReturnType<typeof mount>, row: number, column: number
   return wrapper.find(`[data-test="cell-${row}-${column}"]`)
 }
 
+const pressSpace = async (cell: ReturnType<typeof findCell>) => {
+  await cell.trigger('keydown', { key: ' ', code: 'Space' })
+  await cell.trigger('keyup', { key: ' ', code: 'Space' })
+}
+
+const focusCell = async (cell: ReturnType<typeof findCell>) => {
+  const element = cell.element as HTMLElement
+  element.focus()
+  await cell.trigger('focus')
+}
+
+const expectActiveCell = (row: number, column: number) => {
+  expect((document.activeElement as HTMLElement | null)?.dataset.test).toBe(`cell-${row}-${column}`)
+}
+
 describe('GameBoard', () => {
   beforeEach(() => {
     vi.useFakeTimers()
@@ -62,6 +81,10 @@ describe('GameBoard', () => {
   afterEach(() => {
     vi.runOnlyPendingTimers()
     vi.useRealTimers()
+    for (const wrapper of mountedWrappers) {
+      wrapper.unmount()
+    }
+    mountedWrappers.length = 0
   })
 
   it('emits note records after note state changes', async () => {
@@ -87,5 +110,83 @@ describe('GameBoard', () => {
     await findCell(wrapper, 0, 1).trigger('dblclick')
 
     expect(wrapper.emitted('mark-queen')).toEqual([[[0, 0]], [[0, 1]]])
+  })
+
+  it('uses Space as a keyboard single-click note action', async () => {
+    const { wrapper } = mountGameBoard()
+    const cell = findCell(wrapper, 0, 1)
+
+    await pressSpace(cell)
+    vi.advanceTimersByTime(300)
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.emitted('mark-note')).toEqual([[[0, 1]]])
+
+    await pressSpace(cell)
+    vi.advanceTimersByTime(300)
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.emitted('remove-note')).toEqual([[[0, 1]]])
+  })
+
+  it('uses double Space as a keyboard double-click queen action', async () => {
+    const { wrapper } = mountGameBoard()
+    const queenCell = findCell(wrapper, 0, 0)
+
+    await pressSpace(queenCell)
+    await pressSpace(queenCell)
+    vi.advanceTimersByTime(300)
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.emitted('mark-queen')).toEqual([[[0, 0]]])
+    expect(wrapper.emitted('mark-note')).toBeUndefined()
+  })
+
+  it('uses held Space as a keyboard drag note action across focused cells', async () => {
+    const { wrapper } = mountGameBoard()
+    const startCell = findCell(wrapper, 0, 1)
+    const nextCell = findCell(wrapper, 1, 1)
+
+    await focusCell(startCell)
+    await startCell.trigger('keydown', { key: ' ', code: 'Space' })
+    await startCell.trigger('keydown', { key: 'ArrowDown' })
+    await nextCell.trigger('keyup', { key: ' ', code: 'Space' })
+    await wrapper.vm.$nextTick()
+
+    expectActiveCell(1, 1)
+    expect(wrapper.emitted('mark-note')).toEqual([[[0, 1]], [[1, 1]]])
+  })
+
+  it('moves focus between board cells with arrow keys', async () => {
+    const { wrapper } = mountGameBoard()
+    const startCell = findCell(wrapper, 0, 0)
+
+    await focusCell(startCell)
+    await startCell.trigger('keydown', { key: 'ArrowRight' })
+    await wrapper.vm.$nextTick()
+    expectActiveCell(0, 1)
+
+    await findCell(wrapper, 0, 1).trigger('keydown', { key: 'ArrowDown' })
+    await wrapper.vm.$nextTick()
+    expectActiveCell(1, 1)
+
+    await findCell(wrapper, 1, 1).trigger('keydown', { key: 'ArrowLeft' })
+    await wrapper.vm.$nextTick()
+    expectActiveCell(1, 0)
+
+    await findCell(wrapper, 1, 0).trigger('keydown', { key: 'ArrowUp' })
+    await wrapper.vm.$nextTick()
+    expectActiveCell(0, 0)
+  })
+
+  it('keeps focus in place when arrow navigation reaches the board edge', async () => {
+    const { wrapper } = mountGameBoard()
+    const startCell = findCell(wrapper, 0, 0)
+
+    await focusCell(startCell)
+    await startCell.trigger('keydown', { key: 'ArrowLeft' })
+    await wrapper.vm.$nextTick()
+
+    expectActiveCell(0, 0)
   })
 })

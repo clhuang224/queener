@@ -14,6 +14,8 @@ import { pickDistributedColors } from '@/modules/utils/pickDistributedColors'
 import { pickRandomItems } from '@/modules/utils/pickRandomItems'
 import { GameSoundType } from '@/modules/enums/GameSoundType'
 
+type CellFocusDirection = 'up' | 'down' | 'left' | 'right'
+
 const props = defineProps<{
   queenSkin: QueenSkinType
   boardSkin: BoardSkinType
@@ -66,6 +68,37 @@ const getBoardElementFromPoint = (clientX: number, clientY: number) => {
   return element
 }
 
+const focusCell = ([row, column]: Position, direction: CellFocusDirection) => {
+  const [rowOffset, columnOffset] =
+    direction === 'up'
+      ? [-1, 0]
+      : direction === 'down'
+        ? [1, 0]
+        : direction === 'left'
+          ? [0, -1]
+          : [0, 1]
+
+  let nextRow = row + rowOffset
+  let nextColumn = column + columnOffset
+
+  while (
+    nextRow >= 0 &&
+    nextRow < boardSize.value &&
+    nextColumn >= 0 &&
+    nextColumn < boardSize.value
+  ) {
+    if (isInteractiveCell([nextRow, nextColumn])) {
+      boardRef.value
+        ?.querySelector<HTMLElement>(`[data-row="${nextRow}"][data-column="${nextColumn}"]`)
+        ?.focus()
+      return
+    }
+
+    nextRow += rowOffset
+    nextColumn += columnOffset
+  }
+}
+
 const markNoteWithSound = (position: Position) => {
   const wasNote = props.game.isNote(position)
   props.game.markNote(position)
@@ -96,6 +129,10 @@ const markQueenWithSound = (position: Position) => {
 const {
   handleMarkQueen,
   handleNoteClick,
+  handlePressClick,
+  handlePressEnd,
+  handlePressEnter,
+  handlePressStart,
   handlePointerDown,
   handlePointerEnd,
   handlePointerEnter,
@@ -137,6 +174,11 @@ const {
           @pointer-enter="handlePointerEnter"
           @note-click="handleNoteClick"
           @mark-queen="handleMarkQueen"
+          @press-start="handlePressStart"
+          @press-enter="handlePressEnter"
+          @press-click="handlePressClick"
+          @press-end="handlePressEnd"
+          @move-focus="focusCell"
         />
       </template>
     </div>

@@ -178,6 +178,18 @@ export const useGameBoardGestures = ({
     markQueen(position)
   }
 
+  const handlePressClick = (position: Position) => {
+    if (
+      pendingNotePosition !== null &&
+      getPositionKey(pendingNotePosition) === getPositionKey(position)
+    ) {
+      handleMarkQueen(position)
+      return
+    }
+
+    handleNoteClick(position)
+  }
+
   const handlePointerEnd = () => {
     isDragging.value = false
     resetPointerSession()
@@ -190,6 +202,10 @@ export const useGameBoardGestures = ({
   return {
     handleMarkQueen,
     handleNoteClick,
+    handlePressClick,
+    handlePressEnd: handlePointerEnd,
+    handlePressEnter: handlePointerEnter,
+    handlePressStart: handlePointerDown,
     handlePointerDown,
     handlePointerEnd,
     handlePointerEnter,

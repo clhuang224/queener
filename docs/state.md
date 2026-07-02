@@ -8,7 +8,7 @@ This document collects the main state transitions used in the project.
 
 ## 1. Cell Interaction Session
 
-This state machine describes how `GameBoard` interprets low-level desktop and mobile interaction events coming from `GameCell` and the board container.
+This state machine describes how `GameBoard` interprets low-level pointer, touch, and keyboard interaction events coming from `GameCell` and the board container.
 
 Type:
 
@@ -24,20 +24,28 @@ Implementation:
 
 | Current State        | Platform    | Event                                                   | Next State           | Action                                                          |
 | -------------------- | ----------- | ------------------------------------------------------- | -------------------- | --------------------------------------------------------------- |
-| `Idle`               | desktop+mobile | `pointerdown(cell)`                                  | `Pressed`            | start pointer session and store start position                  |
-| `Pressed`            | desktop+mobile | `click(cell)`                                        | `PendingSingleClick` | schedule delayed single-click note action                       |
+| `Idle`               | pointer+touch | `pointerdown(cell)`                                    | `Pressed`            | start press session and store start position                    |
+| `Idle`               | keyboard    | `Space keydown(cell)`                                   | `Pressed`            | start press session and store start position                    |
+| `Pressed`            | pointer+touch | `click(cell)`                                          | `PendingSingleClick` | schedule delayed single-click note action                       |
+| `Pressed`            | keyboard    | `Space keyup(cell)`                                     | `PendingSingleClick` | schedule delayed single-click note action                       |
 | `Pressed`            | desktop     | `pointerenter(other cell)`                              | `Dragging`           | cancel pending note if needed and begin drag selection using the start cell's note mode |
 | `Pressed`            | mobile      | `touchmove(over other cell)`                            | `Dragging`           | resolve touched cell from coordinates and begin drag selection using the start cell's note mode |
+| `Pressed`            | keyboard    | `focus(other cell)` while Space is held                  | `Dragging`           | cancel pending note if needed and begin drag selection using the start cell's note mode |
 | `Pressed`            | desktop     | `pointerup` / `pointercancel` / `mouseleave`            | `Idle`               | end pointer session                                             |
 | `Pressed`            | mobile      | `touchend` / `touchcancel` / `pointercancel`            | `Idle`               | end pointer session                                             |
-| `PendingSingleClick` | desktop+mobile | `dblclick(cell)`                                     | `Idle`               | cancel pending note and mark queen                              |
-| `PendingSingleClick` | desktop+mobile | click timeout                                         | `Idle`               | call `QueenGame.removeNote(position)` if noted, otherwise `QueenGame.markNote(position)` |
+| `Pressed`            | keyboard    | `Space keyup` after drag                                | `Idle`               | end keyboard press session                                      |
+| `PendingSingleClick` | pointer+touch | `dblclick(cell)`                                      | `Idle`               | cancel pending note and mark queen                              |
+| `PendingSingleClick` | keyboard    | second `Space keyup(cell)` before timeout                | `Idle`               | cancel pending note and mark queen                              |
+| `PendingSingleClick` | pointer+touch+keyboard | click timeout                                  | `Idle`               | call `QueenGame.removeNote(position)` if noted, otherwise `QueenGame.markNote(position)` |
 | `PendingSingleClick` | desktop     | `pointerenter(other cell)`                              | `Dragging`           | cancel pending click and begin drag selection using the start cell's note mode |
 | `PendingSingleClick` | mobile      | `touchmove(over other cell)`                            | `Dragging`           | cancel pending click and begin drag selection using the start cell's note mode |
+| `PendingSingleClick` | keyboard    | `focus(other cell)` while Space is held                  | `Dragging`           | cancel pending click and begin drag selection using the start cell's note mode |
 | `Dragging`           | desktop     | `pointerenter(new cell)`                                | `Dragging`           | apply the drag note action once for each newly entered cell     |
 | `Dragging`           | mobile      | `touchmove(over new cell)`                              | `Dragging`           | apply the drag note action once for each newly touched cell from screen point |
+| `Dragging`           | keyboard    | `focus(new cell)` while Space is held                    | `Dragging`           | apply the drag note action once for each newly focused cell     |
 | `Dragging`           | desktop     | `pointerup` / `pointercancel` / `mouseleave`            | `Idle`               | end drag session                                                |
 | `Dragging`           | mobile      | `touchend` / `touchcancel` / `pointercancel`            | `Idle`               | end drag session                                                |
+| `Dragging`           | keyboard    | `Space keyup`                                           | `Idle`               | end drag session                                                |
 
 ### Desktop Flowchart
 
@@ -85,6 +93,10 @@ stateDiagram-v2
 | `GameCell` | `click` | `handleNoteClick(position)` | schedule the delayed single-click note action |
 | `GameCell` | `dblclick` | `handleMarkQueen(position)` -> `QueenGame.markQueen(position)` | cancel pending note and mark a queen |
 | `GameCell` | `pointerenter` | `handlePointerEnter(position)` | drive desktop drag progression |
+| `GameCell` | `Space keydown` | `handlePressStart(position)` -> `handlePointerDown(position)` | start a keyboard press session using the shared gesture state |
+| `GameCell` | `Space keyup` | `handlePressClick(position)` and `handlePressEnd()` | schedule a note action, mark queen on a second press, or finish a drag |
+| `GameCell` | `focus` | `handlePressEnter(position)` -> `handlePointerEnter(position)` | drive keyboard drag progression while Space is held |
+| `GameCell` | arrow keydown | `focusCell(position, direction)` | move focus to the next interactive cell in that direction |
 | `.game-board` | `touchmove` | `handleTouchMove(event)` -> `getPositionFromPoint(...)` -> `handlePointerEnter(position)` | drive mobile drag progression by resolving the touched cell from screen coordinates |
 | `.game-board` | `pointerup` / `pointercancel` / `mouseleave` / `touchend` / `touchcancel` | `handlePointerEnd()` -> `resetPointerSession()` | finish the current press or drag session |
 
@@ -94,12 +106,16 @@ stateDiagram-v2
 - `GameBoard` owns gesture interpretation for both desktop and mobile.
 - `QueenGame` performs the actual note and queen updates.
 - Single click uses `QueenGame.isNote(position)` to choose `removeNote(position)` or `markNote(position)`.
+- Space single press uses the same delayed single-click note branch.
+- Space double press cancels the delayed note branch and marks a queen, matching mouse double click.
+- Arrow keys move focus only; they do not change `QueenGame` state by themselves.
 - Dragging chooses one note action for the whole drag session based on the start cell.
 - When dragging starts from an empty cell, dragging calls `QueenGame.markNote(position)` only; existing notes are not removed while sliding across them.
 - When dragging starts from a noted cell, dragging calls `QueenGame.removeNote(position)` only; empty cells are not marked while sliding across them.
 - The delayed single-click branch exists so a `dblclick` can cancel it cleanly.
 - On desktop, drag progression is driven by `pointerenter`.
 - On mobile, drag progression is driven by `touchmove`, and `GameBoard` resolves the active cell with `document.elementFromPoint(...)` before reusing the same drag-selection logic.
+- On keyboard, drag progression is driven by focus entering another cell while Space is held.
 - The shared `Dragging` state intentionally hides the input-source difference so note marking rules stay identical across devices.
 
 ## 2. BoardCell Status
