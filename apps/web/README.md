@@ -33,6 +33,8 @@ Players solve the board by marking notes on cells and confirming queen positions
 - Each new game and restart creates a puzzle variant by rotating the board and remapping region colors
 - Click to toggle notes, or drag from an empty/noted cell to mark/remove notes in one consistent stroke
 - Double click to mark a queen
+- Use arrow keys to move between board cells
+- Use Space as the keyboard version of the board press: single press toggles a note, double press marks a queen, and holding Space while moving focus marks/removes notes across cells
 - Heart-based mistake system where hearts scale by board size
 - One-time hint button that reveals a valid queen position
 - End-of-game replay before the result action flow
@@ -124,5 +126,5 @@ bun run test:e2e
 
 - `QueenGame` tests cover initialization, per-run puzzle variants, queen marking, hint behavior, reset behavior, win detection, and game-over conditions
 - `BoardCell` tests cover cell-level state transitions
-- `GameBoard` tests cover pointer, click, double-click, drag, and mobile gesture coordination
+- `GameBoard` tests cover pointer, keyboard, click, double-click, drag, and mobile gesture coordination
 - Cypress covers a small set of browser-level player flows

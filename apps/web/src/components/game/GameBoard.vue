@@ -78,25 +78,16 @@ const focusCell = ([row, column]: Position, direction: CellFocusDirection) => {
           ? [0, -1]
           : [0, 1]
 
-  let nextRow = row + rowOffset
-  let nextColumn = column + columnOffset
+  const nextRow = row + rowOffset
+  const nextColumn = column + columnOffset
 
-  while (
-    nextRow >= 0 &&
-    nextRow < boardSize.value &&
-    nextColumn >= 0 &&
-    nextColumn < boardSize.value
-  ) {
-    if (isInteractiveCell([nextRow, nextColumn])) {
-      boardRef.value
-        ?.querySelector<HTMLElement>(`[data-row="${nextRow}"][data-column="${nextColumn}"]`)
-        ?.focus()
-      return
-    }
-
-    nextRow += rowOffset
-    nextColumn += columnOffset
+  if (nextRow < 0 || nextRow >= boardSize.value || nextColumn < 0 || nextColumn >= boardSize.value) {
+    return
   }
+
+  boardRef.value
+    ?.querySelector<HTMLElement>(`[data-row="${nextRow}"][data-column="${nextColumn}"]`)
+    ?.focus()
 }
 
 const markNoteWithSound = (position: Position) => {
@@ -127,15 +118,11 @@ const markQueenWithSound = (position: Position) => {
 }
 
 const {
-  handleMarkQueen,
-  handleNoteClick,
   handlePressClick,
+  handlePressDoubleClick,
   handlePressEnd,
   handlePressEnter,
   handlePressStart,
-  handlePointerDown,
-  handlePointerEnd,
-  handlePointerEnter,
   handleTouchMove,
 } = useGameBoardGestures({
   getElementFromPoint: getBoardElementFromPoint,
@@ -153,12 +140,12 @@ const {
     class="game-board"
     data-test="game-board"
     :style="boardStyle"
-    @pointerup="handlePointerEnd"
-    @pointercancel="handlePointerEnd"
-    @mouseleave="handlePointerEnd"
+    @pointerup="handlePressEnd"
+    @pointercancel="handlePressEnd"
+    @mouseleave="handlePressEnd"
     @touchmove="handleTouchMove"
-    @touchend="handlePointerEnd"
-    @touchcancel="handlePointerEnd"
+    @touchend="handlePressEnd"
+    @touchcancel="handlePressEnd"
   >
     <div class="board-cells">
       <template v-for="(row, rowIndex) in game.board" :key="rowIndex">
@@ -170,13 +157,10 @@ const {
           :is-hinted="isHintedCell(cell.getPosition())"
           :queen-icon="queenIcon"
           :queen-note-icon="queenNoteIcon"
-          @pointer-down="handlePointerDown"
-          @pointer-enter="handlePointerEnter"
-          @note-click="handleNoteClick"
-          @mark-queen="handleMarkQueen"
           @press-start="handlePressStart"
           @press-enter="handlePressEnter"
           @press-click="handlePressClick"
+          @press-double-click="handlePressDoubleClick"
           @press-end="handlePressEnd"
           @move-focus="focusCell"
         />

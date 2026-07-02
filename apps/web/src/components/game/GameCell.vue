@@ -13,13 +13,10 @@ const props = defineProps<{
 }>()
 
 type CellInteraction =
-  | 'pointerDown'
-  | 'pointerEnter'
-  | 'noteClick'
-  | 'markQueen'
   | 'pressStart'
   | 'pressEnter'
   | 'pressClick'
+  | 'pressDoubleClick'
   | 'pressEnd'
 type CellFocusDirection = 'up' | 'down' | 'left' | 'right'
 
@@ -43,7 +40,7 @@ const cellAriaLabel = computed(() => {
   return `Row ${row + 1}, column ${column + 1}, region ${region + 1}, ${cellStatusLabel.value}`
 })
 
-const emitWhenInteractive = (event: CellInteraction) => {
+const emitPressIntent = (event: CellInteraction) => {
   if (!isInteractive.value) return
   emit(event, position.value)
 }
@@ -60,9 +57,7 @@ const handleKeydown = (event: KeyboardEvent) => {
   const direction = focusDirectionByKey[event.key]
   if (direction !== undefined) {
     event.preventDefault()
-    if (isInteractive.value) {
-      emit('moveFocus', position.value, direction)
-    }
+    emit('moveFocus', position.value, direction)
     return
   }
 
@@ -71,15 +66,23 @@ const handleKeydown = (event: KeyboardEvent) => {
   event.preventDefault()
   if (event.repeat) return
 
-  emitWhenInteractive('pressStart')
+  emitPressIntent('pressStart')
 }
 
 const handleKeyup = (event: KeyboardEvent) => {
   if (!isSpaceKey(event)) return
 
   event.preventDefault()
-  emitWhenInteractive('pressClick')
-  emitWhenInteractive('pressEnd')
+  emitPressIntent('pressClick')
+  emitPressIntent('pressEnd')
+}
+
+const inputPressHandlers = {
+  pointerDown: () => emitPressIntent('pressStart'),
+  pointerEnter: () => emitPressIntent('pressEnter'),
+  click: () => emitPressIntent('pressClick'),
+  doubleClick: () => emitPressIntent('pressDoubleClick'),
+  focus: () => emitPressIntent('pressEnter'),
 }
 </script>
 
@@ -99,12 +102,12 @@ const handleKeyup = (event: KeyboardEvent) => {
     :data-status="props.cell.status"
     :data-test="`cell-${position[0]}-${position[1]}`"
     :aria-label="cellAriaLabel"
-    :tabindex="isInteractive ? 0 : undefined"
-    @dblclick="emitWhenInteractive('markQueen')"
-    @pointerdown="emitWhenInteractive('pointerDown')"
-    @pointerenter="emitWhenInteractive('pointerEnter')"
-    @click="emitWhenInteractive('noteClick')"
-    @focus="emitWhenInteractive('pressEnter')"
+    tabindex="0"
+    @dblclick="inputPressHandlers.doubleClick"
+    @pointerdown="inputPressHandlers.pointerDown"
+    @pointerenter="inputPressHandlers.pointerEnter"
+    @click="inputPressHandlers.click"
+    @focus="inputPressHandlers.focus"
     @keydown="handleKeydown"
     @keyup="handleKeyup"
   >

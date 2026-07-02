@@ -87,7 +87,7 @@ describe('useGameBoardGestures', () => {
   it('marks a note after a single click delay', () => {
     const { game, gestures, stop } = setupGestures()
 
-    gestures.handleNoteClick([0, 1])
+    gestures.handlePressClick([0, 1])
     expect(game.board[0]![1]!.status).toBe('empty')
 
     vi.advanceTimersByTime(300)
@@ -101,7 +101,7 @@ describe('useGameBoardGestures', () => {
 
     game.markNote([0, 1])
 
-    gestures.handleNoteClick([0, 1])
+    gestures.handlePressClick([0, 1])
     vi.advanceTimersByTime(300)
 
     expect(game.board[0]![1]!.status).toBe('empty')
@@ -112,9 +112,9 @@ describe('useGameBoardGestures', () => {
     const { game, gestures, stop } = setupGestures()
     const queenPosition = getQueenPositions(game)[0]!
 
-    gestures.handleNoteClick(queenPosition)
-    gestures.handleNoteClick(queenPosition)
-    gestures.handleMarkQueen(queenPosition)
+    gestures.handlePressClick(queenPosition)
+    gestures.handlePressClick(queenPosition)
+    gestures.handlePressDoubleClick(queenPosition)
 
     vi.advanceTimersByTime(300)
 
@@ -131,8 +131,8 @@ describe('useGameBoardGestures', () => {
     game.markQueen(queenPosition)
     game.markQueen(wrongPosition)
 
-    gestures.handleNoteClick(queenPosition)
-    gestures.handleNoteClick(wrongPosition)
+    gestures.handlePressClick(queenPosition)
+    gestures.handlePressClick(wrongPosition)
     vi.advanceTimersByTime(300)
 
     expect(game.board[queenPosition[0]]![queenPosition[1]]!.status).toBe('found')
@@ -148,8 +148,8 @@ describe('useGameBoardGestures', () => {
     game.markQueen(queenPosition)
     game.markQueen(wrongPosition)
 
-    gestures.handleMarkQueen(queenPosition)
-    gestures.handleMarkQueen(wrongPosition)
+    gestures.handlePressDoubleClick(queenPosition)
+    gestures.handlePressDoubleClick(wrongPosition)
 
     expect(game.hearts).toBe(game.maxHearts - 1)
     expect(game.board[queenPosition[0]]![queenPosition[1]]!.status).toBe('found')
@@ -160,10 +160,10 @@ describe('useGameBoardGestures', () => {
   it('keeps drag note marking from being undone by the release click', () => {
     const { game, gestures, stop } = setupGestures()
 
-    gestures.handlePointerDown([0, 0])
-    gestures.handlePointerEnter([0, 1])
-    gestures.handlePointerEnd()
-    gestures.handleNoteClick([0, 1])
+    gestures.handlePressStart([0, 0])
+    gestures.handlePressEnter([0, 1])
+    gestures.handlePressEnd()
+    gestures.handlePressClick([0, 1])
 
     vi.advanceTimersByTime(300)
 
@@ -177,9 +177,9 @@ describe('useGameBoardGestures', () => {
 
     game.markNote([0, 1])
 
-    gestures.handlePointerDown([0, 0])
-    gestures.handlePointerEnter([0, 1])
-    gestures.handlePointerEnd()
+    gestures.handlePressStart([0, 0])
+    gestures.handlePressEnter([0, 1])
+    gestures.handlePressEnd()
 
     expect(game.board[0]![0]!.status).toBe('note')
     expect(game.board[0]![1]!.status).toBe('note')
@@ -192,10 +192,10 @@ describe('useGameBoardGestures', () => {
     game.markNote([0, 0])
     game.markNote([1, 1])
 
-    gestures.handlePointerDown([0, 0])
-    gestures.handlePointerEnter([0, 1])
-    gestures.handlePointerEnter([1, 1])
-    gestures.handlePointerEnd()
+    gestures.handlePressStart([0, 0])
+    gestures.handlePressEnter([0, 1])
+    gestures.handlePressEnter([1, 1])
+    gestures.handlePressEnd()
 
     expect(game.board[0]![0]!.status).toBe('empty')
     expect(game.board[0]![1]!.status).toBe('empty')
@@ -209,12 +209,12 @@ describe('useGameBoardGestures', () => {
 
     getElementFromPoint.mockReturnValue(createCellElement(0, 1))
 
-    gestures.handlePointerDown([0, 0])
+    gestures.handlePressStart([0, 0])
     gestures.handleTouchMove({
       preventDefault,
       touches: [{ clientX: 30, clientY: 30 }],
     })
-    gestures.handlePointerEnd()
+    gestures.handlePressEnd()
 
     expect(getElementFromPoint).toHaveBeenCalledWith(30, 30)
     expect(preventDefault).toHaveBeenCalled()
@@ -231,13 +231,13 @@ describe('useGameBoardGestures', () => {
     game.markQueen(queenPosition)
     game.markQueen(wrongPosition)
 
-    gestures.handlePointerDown(queenPosition)
-    gestures.handlePointerEnter([1, 0])
-    gestures.handlePointerEnd()
+    gestures.handlePressStart(queenPosition)
+    gestures.handlePressEnter([1, 0])
+    gestures.handlePressEnd()
 
-    gestures.handlePointerDown([1, 0])
-    gestures.handlePointerEnter(wrongPosition)
-    gestures.handlePointerEnd()
+    gestures.handlePressStart([1, 0])
+    gestures.handlePressEnter(wrongPosition)
+    gestures.handlePressEnd()
 
     expect(game.board[queenPosition[0]]![queenPosition[1]]!.status).toBe('found')
     expect(game.board[wrongPosition[0]]![wrongPosition[1]]!.status).toBe('wrong')

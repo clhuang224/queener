@@ -179,6 +179,31 @@ describe('GameBoard', () => {
     expectActiveCell(0, 0)
   })
 
+  it('keeps marked queens focusable while Space stays a no-op', async () => {
+    const { game, wrapper } = mountGameBoard()
+    const [queenRow, queenColumn] = game.board
+      .flat()
+      .find((cell) => cell.isQueen())!
+      .getPosition()
+    const queenCell = findCell(wrapper, queenRow, queenColumn)
+
+    await queenCell.trigger('dblclick')
+    await wrapper.vm.$nextTick()
+
+    expect(queenCell.attributes('data-status')).toBe('found')
+    expect(queenCell.attributes('tabindex')).toBe('0')
+
+    await focusCell(queenCell)
+    await pressSpace(queenCell)
+    vi.advanceTimersByTime(300)
+    await wrapper.vm.$nextTick()
+
+    expectActiveCell(queenRow, queenColumn)
+    expect(wrapper.emitted('mark-queen')).toEqual([[[queenRow, queenColumn]]])
+    expect(wrapper.emitted('mark-note')).toBeUndefined()
+    expect(wrapper.emitted('remove-note')).toBeUndefined()
+  })
+
   it('keeps focus in place when arrow navigation reaches the board edge', async () => {
     const { wrapper } = mountGameBoard()
     const startCell = findCell(wrapper, 0, 0)

@@ -43,7 +43,7 @@ describe('GameCell', () => {
     )
   })
 
-  it('makes only interactive cells keyboard-focusable', () => {
+  it('makes every cell keyboard-focusable', () => {
     const emptyCell = new BoardCell(0, 0, 0, false)
 
     const noteCell = new BoardCell(0, 1, 0, false)
@@ -57,7 +57,7 @@ describe('GameCell', () => {
 
     expect(mountGameCell(emptyCell).attributes('tabindex')).toBe('0')
     expect(mountGameCell(noteCell).attributes('tabindex')).toBe('0')
-    expect(mountGameCell(foundCell).attributes('tabindex')).toBeUndefined()
-    expect(mountGameCell(wrongCell).attributes('tabindex')).toBeUndefined()
+    expect(mountGameCell(foundCell).attributes('tabindex')).toBe('0')
+    expect(mountGameCell(wrongCell).attributes('tabindex')).toBe('0')
   })
 })

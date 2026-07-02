@@ -34,7 +34,7 @@ export const useGameBoardGestures = ({
   removeNote,
 }: UseGameBoardGesturesOptions) => {
   const isDragging = ref(false)
-  const isPointerDown = ref(false)
+  const isPressing = ref(false)
   const suppressNextClick = ref(false)
 
   let dragStartPosition: Position | null = null
@@ -97,17 +97,17 @@ export const useGameBoardGestures = ({
     draggedPositions.add(key)
   }
 
-  const resetPointerSession = () => {
-    isPointerDown.value = false
+  const resetPressSession = () => {
+    isPressing.value = false
     dragStartPosition = null
     dragNoteAction = null
     draggedPositions = new Set<string>()
   }
 
-  const handlePointerDown = (position: Position) => {
+  const handlePressStart = (position: Position) => {
     if (!isInteractive(position)) return
 
-    isPointerDown.value = true
+    isPressing.value = true
     isDragging.value = false
     suppressNextClick.value = false
     dragStartPosition = position
@@ -115,9 +115,9 @@ export const useGameBoardGestures = ({
     draggedPositions = new Set<string>()
   }
 
-  const handlePointerEnter = (position: Position) => {
+  const handlePressEnter = (position: Position) => {
     if (!isInteractive(position)) return
-    if (!isPointerDown.value || dragStartPosition === null) return
+    if (!isPressing.value || dragStartPosition === null) return
 
     const startKey = getPositionKey(dragStartPosition)
     const currentKey = getPositionKey(position)
@@ -136,7 +136,7 @@ export const useGameBoardGestures = ({
   }
 
   const handleTouchMove = (event: TouchMoveEvent) => {
-    if (!isPointerDown.value || dragStartPosition === null) return
+    if (!isPressing.value || dragStartPosition === null) return
 
     const touch = event.touches[0]
     if (!touch) return
@@ -145,7 +145,7 @@ export const useGameBoardGestures = ({
     if (position === null) return
 
     event.preventDefault()
-    handlePointerEnter(position)
+    handlePressEnter(position)
   }
 
   const handleNoteClick = (position: Position) => {
@@ -190,9 +190,9 @@ export const useGameBoardGestures = ({
     handleNoteClick(position)
   }
 
-  const handlePointerEnd = () => {
+  const handlePressEnd = () => {
     isDragging.value = false
-    resetPointerSession()
+    resetPressSession()
   }
 
   onScopeDispose(() => {
@@ -200,15 +200,11 @@ export const useGameBoardGestures = ({
   })
 
   return {
-    handleMarkQueen,
-    handleNoteClick,
     handlePressClick,
-    handlePressEnd: handlePointerEnd,
-    handlePressEnter: handlePointerEnter,
-    handlePressStart: handlePointerDown,
-    handlePointerDown,
-    handlePointerEnd,
-    handlePointerEnter,
+    handlePressDoubleClick: handleMarkQueen,
+    handlePressEnd,
+    handlePressEnter,
+    handlePressStart,
     handleTouchMove,
   }
 }

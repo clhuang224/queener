@@ -30,7 +30,7 @@ The current web app includes:
 - a playable single-player Queener puzzle loop
 - region-based N-Queens rules
 - heart-based mistakes
-- note marking, drag note marking, and queen marking
+- note marking, drag note marking, queen marking, and keyboard board controls
 - per-run puzzle variants with board rotation and region remapping
 - board skins, queen skins, board textures, and sound volume settings
 - end-of-game replay and result flow
