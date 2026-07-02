@@ -137,9 +137,9 @@ Do not move one-off code here until reuse is real.
 
 ```text
 GameCell
-  -> emits interaction intent
+  -> normalizes native input into cell press and focus intents
 GameBoard
-  -> resolves click / double click / drag behavior
+  -> wires board-level input and gesture interpretation
 GameView / useGameRun
   -> records the player action
 QueenGame
@@ -147,6 +147,14 @@ QueenGame
 BoardCell
   -> exposes display state
 ```
+
+Board input intentionally has three small layers before it reaches `QueenGame`:
+
+1. `useGameCellInputEvents` maps cell-native input such as pointer events, clicks, Space, and arrow keys into shared cell intents like `pressStart`, `pressClick`, `pressEnter`, `pressEnd`, and `moveFocus`.
+2. `useGameBoardInputEvents` owns board-level input concerns such as native board listeners, touch coordinate resolution, and moving focus between board cells.
+3. `useGameBoardGestures` owns the interaction state machine that turns press intents into note toggles, queen marking, drag note marking, and ignored actions on locked cells.
+
+This keeps `GameCell` and `GameBoard` mostly declarative while preserving the engine-first boundary: UI input is normalized into player intent, and `QueenGame` remains the place where gameplay rules mutate board state. The detailed transition tables live in [state.md](./state.md).
 
 ### Run Replay
 
