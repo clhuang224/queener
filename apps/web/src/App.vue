@@ -69,11 +69,24 @@ textarea {
 
 .app {
   width: 100%;
-  height: 100vh;
+  height: 100dvh;
+  min-height: 100dvh;
+  padding:
+    env(safe-area-inset-top, 0)
+    env(safe-area-inset-right, 0)
+    env(safe-area-inset-bottom, 0)
+    env(safe-area-inset-left, 0);
   display: flex;
   flex-direction: column;
   background-color: var(--color-page);
   color: var(--color-text);
   user-select: none;
+}
+
+@supports not (height: 100dvh) {
+  .app {
+    height: 100vh;
+    min-height: 100vh;
+  }
 }
 </style>

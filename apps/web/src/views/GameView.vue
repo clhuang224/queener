@@ -350,6 +350,8 @@ watch(
   flex-direction: column;
   align-items: center;
   height: 100%;
+  min-height: 0;
+  padding-bottom: 16px;
 }
 
 .game-header {

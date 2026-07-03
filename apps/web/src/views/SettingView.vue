@@ -122,15 +122,17 @@ const resetSettings = () => {
               />
             </div>
           </fieldset>
-          <BaseButton
-            variant="ghost"
-            class="reset-button"
-            aria-label="Reset settings"
-            @click="resetSettings"
-          >
-            <IconRestore aria-hidden="true" />
-            <span>Reset Settings</span>
-          </BaseButton>
+          <fieldset class="setting-group">
+            <BaseButton
+              variant="ghost"
+              class="reset-button"
+              aria-label="Reset settings"
+              @click="resetSettings"
+            >
+              <IconRestore aria-hidden="true" />
+              <span>Reset Settings</span>
+            </BaseButton>
+          </fieldset>
         </div>
       </BasePanel>
     </div>
@@ -163,7 +165,6 @@ const resetSettings = () => {
 .setting-content {
   flex: 1 1 auto;
   min-height: 0;
-  padding-bottom: 24px;
   overflow: hidden;
 }
 
@@ -221,6 +222,7 @@ h1 {
   gap: 20px;
   width: 100%;
   min-height: 0;
+  padding-bottom: 16px;
 }
 
 .setting-group {
@@ -228,9 +230,6 @@ h1 {
   margin: 0;
   padding: 0;
   border: 0;
-}
-
-.setting-group {
   padding: 8px 0 28px;
   border-top: 1px solid var(--color-border);
 }
