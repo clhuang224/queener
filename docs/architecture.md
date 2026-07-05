@@ -156,6 +156,8 @@ Board input intentionally has three small layers before it reaches `QueenGame`:
 
 This keeps `GameCell` and `GameBoard` mostly declarative while preserving the engine-first boundary: UI input is normalized into player intent, and `QueenGame` remains the place where gameplay rules mutate board state. The detailed transition tables live in [state.md](./state.md).
 
+Keyboard input should also follow the accessibility principles in [a11y.md](./a11y.md): `Tab` remains page navigation, while arrow keys and game shortcuts are additive board controls.
+
 ### Run Replay
 
 ```text

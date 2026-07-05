@@ -136,6 +136,8 @@ Prefer project-owned components and native HTML for simple display-oriented UI a
 
 ## Accessibility And Labels
 
+Use [../../docs/a11y.md](../../docs/a11y.md) for keyboard-layer, board-control, and shortcut-setting principles.
+
 For `aria-label`, use short sentence-case action labels for icon-only or symbol-only controls.
 
 Good examples:

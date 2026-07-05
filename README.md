@@ -62,6 +62,7 @@ The web development server starts at `http://localhost:5173`.
 ## Documentation
 
 - [Architecture](./docs/architecture.md): current workspace layout, app boundaries, and next architecture direction
+- [Accessibility notes](./docs/a11y.md): keyboard layers, board controls, and shortcut-setting principles
 - [Development plan](./docs/plan.md): product, platform, accessibility, and later-stage direction
 - [Checklist](./docs/checklist.md): concrete unfinished tasks
 - [State documentation](./docs/state.md): state machines and transition tables
