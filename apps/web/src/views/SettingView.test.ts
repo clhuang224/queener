@@ -12,7 +12,10 @@ import { isQueenSkinAvailable, queenSkinMapName } from '@/modules/constants/quee
 import { BoardSkinType } from '@/modules/enums/BoardSkinType'
 import { GameSoundType } from '@/modules/enums/GameSoundType'
 import { QueenSkinType } from '@/modules/enums/QueenSkinType'
-import { END_REPLAY_ENABLED_STORAGE_KEY } from '@/modules/stores/gameplay'
+import {
+  END_REPLAY_ENABLED_STORAGE_KEY,
+  QUEEN_HINT_SHORTCUT_STORAGE_KEY,
+} from '@/modules/stores/gameplay'
 import { USERNAME_STORAGE_KEY } from '@/modules/stores/user'
 import { SOUND_VOLUME_STORAGE_KEY } from '@/modules/utils/soundVolume'
 import { getEnumValues } from '@/modules/utils/getEnumValues'
@@ -81,6 +84,7 @@ describe('SettingView', () => {
     const textureSwitch = findSwitch('board-texture-label')
     const endReplaySwitch = findSwitch('end-replay-label')
     const usernameInput = wrapper.get<HTMLInputElement>('#username-input')
+    const queenHintShortcutButton = wrapper.get('button[aria-label="Change Queen Hint shortcut"]')
     const blackCrownRadio = queenSkinGroup
       .findAll('[role="radio"]')
       .find(
@@ -92,6 +96,7 @@ describe('SettingView', () => {
     expect(textureSwitch.attributes('aria-checked')).toBe('false')
     expect(endReplaySwitch.attributes('aria-checked')).toBe('true')
     expect(usernameInput.element.value).toBe('Queener-1782432000123')
+    expect(queenHintShortcutButton.text()).toBe('Q')
     expect(blackCrownRadio.attributes('aria-checked')).toBe('false')
 
     usernameInput.element.value = 'Ada'
@@ -99,11 +104,14 @@ describe('SettingView', () => {
     await autumnBoardRadio.trigger('click')
     await textureSwitch.trigger('click')
     await endReplaySwitch.trigger('click')
+    await queenHintShortcutButton.trigger('click')
+    await queenHintShortcutButton.trigger('keydown', { key: 'h' })
     await blackCrownRadio.trigger('click')
 
     expect(window.localStorage.getItem('queen-game-board-skin')).toBe(BoardSkinType.AUTUMN)
     expect(window.localStorage.getItem('queen-game-board-texture-enabled')).toBe('true')
     expect(window.localStorage.getItem(END_REPLAY_ENABLED_STORAGE_KEY)).toBe('false')
+    expect(window.localStorage.getItem(QUEEN_HINT_SHORTCUT_STORAGE_KEY)).toBe('h')
     expect(window.localStorage.getItem(USERNAME_STORAGE_KEY)).toBe('Ada')
     expect(window.localStorage.getItem('queen-game-queen-skin')).toBe(QueenSkinType.BLACK_CROWN)
     expect(wrapper.findAll('.preview-cell')).toHaveLength(BOARD_SKIN_COLOR_COUNT * 4)
@@ -157,6 +165,7 @@ describe('SettingView', () => {
       'Appearance',
       'Audio',
       'Results',
+      'Keyboard',
     ])
     expect(
       wrapper
@@ -216,12 +225,31 @@ describe('SettingView', () => {
     expect(playGameSound).toHaveBeenCalledWith(GameSoundType.CORRECT)
   })
 
+  it('stops capturing a queen hint shortcut after the shortcut field loses focus', async () => {
+    const wrapper = mount(SettingView, {
+      global: {
+        plugins: [createTestingPinia()],
+      },
+    })
+    const queenHintShortcutButton = wrapper.get('button[aria-label="Change Queen Hint shortcut"]')
+
+    await queenHintShortcutButton.trigger('click')
+    expect(queenHintShortcutButton.text()).toBe('Press key')
+
+    await queenHintShortcutButton.trigger('blur')
+    await queenHintShortcutButton.trigger('keydown', { key: 'h' })
+
+    expect(queenHintShortcutButton.text()).toBe('Q')
+    expect(window.localStorage.getItem(QUEEN_HINT_SHORTCUT_STORAGE_KEY)).toBeNull()
+  })
+
   it('resets settings to defaults', async () => {
     window.localStorage.setItem('queen-game-board-skin', BoardSkinType.AUTUMN)
     window.localStorage.setItem('queen-game-board-texture-enabled', 'true')
     window.localStorage.setItem('queen-game-queen-skin', QueenSkinType.BLACK_CROWN)
     window.localStorage.setItem(SOUND_VOLUME_STORAGE_KEY, '35')
     window.localStorage.setItem(END_REPLAY_ENABLED_STORAGE_KEY, 'false')
+    window.localStorage.setItem(QUEEN_HINT_SHORTCUT_STORAGE_KEY, 'h')
     window.localStorage.setItem(USERNAME_STORAGE_KEY, 'Lynn')
 
     const wrapper = mount(SettingView, {
@@ -239,6 +267,7 @@ describe('SettingView', () => {
     expect(window.localStorage.getItem('queen-game-queen-skin')).toBe(QueenSkinType.PINK_CROWN)
     expect(window.localStorage.getItem(SOUND_VOLUME_STORAGE_KEY)).toBe('80')
     expect(window.localStorage.getItem(END_REPLAY_ENABLED_STORAGE_KEY)).toBe('true')
+    expect(window.localStorage.getItem(QUEEN_HINT_SHORTCUT_STORAGE_KEY)).toBe('q')
     expect(window.localStorage.getItem(USERNAME_STORAGE_KEY)).toBe('Queener-1782432000123')
     expect(wrapper.text()).toContain('80%')
   })

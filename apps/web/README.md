@@ -36,7 +36,7 @@ Players solve the board by marking notes on cells and confirming queen positions
 - Use arrow keys to move between board cells
 - Use Space as the keyboard version of the board press: single press toggles a note, double press marks a queen, and holding Space while moving focus marks/removes notes across cells
 - Heart-based mistake system where hearts scale by board size
-- One-time hint button that reveals a valid queen position
+- One-time hint button and configurable shortcut that reveal a valid queen position
 - End-of-game replay before the result action flow
 - Board skins define ten palette colors; smaller boards sample across the full palette
 
@@ -45,6 +45,7 @@ Players solve the board by marking notes on cells and confirming queen positions
 - Queen skin selection
 - Board skin selection
 - Board texture toggle
+- Queen hint keyboard shortcut
 - Sound volume control and sound preview
 - Reset settings action
 

@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import GameView from './GameView.vue'
 import GameBoard from '@/components/game/GameBoard.vue'
@@ -11,7 +11,10 @@ import { ActionType } from '@/modules/enums/ActionType'
 import { BoardSkinType } from '@/modules/enums/BoardSkinType'
 import { GameSoundType } from '@/modules/enums/GameSoundType'
 import { QueenSkinType } from '@/modules/enums/QueenSkinType'
-import { END_REPLAY_ENABLED_STORAGE_KEY } from '@/modules/stores/gameplay'
+import {
+  END_REPLAY_ENABLED_STORAGE_KEY,
+  QUEEN_HINT_SHORTCUT_STORAGE_KEY,
+} from '@/modules/stores/gameplay'
 import type { QueenGamePublic } from '@/modules/game/QueenGame'
 
 const runRecorderMock = vi.hoisted(() => {
@@ -44,6 +47,9 @@ const push = vi.fn()
 const openAlertModal = vi.fn()
 const openConfirmModal = vi.fn()
 const openResultModal = vi.fn()
+const globalModal = {
+  isOpen: false,
+}
 const { playGameSound } = vi.hoisted(() => ({
   playGameSound: vi.fn(),
 }))
@@ -57,6 +63,7 @@ vi.mock('vue-router', () => ({
 
 vi.mock('@/modules/stores/globalModal', () => ({
   useGlobalModalStore: () => ({
+    globalModal,
     openAlertModal,
     openConfirmModal,
     openResultModal,
@@ -73,6 +80,7 @@ vi.mock('@/modules/game/QueenGameRunRecorder', () => ({
 
 const mountGameView = () => {
   const wrapper = mount(GameView, {
+    attachTo: document.body,
     props: {
       level: 1,
     },
@@ -94,6 +102,18 @@ const mountGameView = () => {
       .findAll('button')
       .find((button) => button.attributes('aria-label') === 'Restart level')!,
   }
+}
+
+const mountedWrappers: ReturnType<typeof mount>[] = []
+
+const mountTrackedGameView = () => {
+  const mounted = mountGameView()
+  mountedWrappers.push(mounted.wrapper)
+  return mounted
+}
+
+const pressShortcutKey = (key: string, options: KeyboardEventInit = {}) => {
+  document.dispatchEvent(new KeyboardEvent('keydown', { key, ...options }))
 }
 
 const getRenderedGame = (wrapper: ReturnType<typeof mount>) => {
@@ -160,16 +180,23 @@ describe('GameView', () => {
     openAlertModal.mockReset()
     openConfirmModal.mockReset()
     openResultModal.mockReset()
+    globalModal.isOpen = false
     playGameSound.mockReset()
     playGameSound.mockResolvedValue(undefined)
     runRecorderMock.create.mockClear()
     runRecorderMock.instances.length = 0
   })
 
+  afterEach(() => {
+    mountedWrappers.splice(0).forEach((wrapper) => {
+      wrapper.unmount()
+    })
+  })
+
   it('restarts the current level after confirmation', async () => {
     openConfirmModal.mockResolvedValue(undefined)
 
-    const { wrapper, queenCell, restartButton } = mountGameView()
+    const { wrapper, queenCell, restartButton } = mountTrackedGameView()
 
     await queenCell.trigger('dblclick')
     expect(queenCell.attributes('data-status')).toBe('found')
@@ -187,7 +214,7 @@ describe('GameView', () => {
   it('keeps current progress when restart is cancelled', async () => {
     openConfirmModal.mockRejectedValue(new Error('cancelled'))
 
-    const { wrapper, queenCell, restartButton } = mountGameView()
+    const { wrapper, queenCell, restartButton } = mountTrackedGameView()
 
     await queenCell.trigger('dblclick')
     expect(queenCell.attributes('data-status')).toBe('found')
@@ -203,7 +230,7 @@ describe('GameView', () => {
     window.localStorage.setItem('queen-game-board-texture-enabled', 'true')
     window.localStorage.setItem('queen-game-queen-skin', QueenSkinType.PINK_CROWN)
 
-    const { wrapper, queenCell } = mountGameView()
+    const { wrapper, queenCell } = mountTrackedGameView()
     const board = wrapper.find('[data-test="game-board"]')
 
     expect(board.attributes('style')).toContain(
@@ -218,7 +245,7 @@ describe('GameView', () => {
   })
 
   it('shows the run time timer', () => {
-    const { wrapper } = mountGameView()
+    const { wrapper } = mountTrackedGameView()
 
     expect(wrapper.find('[aria-label="Run time"]').text()).toBe('00:00.000')
   })
@@ -226,7 +253,7 @@ describe('GameView', () => {
   it('shows win result actions and navigates to next level', async () => {
     openResultModal.mockResolvedValue('next')
 
-    const { wrapper } = mountGameView()
+    const { wrapper } = mountTrackedGameView()
     getActiveRunRecorder().getRecords.mockReturnValue(getReplayRecords())
 
     for (const [row, column] of getQueenPositions(wrapper)) {
@@ -276,7 +303,7 @@ describe('GameView', () => {
     })
     openResultModal.mockReturnValue(modal.promise)
 
-    const { wrapper } = mountGameView()
+    const { wrapper } = mountTrackedGameView()
     getActiveRunRecorder().getRecords.mockReturnValue(getReplayRecords())
 
     for (const [row, column] of getQueenPositions(wrapper)) {
@@ -318,7 +345,7 @@ describe('GameView', () => {
     window.localStorage.setItem(END_REPLAY_ENABLED_STORAGE_KEY, 'false')
     openResultModal.mockResolvedValue('next')
 
-    const { wrapper } = mountGameView()
+    const { wrapper } = mountTrackedGameView()
 
     for (const [row, column] of getQueenPositions(wrapper)) {
       await findCell(wrapper, row, column)!.trigger('dblclick')
@@ -345,7 +372,7 @@ describe('GameView', () => {
   it('loads the next puzzle when the route level changes', async () => {
     window.localStorage.setItem('queen-game-highest-completed-level', '1')
 
-    const { wrapper } = mountGameView()
+    const { wrapper } = mountTrackedGameView()
 
     await wrapper.setProps({ level: 2 })
     const [row, column] = getQueenPositions(wrapper)[0]!
@@ -358,7 +385,7 @@ describe('GameView', () => {
   it('shows loss result actions and allows replay', async () => {
     openResultModal.mockResolvedValue('retry')
 
-    const { wrapper } = mountGameView()
+    const { wrapper } = mountTrackedGameView()
     getActiveRunRecorder().getRecords.mockReturnValue(getReplayRecords())
     const wrongPositions = getWrongPositions(wrapper).slice(0, 2)
     const wrongCell = findCell(wrapper, ...wrongPositions[0]!)!
@@ -388,7 +415,7 @@ describe('GameView', () => {
   it('shows a used hint state and animates the hinted cell after hint is consumed', async () => {
     openAlertModal.mockResolvedValue(undefined)
 
-    const { wrapper } = mountGameView()
+    const { wrapper } = mountTrackedGameView()
     const hintButton = wrapper
       .findAll('button')
       .find((button) => button.attributes('aria-label') === 'Use hint')!
@@ -404,8 +431,71 @@ describe('GameView', () => {
     expect(hintButton.attributes('disabled')).toBeDefined()
   })
 
+  it('uses the queen hint shortcut during active play', async () => {
+    const { wrapper } = mountTrackedGameView()
+
+    pressShortcutKey('q')
+    await wrapper.vm.$nextTick()
+
+    expect(playGameSound).toHaveBeenCalledWith(GameSoundType.HINT)
+    expect(wrapper.find('.game-cell--hinted').exists()).toBe(true)
+    expect(wrapper.find('.game-cell--hinted').attributes('data-status')).toBe('found')
+  })
+
+  it('uses the queen hint shortcut from a focused board cell', async () => {
+    const { wrapper } = mountTrackedGameView()
+    const cell = wrapper.get('.game-cell')
+
+    await cell.trigger('keydown', { key: 'q' })
+    await wrapper.vm.$nextTick()
+
+    expect(playGameSound).toHaveBeenCalledWith(GameSoundType.HINT)
+    expect(wrapper.find('.game-cell--hinted').exists()).toBe(true)
+  })
+
+  it('uses the saved queen hint shortcut', async () => {
+    window.localStorage.setItem(QUEEN_HINT_SHORTCUT_STORAGE_KEY, 'h')
+    const { wrapper } = mountTrackedGameView()
+
+    pressShortcutKey('q')
+    await wrapper.vm.$nextTick()
+    expect(playGameSound).not.toHaveBeenCalledWith(GameSoundType.HINT)
+
+    pressShortcutKey('h')
+    await wrapper.vm.$nextTick()
+    expect(playGameSound).toHaveBeenCalledWith(GameSoundType.HINT)
+  })
+
+  it('ignores modified queen hint shortcut key presses', async () => {
+    const { wrapper } = mountTrackedGameView()
+
+    pressShortcutKey('q', { ctrlKey: true })
+    pressShortcutKey('q', { metaKey: true })
+    pressShortcutKey('q', { shiftKey: true })
+    await wrapper.vm.$nextTick()
+
+    expect(playGameSound).not.toHaveBeenCalledWith(GameSoundType.HINT)
+  })
+
+  it('ignores the queen hint shortcut while a modal is open or an editable field is focused', async () => {
+    const { wrapper } = mountTrackedGameView()
+    const input = document.createElement('input')
+    document.body.append(input)
+
+    globalModal.isOpen = true
+    pressShortcutKey('q')
+    expect(playGameSound).not.toHaveBeenCalledWith(GameSoundType.HINT)
+
+    globalModal.isOpen = false
+    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'q', bubbles: true }))
+    await wrapper.vm.$nextTick()
+
+    expect(playGameSound).not.toHaveBeenCalledWith(GameSoundType.HINT)
+    input.remove()
+  })
+
   it('records player actions during the current run', async () => {
-    const { wrapper } = mountGameView()
+    const { wrapper } = mountTrackedGameView()
     const recorder = getActiveRunRecorder()
     const gameBoard = wrapper.findComponent(GameBoard)
 
@@ -427,7 +517,7 @@ describe('GameView', () => {
   it('starts a fresh run recorder after restart', async () => {
     openConfirmModal.mockResolvedValue(undefined)
 
-    const { wrapper, restartButton } = mountGameView()
+    const { wrapper, restartButton } = mountTrackedGameView()
     const recorderCount = runRecorderMock.instances.length
 
     await restartButton.trigger('click')

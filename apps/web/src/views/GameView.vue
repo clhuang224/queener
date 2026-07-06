@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import BaseButton from '@/components/common/BaseButton.vue'
@@ -15,6 +15,7 @@ import { useLevelStore } from '@/modules/stores/level'
 import type { Position } from '@/modules/types/board'
 import type { RunReplayData } from '@/modules/types/run'
 import { playGameSound } from '@/modules/utils/playGameSound'
+import { normalizeShortcutKey } from '@/modules/utils/keyboardShortcut'
 import { GameSoundType } from '@/modules/enums/GameSoundType'
 import { IconCrown, IconCrownOff, IconHome, IconRefresh } from '@tabler/icons-vue'
 import { useGameRun } from './useGameRun'
@@ -28,9 +29,10 @@ const skinStore = useSkinStore()
 const gameplayStore = useGameplayStore()
 const levelStore = useLevelStore()
 const { boardSkin, boardTextureEnabled, queenSkin } = storeToRefs(skinStore)
-const { endReplayEnabled } = storeToRefs(gameplayStore)
+const { endReplayEnabled, queenHintShortcut } = storeToRefs(gameplayStore)
 
-const { openAlertModal, openConfirmModal, openResultModal } = useGlobalModalStore()
+const globalModalStore = useGlobalModalStore()
+const { openAlertModal, openConfirmModal, openResultModal } = globalModalStore
 
 skinStore.load()
 gameplayStore.load()
@@ -104,6 +106,37 @@ const clickHint = async () => {
     content: 'No hints available!',
   })
 }
+
+const isEditableShortcutTarget = (target: EventTarget | null) => {
+  if (!(target instanceof HTMLElement)) return false
+
+  return (
+    target instanceof HTMLInputElement ||
+    target instanceof HTMLTextAreaElement ||
+    target instanceof HTMLSelectElement ||
+    target.isContentEditable
+  )
+}
+
+const handleDocumentKeydown = (event: KeyboardEvent) => {
+  if (event.repeat) return
+  if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return
+  if (isHintUsed.value || isHandlingResult.value || isReplayingResult.value) return
+  if (globalModalStore.globalModal.isOpen) return
+  if (isEditableShortcutTarget(event.target)) return
+  if (normalizeShortcutKey(event.key) !== queenHintShortcut.value) return
+
+  event.preventDefault()
+  void clickHint()
+}
+
+onMounted(() => {
+  document.addEventListener('keydown', handleDocumentKeydown, { capture: true })
+})
+
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleDocumentKeydown, { capture: true })
+})
 
 const clickQuit = async () => {
   try {

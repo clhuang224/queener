@@ -23,6 +23,15 @@ const visitGame = () => {
 const getCell = ([row, column]: BoardPosition) => cy.get(`[data-test="cell-${row}-${column}"]`)
 
 describe('desktop board interactions', () => {
+  it('uses the queen hint when pressing Q', () => {
+    visitGame()
+
+    cy.get('body').type('q')
+
+    cy.get('.game-cell--hinted').should('exist')
+    cy.get('button[aria-label="Hint used"]').should('be.disabled')
+  })
+
   it('supports note toggling, double click, and drag note marking/removal', () => {
     visitGame()
 

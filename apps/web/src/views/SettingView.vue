@@ -6,6 +6,7 @@ import BaseButton from '@/components/common/BaseButton.vue'
 import BasePanel from '@/components/common/BasePanel.vue'
 import BoardSkinField from '@/components/setting/BoardSkinField.vue'
 import BoardSkinPreview from '@/components/setting/BoardSkinPreview.vue'
+import KeyboardShortcutField from '@/components/setting/KeyboardShortcutField.vue'
 import QueenSkinField from '@/components/setting/QueenSkinField.vue'
 import SettingSwitchField from '@/components/setting/SettingSwitchField.vue'
 import SoundVolumeField from '@/components/setting/SoundVolumeField.vue'
@@ -27,7 +28,7 @@ const gameplayStore = useGameplayStore()
 const userStore = useUserStore()
 const { boardSkin, boardTextureEnabled, queenSkin } = storeToRefs(skinStore)
 const { soundVolume } = storeToRefs(audioStore)
-const { endReplayEnabled } = storeToRefs(gameplayStore)
+const { endReplayEnabled, queenHintShortcut } = storeToRefs(gameplayStore)
 const { username } = storeToRefs(userStore)
 
 userStore.load()
@@ -119,6 +120,16 @@ const resetSettings = () => {
                 label-id="end-replay-label"
                 :model-value="endReplayEnabled"
                 @update:model-value="gameplayStore.setEndReplayEnabled"
+              />
+            </div>
+          </fieldset>
+          <fieldset class="setting-group">
+            <legend class="setting-group-title">Keyboard</legend>
+            <div class="setting-group-content">
+              <KeyboardShortcutField
+                label="Queen Hint"
+                :model-value="queenHintShortcut"
+                @update:model-value="gameplayStore.setQueenHintShortcut"
               />
             </div>
           </fieldset>
