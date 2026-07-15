@@ -45,7 +45,6 @@ Use this checklist for concrete unfinished work. Each checkbox should describe a
 
 ## Board Keyboard Accessibility
 
-- [ ] Add visible focused-cell styling that works on light board skins.
 - [ ] Add visible focused-cell styling that works on dark board skins.
 - [ ] Add visible focused-cell styling that works when board texture is enabled.
 

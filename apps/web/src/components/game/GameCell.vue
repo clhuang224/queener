@@ -99,8 +99,11 @@ const cellInput = useGameCellInputEvents({ emit, isInteractive, position })
 
   &:focus-visible {
     border-color: var(--color-primary);
-    outline: 3px solid var(--color-focus);
-    outline-offset: 3px;
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    box-shadow:
+      0 0 0 5px var(--color-surface),
+      0 0 0 8px var(--color-focus);
   }
 }
 
