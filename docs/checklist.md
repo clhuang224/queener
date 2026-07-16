@@ -43,14 +43,6 @@ Use this checklist for concrete unfinished work. Each checkbox should describe a
 - [ ] Add tests that note animations do not change `QueenGame` rules.
 - [ ] Add `prefers-reduced-motion` handling for cell animations.
 
-## Board Keyboard Accessibility
-
-- [ ] Add visible focused-cell styling that works on dark board skins.
-- [ ] Add visible focused-cell styling that works when board texture is enabled.
-
-## Settings
-
-
 ## Board Skins
 
 - [ ] Add simulated color vision deficiency checks for board palettes.
