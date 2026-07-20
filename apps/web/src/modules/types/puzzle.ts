@@ -1,5 +1,7 @@
 import type { Position } from './board'
 
+export type PuzzleDifficulty = 'easy' | 'normal' | 'hard'
+
 export interface PuzzleRules {
   size: number
   allowDisconnectedRegions: boolean

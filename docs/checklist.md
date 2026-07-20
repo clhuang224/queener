@@ -77,7 +77,6 @@ Use this checklist for concrete unfinished work. Each checkbox should describe a
 
 ## Puzzle Generator
 
-- [ ] Define a puzzle difficulty type.
 - [ ] Add a generator that creates valid queen positions.
 - [ ] Add a generator that creates compatible regions.
 - [ ] Add validation for generated puzzle uniqueness if required by the game rules.

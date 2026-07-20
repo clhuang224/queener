@@ -391,6 +391,24 @@ Puzzle variants are stored as metadata instead of a full transformed puzzle:
 
 The original `puzzle` remains the canonical leaderboard identity. The variant metadata only describes how that puzzle was presented during one run. This keeps fixed campaign levels, future generated puzzles, and future timed challenge boards easier to compare and group.
 
+### Puzzle Difficulty Draft
+
+Puzzle difficulty is a product-facing label for comparing generated puzzles, campaign pacing, leaderboard filters, and future tutorial recommendations. It is intentionally not required on the current fixed puzzle data yet.
+
+Type:
+
+```ts
+type PuzzleDifficulty = 'easy' | 'normal' | 'hard'
+```
+
+The draft criteria below are a starting point, not a finished scoring formula. Future generator work should replace broad language with measurable puzzle metadata as those signals become available.
+
+| Difficulty | Player Experience | Candidate Signals | Design Guardrails |
+| --- | --- | --- | --- |
+| `easy` | The next move is usually visible after checking rows, columns, and regions directly. | Smaller boards, fewer ambiguous candidate cells, larger or clearer regions, lower note density, short solve paths. | Suitable for onboarding, tutorial follow-up, and relaxed early campaign levels. |
+| `normal` | The player must combine two or more constraints and use notes deliberately, but the puzzle should not require long chains of speculation. | Medium boards, moderate candidate overlap, some constrained regions, several useful note-removal moments. | Default campaign target once the player understands the rules. |
+| `hard` | Progress may require maintaining several candidate sets and spotting indirect constraints across rows, columns, and regions. | Larger boards, high candidate overlap, region shapes that create delayed deductions, longer solve paths, fewer immediately forced queens. | Should stay fair: avoid guessing-dependent puzzles unless the product explicitly introduces a different mode. |
+
 ### Notes
 
 - `QueenGameRunRecorder` records actions after the gameplay action successfully changes state, except queen marking, which records the player's interactive queen attempt whether it is correct or wrong.
