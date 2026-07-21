@@ -380,6 +380,8 @@ A completed run record is the planned storage shape for leaderboard and replay d
 | `user` | `RunUser` | user identity used for leaderboard display |
 | `score` | `number` | calculated score for leaderboard sorting |
 
+Local leaderboard rows should initially display the run's `level`, `score`, `user.name`, and completed time from `endedAt`.
+
 ### Puzzle Variant Metadata
 
 Puzzle variants are stored as metadata instead of a full transformed puzzle:

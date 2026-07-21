@@ -61,7 +61,6 @@ Use this checklist for concrete unfinished work. Each checkbox should describe a
 
 ## Local Leaderboard
 
-- [ ] Choose an IndexedDB helper approach.
 - [ ] Add an IndexedDB store for completed runs.
 - [ ] Save completed runs after a win.
 - [ ] Add a leaderboard button to `LevelPicker`.

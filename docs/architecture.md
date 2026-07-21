@@ -173,6 +173,22 @@ QueenGameRunReplay
 
 The replay UI is presentation-only. It should not become a second gameplay engine.
 
+### Local Leaderboard Storage
+
+The first local leaderboard should use a small project-owned wrapper around native IndexedDB instead of adding an IndexedDB helper dependency immediately.
+
+Initial scope:
+
+- one `completedRuns` object store
+- one record per completed level run
+- records grouped and queried by `level`
+- player name copied from the current setting username at completion time
+- leaderboard rows displaying level, score, player name, and completed time
+
+Use the existing completed run record shape as the source model. The stored record should keep enough replay data to reconstruct the run later, but leaderboard list queries should read only leaderboard-relevant fields when practical.
+
+Re-evaluate a helper library such as `idb` or Dexie only after native IndexedDB code becomes repetitive, schema migrations become non-trivial, or leaderboard queries need several indexes beyond level and score.
+
 ## Next Repository Direction
 
 The current workspace is intentionally shallow. The next architecture phase is not more moving for its own sake; it is selective extraction only when package boundaries become useful.
