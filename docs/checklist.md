@@ -66,9 +66,7 @@ Use this checklist for concrete unfinished work. Each checkbox should describe a
 - [ ] Add a leaderboard button to `LevelPicker`.
 - [ ] Add a level leaderboard view or modal.
 - [ ] Show player name, score, completion time, and completion date in leaderboard rows.
-- [ ] Sort leaderboard rows by score.
 - [ ] Add tests for saving completed runs.
-- [ ] Add tests for leaderboard sorting.
 
 ## Run Replay
 

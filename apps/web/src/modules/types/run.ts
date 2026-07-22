@@ -25,6 +25,14 @@ export interface CompletedRunRecord {
   score: number
 }
 
+export interface LeaderboardItem {
+  uid: string
+  level: number
+  score: number
+  playerName: string
+  completedAt: Date
+}
+
 export interface RunReplayData {
   level: number
   puzzle: Puzzle
