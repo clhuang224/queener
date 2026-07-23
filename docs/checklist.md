@@ -57,7 +57,6 @@ Use this checklist for concrete unfinished work. Each checkbox should describe a
 - [ ] Add note-state queen image variants for each queen skin.
 - [ ] Add wrong-state queen image variants for each queen skin.
 - [ ] Update `QueenIcon` or `GameCell` to use prepared state-specific image variants.
-- [ ] Add tests that every `QueenSkinType` has all required state assets.
 
 ## Local Leaderboard
 

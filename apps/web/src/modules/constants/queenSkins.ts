@@ -12,6 +12,13 @@ const queenSkinNoteIconModules = import.meta.glob<string>('../../assets/noteIcon
   import: 'default',
 })
 
+export const queenSkinIconAssetNames = Object.keys(queenSkinIconModules).map((path) =>
+  path.replace('../../assets/icons/', '').replace('.png', ''),
+)
+export const queenSkinNoteIconAssetNames = Object.keys(queenSkinNoteIconModules).map((path) =>
+  path.replace('../../assets/noteIcons/', '').replace('.svg', ''),
+)
+
 const getQueenSkinIcons = (skin: QueenSkinType) => {
   const icon = queenSkinIconModules[`../../assets/icons/${skin}.png`]
   const noteIcon = queenSkinNoteIconModules[`../../assets/noteIcons/${skin}.svg`]
