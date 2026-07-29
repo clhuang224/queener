@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { ActionType } from '@/modules/enums/ActionType'
-import type { CompletedRunRecord, RunActionRecord } from './run'
+import type { GameRecord, RunActionRecord } from './run'
 import type { Puzzle } from './puzzle'
 
 const TEST_PUZZLE: Puzzle = {
@@ -44,8 +44,8 @@ describe('run record types', () => {
     })
   })
 
-  it('supports completed run records for leaderboard and replay storage', () => {
-    const completedRun: CompletedRunRecord = {
+  it('supports game records for leaderboard and replay storage', () => {
+    const gameRecord: GameRecord = {
       uid: 'run-1',
       level: 1,
       puzzle: TEST_PUZZLE,
@@ -72,9 +72,9 @@ describe('run record types', () => {
       score: 950,
     }
 
-    expect(completedRun.startedAt).toBeInstanceOf(Date)
-    expect(completedRun.endedAt).toBeInstanceOf(Date)
-    expect(completedRun.puzzleVariantMetadata).toEqual({
+    expect(gameRecord.startedAt).toBeInstanceOf(Date)
+    expect(gameRecord.endedAt).toBeInstanceOf(Date)
+    expect(gameRecord.puzzleVariantMetadata).toEqual({
       direction: 180,
       regionMap: {
         0: 1,

@@ -13,7 +13,7 @@ export interface RunActionRecord {
   position: Position
 }
 
-export interface CompletedRunRecord {
+export interface GameRecord {
   uid: string
   level: number
   puzzle: Puzzle

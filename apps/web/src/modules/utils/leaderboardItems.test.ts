@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { ActionType } from '@/modules/enums/ActionType'
-import type { CompletedRunRecord, LeaderboardItem } from '@/modules/types/run'
+import type { GameRecord, LeaderboardItem } from '@/modules/types/run'
 import type { Puzzle } from '@/modules/types/puzzle'
 import { sortLeaderboardItems, toLeaderboardItem } from './leaderboardItems'
 
@@ -21,9 +21,7 @@ const TEST_PUZZLE: Puzzle = {
   ],
 }
 
-const createCompletedRunRecord = (
-  overrides: Partial<CompletedRunRecord> = {},
-): CompletedRunRecord => ({
+const createGameRecord = (overrides: Partial<GameRecord> = {}): GameRecord => ({
   uid: 'run-1',
   level: 1,
   puzzle: TEST_PUZZLE,
@@ -52,10 +50,10 @@ const createCompletedRunRecord = (
 })
 
 describe('leaderboard items', () => {
-  it('creates a leaderboard item from a completed run record', () => {
+  it('creates a leaderboard item from a game record', () => {
     const completedAt = new Date('2026-07-22T10:01:00.000Z')
     const item = toLeaderboardItem(
-      createCompletedRunRecord({
+      createGameRecord({
         uid: 'run-2',
         level: 3,
         score: 870,

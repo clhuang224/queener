@@ -1,6 +1,6 @@
-import type { CompletedRunRecord, LeaderboardItem } from '@/modules/types/run'
+import type { GameRecord, LeaderboardItem } from '@/modules/types/run'
 
-export const toLeaderboardItem = (record: CompletedRunRecord): LeaderboardItem => ({
+export const toLeaderboardItem = (record: GameRecord): LeaderboardItem => ({
   uid: record.uid,
   level: record.level,
   score: record.score,
