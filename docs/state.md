@@ -311,7 +311,7 @@ stateDiagram-v2
 
 ## 5. Run Event Log
 
-The run event log records selected state transitions that happen during one active puzzle run. It is runtime memory today and is intended to become the input for scoring, end-of-game replay, and local leaderboard storage.
+The run event log records selected state transitions that happen during one active puzzle run. It remains runtime memory while the run is active and already drives result replay. The game record persistence boundary exists, but the win flow does not save this log yet.
 
 Type:
 
@@ -364,13 +364,13 @@ Current action values:
 | `ActionType.MARK_QUEEN` | `mark-queen` | the player attempts to mark a queen on an interactive cell |
 | `ActionType.HINT` | `hint` | a hint successfully reveals a queen |
 
-### Completed Run Record
+### Game Record
 
-A completed run record is the planned storage shape for leaderboard and replay data:
+A `GameRecord` is the storage shape for leaderboard and replay data:
 
 | Field | Type | Meaning |
 | --- | --- | --- |
-| `uid` | `string` | unique id for this completed run |
+| `uid` | `string` | unique id for this game record |
 | `level` | `number` | campaign level number |
 | `puzzle` | `Puzzle` | original puzzle source data, not the transformed active board |
 | `puzzleVariantMetadata` | `PuzzleVariantMetadata` | per-run direction and region remap used to build the active board |
@@ -381,6 +381,74 @@ A completed run record is the planned storage shape for leaderboard and replay d
 | `score` | `number` | calculated score for leaderboard sorting |
 
 Local leaderboard rows should initially display the run's `level`, `score`, `user.name`, and completed time from `endedAt`.
+
+### Score Calculation
+
+Implementation:
+
+- [apps/web/src/modules/game/QueenGameRunScorer.ts](../apps/web/src/modules/game/QueenGameRunScorer.ts)
+
+The current score totals at most `1000` points:
+
+| Component | Maximum | Current Rule |
+| --- | --- | --- |
+| time | `700` | decreases linearly from `700` to `0` between zero elapsed time and the board-size timeout |
+| hearts | `200` | remaining hearts divided by maximum hearts |
+| hints | `100` | remaining hints divided by maximum hints; the current game has one hint |
+
+Current time-score cutoffs:
+
+| Board Size | Timeout |
+| --- | --- |
+| `5` | 60 seconds |
+| `6` | 90 seconds |
+| `7` | 120 seconds |
+| `8` | 180 seconds |
+| `9` | 240 seconds |
+| `10` | 300 seconds |
+
+Elapsed time is calculated from `endedAt - startedAt`. Values outside the expected range are clamped, component scores are rounded, and the final score is capped at `1000`. The scorer is implemented and tested but is not yet called by the win flow.
+
+### Game Record Persistence State
+
+Implementation:
+
+- [apps/web/src/modules/types/run.ts](../apps/web/src/modules/types/run.ts)
+- [apps/web/src/modules/repositories/gameRecords.ts](../apps/web/src/modules/repositories/gameRecords.ts)
+- [apps/web/src/modules/stores/gameRecords.ts](../apps/web/src/modules/stores/gameRecords.ts)
+- [apps/web/src/modules/utils/leaderboardItems.ts](../apps/web/src/modules/utils/leaderboardItems.ts)
+
+```text
+game or leaderboard UI
+  -> useGameRecordsStore
+  -> GameRecordRepository
+  -> IndexedDB gameRecords object store
+```
+
+Pinia owns the application-facing state:
+
+| State / Action | Pending | Success | Failure |
+| --- | --- | --- | --- |
+| `records` / `load()` | keep current records; set `isLoading` | replace records with `repository.getAll()` | keep current records |
+| `records` / `save(record)` | keep current records; set `isSaving` | insert the record or replace the item with the same `uid` | keep current records |
+| `errorMessage` | clear previous error | remain `null` | store the error message and rethrow the original error |
+
+The repository and Pinia store are implemented and tested, but neither `GameView` nor a leaderboard view calls them yet. The next win-flow integration should build one `GameRecord` from these sources:
+
+| Record Field | Intended Source | Current Gap |
+| --- | --- | --- |
+| `uid` | a new id for each completed winning run | generation policy is not implemented; `crypto.randomUUID()` is a candidate |
+| `level` | `useGameRun.activeLevel` | none |
+| `puzzle` | `getPuzzleByLevel(activeLevel)` | none |
+| `puzzleVariantMetadata` | `QueenGame.getPuzzleVariantMetadata()` | none |
+| `record` | `QueenGameRunRecorder.getRecords()` | `GameView` must read it from `useGameRun` |
+| `startedAt` | `useGameRun.startedAt` | none |
+| `endedAt` | `useGameRun.endedAt` after `finishRun()` | guard against `null` before constructing the record |
+| `user.name` | `useUserStore.username` | ensure the user store is loaded |
+| `user.uid` | stable local user identity | no user id exists yet; only username is persisted |
+| `score` | `QueenGameRunScorer.calculateScore(...)` | wire current time, hearts, and hint values into the scorer |
+
+Save only winning runs in the first local leaderboard phase. Call `finishRun()` before calculating the score or persisting the record, and save before the player can navigate away. The result flow still needs an explicit policy for whether an IndexedDB failure should delay replay/modal presentation or be reported without blocking the result.
 
 ### Puzzle Variant Metadata
 
@@ -414,9 +482,9 @@ The draft criteria below are a starting point, not a finished scoring formula. F
 ### Notes
 
 - `QueenGameRunRecorder` records actions after the gameplay action successfully changes state, except queen marking, which records the player's interactive queen attempt whether it is correct or wrong.
-- `actionAtMillisecond` is relative to the run start, while `startedAt` and `endedAt` remain wall-clock `Date` values on the completed run.
-- `QueenGameRunReplay` is a deterministic cursor over the action log. Playback speed should be handled by the future replay UI/controller by passing scaled elapsed milliseconds into the replay cursor.
-- Current runtime records are reset when the player starts another level, restarts the current level, or chooses replay after a result modal. Persistent storage is a later local leaderboard task.
+- `actionAtMillisecond` is relative to the run start, while `startedAt` and `endedAt` remain wall-clock `Date` values on `GameRecord`.
+- `QueenGameRunReplay` is a deterministic cursor over the action log. `GameRunReplayBoard` currently passes scaled elapsed milliseconds into it, using at least `3x` playback and increasing speed so long result replays finish in approximately 10 seconds or less.
+- Current runtime records are reset when the player starts another level, restarts the current level, or chooses Play Again after a result modal. The repository and Pinia store provide the game record persistence boundary, but the active win flow has not been connected to it yet.
 
 ## 6. Combined Modeling View
 

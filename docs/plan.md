@@ -13,7 +13,9 @@ This document captures Queener's product direction, platform direction, and impl
 
 ## Implemented Baseline
 
-The current product baseline includes the playable single-player loop, hearts, settings, Reka-based non-board controls, asset preloading, sound volume control, per-run puzzle variants, declarative puzzle data, board skins, queen skins, board textures, and the current soft visual direction.
+The current product baseline includes the playable single-player loop, hearts, run timing, configurable keyboard input, player naming, settings, Reka-based non-board controls, asset preloading, sound and replay settings, per-run puzzle variants, declarative puzzle data, board skins, queen skins, board textures, compressed result replay, scoring helpers, and the current soft visual direction.
+
+The local game record domain type, IndexedDB repository, Pinia store, and leaderboard projection helpers are implemented. Saving a record from the win flow and presenting a leaderboard are still unfinished.
 
 ## Product Direction
 
@@ -27,8 +29,9 @@ Short-term product work should prioritize:
 - clearer hint behavior without blocking the player's flow
 - stronger keyboard and screen reader support for core board interactions
 - intentional puzzle progression and campaign structure
+- connecting completed wins to local game records
 
-Longer-term work should expand from the single-player foundation into local leaderboard records, replay controls and settings, backend-backed persistence, ghost runs, and eventually competition modes.
+Longer-term work should expand from the single-player foundation into local leaderboard presentation, replay controls, backend-backed game record synchronization, ghost runs, and eventually competition modes.
 
 ## Platform Direction
 
@@ -53,7 +56,7 @@ Rationale:
 - Bun workspace keeps package management and backend runtime choices coherent
 - Vue + Vite remains the fastest path for the existing custom game UI
 - Elysia fits the first backend scope without turning the project into a heavy server framework exercise
-- PostgreSQL and Prisma are enough for users, completed runs, replays, and leaderboards
+- PostgreSQL and Prisma are enough for users, game records, replays, and leaderboards
 - Capacitor matches the product's mobile direction because the current UI should be reused rather than rewritten
 
 ## Backend Direction
@@ -65,7 +68,7 @@ Elysia is the preferred framework because it keeps the backend close to Bun and 
 The first backend scope should cover:
 
 - guest user creation and naming
-- completed run upload
+- game record upload
 - replay retrieval
 - per-level leaderboard queries
 - storage for future ghost-run selection
@@ -115,7 +118,7 @@ Design principles:
 - use low-saturation ivory, sage green, powder blue, pale pink, and warm graphite
 - avoid blue as the primary action color even when powder blue appears as a supporting color
 - keep the outer app UI calm so board skins and queen skins remain the visual focus
-- avoid black outlines, heavy shadows, glossy gradients, or paper-card styling
+- avoid black outlines on general UI containers and controls, heavy shadows, glossy gradients, or paper-card styling
 - use spacing, gentle borders, rounded shapes, and restrained color blocks for hierarchy
 - keep shared semantic CSS variables in `App.vue`
 - keep the board and cell interaction layer highly controllable because it is part of the product identity
@@ -157,7 +160,7 @@ Priorities:
 ## Phase Overview
 
 1. Core Product Polish, including tutorial mode
-2. Local Leaderboard And Replay Settings
+2. Local Game History, Leaderboard, And Replay Controls
 3. Shared Package Extraction When Needed
 4. Elysia Backend And PostgreSQL Persistence
 5. Puzzle Generator
@@ -172,7 +175,7 @@ These phases are planning order, not strict release boundaries. Product polish s
 
 Leaderboard and run replay should remain local-first until the persistence model is stable enough to sync confidently.
 
-Backend persistence should land before competition features. Ghost competition should build on recorded run playback and stored leaderboard history. Realtime competition should wait for a more mature backend model, clearer session rules, and a stronger understanding of which game state must become authoritative.
+Backend persistence should land before competition features. Ghost competition should build on recorded run playback and synchronized game records. Realtime competition should wait for a more mature backend model, clearer session rules, and a stronger understanding of which game state must become authoritative.
 
 Desktop packaging should be evaluated only after the mobile hybrid path is understood well enough to avoid solving both app-shell problems at once.
 

@@ -2,15 +2,7 @@
 
 Place the queens. Become the winner.
 
-Queener is a puzzle-focused game inspired by the N-Queens problem. The project is now organized as a Bun workspace so the current web game can grow toward backend persistence, leaderboard records, replay features, and future app packaging without forcing every boundary too early.
-
-## Screenshots
-
-<p>
-  <img src="./docs/screenshots/demo-home.png" alt="Home screen" width="260" />
-  <img src="./docs/screenshots/demo-game.png" alt="Game screen" width="260" />
-  <img src="./docs/screenshots/demo-setting.png" alt="Settings screen" width="260" />
-</p>
+Queener is a puzzle-focused game inspired by the N-Queens problem. The project is organized as a Bun workspace with a local game record foundation so the current web game can grow toward leaderboard UI, backend synchronization, replay features, and future app packaging without forcing every boundary too early.
 
 ## Workspace
 
@@ -32,8 +24,8 @@ The current web app includes:
 - heart-based mistakes
 - note marking, drag note marking, queen marking, and keyboard board controls
 - per-run puzzle variants with board rotation and region remapping
-- board skins, queen skins, board textures, and sound volume settings
-- end-of-game replay and result flow
+- a run timer plus compressed end-of-game replay and result flow
+- player name, board skins, queen skins, board textures, sound, replay, and keyboard shortcut settings
 - asset preloading and responsive mobile-focused layout
 
 For web-specific setup, scripts, and implementation details, see [`apps/web/README.md`](./apps/web/README.md).

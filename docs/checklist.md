@@ -60,12 +60,14 @@ Use this checklist for concrete unfinished work. Each checkbox should describe a
 
 ## Local Leaderboard
 
-- [ ] Add an IndexedDB store for completed runs.
-- [ ] Save completed runs after a win.
+- [ ] Add and persist a stable local user id for `GameRecord.user.uid`.
+- [ ] Define how each winning `GameRecord.uid` is generated.
+- [ ] Save a game record after a win.
+- [ ] Define and test how game record save failures affect the win result flow.
 - [ ] Add a leaderboard button to `LevelPicker`.
 - [ ] Add a level leaderboard view or modal.
 - [ ] Show player name, score, completion time, and completion date in leaderboard rows.
-- [ ] Add tests for saving completed runs.
+- [ ] Add tests for saving a game record after a win.
 
 ## Run Replay
 
@@ -83,7 +85,7 @@ Use this checklist for concrete unfinished work. Each checkbox should describe a
 ## Architecture And Data
 
 - [ ] Draft the first `apps/api` folder structure before adding backend routes.
-- [ ] Draft backend data models for puzzles, users, runs, and leaderboard entries.
+- [ ] Draft backend data models for puzzles, users, game records, and leaderboard entries.
 - [ ] Add a backend leaderboard sync plan after local leaderboard records are stable.
 
 ## Competition Modes
@@ -100,3 +102,7 @@ Use this checklist for concrete unfinished work. Each checkbox should describe a
 - [ ] Add a product note for whether Sudoku fits the same platform direction.
 - [ ] Add a product note for whether Minesweeper fits the same platform direction.
 - [ ] Add a domain and deployment note before starting portal work.
+
+## Documentation
+
+- [ ] Regenerate current home, game, and setting screenshots and restore them to `README.md`.

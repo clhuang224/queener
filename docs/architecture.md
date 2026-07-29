@@ -18,6 +18,7 @@ queener/
           types/
           puzzles/
           constants/
+          repositories/
           stores/
           utils/
         router/
@@ -33,7 +34,8 @@ The current runtime architecture is intentionally simple:
 2. Components render UI and emit player intent.
 3. `QueenGame` applies gameplay rules.
 4. `BoardCell` instances expose the resulting cell state.
-5. Pinia stores hold app-level preferences and cross-view UI state.
+5. Pinia stores hold app-level preferences, cross-view UI state, and game record state.
+6. Repositories isolate persistent data access from views and Pinia stores.
 
 The most important boundary is still:
 
@@ -122,8 +124,15 @@ Good fits:
 - audio preferences
 - global modal state
 - level progress
+- game record loading, saving, and in-memory records
 
 Core gameplay rules should not move into Pinia unless there is a stronger architectural reason.
+
+### `apps/web/src/modules/repositories`
+
+Repositories isolate persistent data access from application state.
+
+The current `GameRecordRepository` uses native IndexedDB. Views and gameplay flow should call `useGameRecordsStore`; they should not call the IndexedDB repository directly. A future API-backed or local-first repository can replace the concrete persistence implementation without changing those consumers.
 
 ### `apps/web/src/modules/utils`
 
@@ -171,21 +180,57 @@ QueenGameRunReplay
   -> releases actions according to replay time
 ```
 
-The replay UI is presentation-only. It should not become a second gameplay engine.
+The replay UI is presentation-only. It should not become a second gameplay engine. Playback runs at least at `3x`, and longer runs are accelerated further so result replay finishes in approximately 10 seconds or less.
 
-### Local Leaderboard Storage
+### Game Records And Local Leaderboard
 
-The first local leaderboard should use a small project-owned wrapper around native IndexedDB instead of adding an IndexedDB helper dependency immediately.
+Game records use Pinia as the application-facing state layer and a project-owned repository as the persistence boundary:
+
+```text
+game and leaderboard UI
+  -> useGameRecordsStore
+  -> GameRecordRepository
+  -> IndexedDB now, API or local-first sync later
+```
+
+The repository uses native IndexedDB instead of adding an IndexedDB helper dependency immediately. UI and game flow should call the Pinia store rather than access IndexedDB directly.
+
+Current implementation:
+
+| Layer | Current API / Schema | Responsibility |
+| --- | --- | --- |
+| domain type | `GameRecord` | complete persisted run data for replay and leaderboard projection |
+| Pinia | `useGameRecordsStore` | `load()`, `save(record)`, `getRecordsByLevel(level)`, and loading/saving/error state |
+| repository | `GameRecordRepository` | persistence contract with `save(record)` and `getAll()` |
+| IndexedDB | database `queener`, version `1`, object store `gameRecords` | records keyed by `uid`, with a non-unique `level` index |
+| tests | Vitest store tests and Cypress repository test | mocked repository coordination and real browser IndexedDB behavior |
+
+The store currently loads every record and filters its in-memory list by level. The IndexedDB `level` index is reserved for a future repository query if history volume makes loading everything inappropriate.
 
 Initial scope:
 
-- one `completedRuns` object store
-- one record per completed level run
-- records grouped and queried by `level`
+- one `gameRecords` object store
+- one `GameRecord` per completed level run
+- records grouped by `level`
 - player name copied from the current setting username at completion time
 - leaderboard rows displaying level, score, player name, and completed time
 
-Use the existing completed run record shape as the source model. The stored record should keep enough replay data to reconstruct the run later, but leaderboard list queries should read only leaderboard-relevant fields when practical.
+The stored record should keep enough replay data to reconstruct the run later, but leaderboard list queries should read only leaderboard-relevant fields when practical.
+
+Current integration status:
+
+- the domain type, IndexedDB repository, Pinia store, leaderboard projection helpers, and tests exist
+- active gameplay does not create or save a `GameRecord` yet
+- no leaderboard screen loads records yet
+- the next integration step is the checklist item to save one record after a win
+
+When connecting the win flow, finish the run clock first, construct the record from `useGameRun`, `QueenGame`, `useUserStore`, and `QueenGameRunScorer`, then call `useGameRecordsStore().save(record)`. The exact field sources and unresolved identity decisions are recorded in [state.md](./state.md#game-record-persistence-state).
+
+Keep `useGameRecordsStore` as the app-facing contract when remote persistence arrives. An API repository or local-first synchronization repository should implement `GameRecordRepository`; views should not branch between IndexedDB and HTTP themselves.
+
+Repository implementations must return `startedAt` and `endedAt` as `Date` instances. IndexedDB preserves them through structured clone; a future HTTP repository must hydrate serialized date strings before returning `GameRecord` objects.
+
+When changing the IndexedDB schema, increment `DATABASE_VERSION` and add the migration in `onupgradeneeded`. Changing an object-store or index name without a version bump will leave existing browser databases on the old schema.
 
 Re-evaluate a helper library such as `idb` or Dexie only after native IndexedDB code becomes repetitive, schema migrations become non-trivial, or leaderboard queries need several indexes beyond level and score.
 
@@ -238,12 +283,12 @@ Initial responsibilities:
 
 - health checks
 - guest user creation and profile updates
-- completed run persistence
+- game record persistence
 - replay retrieval
 - per-level leaderboard queries
 - future ghost-run selection data
 
-The first backend should remain lightweight. It should persist and query completed runs, not become the live authority for every board interaction.
+The first backend should remain lightweight. It should persist and query game records, not become the live authority for every board interaction.
 
 ### `packages/game`
 
@@ -266,7 +311,7 @@ Likely candidates:
 
 - user profile shapes
 - puzzle references
-- completed run summaries
+- game record summaries
 - leaderboard entry models
 - replay metadata
 
@@ -334,7 +379,7 @@ Likely candidates:
 ### API Owns
 
 - persisted user identity
-- completed run storage
+- game record persistence
 - replay storage and retrieval
 - leaderboard queries
 - future ghost-run selection
@@ -366,7 +411,7 @@ The planned database stack is PostgreSQL with Prisma.
 Early persisted models should focus on:
 
 - users
-- completed runs
+- game records
 - replay records or replay payloads
 - leaderboard-readable run summaries
 

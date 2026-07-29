@@ -90,6 +90,21 @@ Pinia stores should hold app-level state such as settings, level progress, skin 
 
 Do not move core puzzle rules into Pinia.
 
+Game records are split across two layers:
+
+- `useGameRecordsStore` is the application-facing state and action boundary
+- `GameRecordRepository` owns persistence through IndexedDB now and an API or local-first adapter later
+
+Views and gameplay flow should call the Pinia store instead of importing the IndexedDB repository directly.
+
+### `src/modules/repositories`
+
+Repositories isolate persistent data access from Pinia and UI code.
+
+Keep repository contracts focused on product operations rather than browser-specific request objects. When remote game records arrive, preserve the `useGameRecordsStore` API and replace or compose the repository implementation underneath it.
+
+For IndexedDB schema changes, bump the database version and handle migration in `onupgradeneeded`. Do not rename stores or indexes without a versioned migration.
+
 ### `src/modules/utils`
 
 Utilities should be small, pure, and reusable.
@@ -183,6 +198,8 @@ For board interactions:
 
 - keep most gesture edge cases in Vitest tests around `GameBoard`
 - use Cypress for a smaller set of real browser flows
+- test Pinia game record coordination with a mocked repository
+- test native IndexedDB repository behavior in Cypress because the Vitest jsdom environment does not provide a real browser database
 - set `window.__QUEENER_E2E_SKIP_PRELOAD__ = true` in `cy.visit(... onBeforeLoad)` for specs that do not cover app startup or preloading
 - do not set that flag in specs that intentionally verify prepare view or preload behavior
 

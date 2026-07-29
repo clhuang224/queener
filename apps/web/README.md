@@ -2,7 +2,7 @@
 
 This is the active Queener game client.
 
-It is a Vue 3 + Vite single-page application that contains the current game UI, local gameplay engine, settings, replay flow, and browser tests.
+It is a Vue 3 + Vite single-page application that contains the current game UI, local gameplay engine, settings, run recording and scoring, replay flow, game record persistence foundation, and browser tests.
 
 ## Overview
 
@@ -37,16 +37,19 @@ Players solve the board by marking notes on cells and confirming queen positions
 - Use Space as the keyboard version of the board press: single press toggles a note, double press marks a queen, and holding Space while moving focus marks/removes notes across cells
 - Heart-based mistake system where hearts scale by board size
 - One-time hint button and configurable shortcut that reveal a valid queen position
-- End-of-game replay before the result action flow
+- Visible run timer during active play
+- End-of-game replay before the result action flow, with at least `3x` playback and longer runs compressed to approximately 10 seconds or less
 - Board skins define ten palette colors; smaller boards sample across the full palette
 
 ### Settings
 
+- Player name used by future game records and leaderboard entries
 - Queen skin selection
 - Board skin selection
 - Board texture toggle
 - Queen hint keyboard shortcut
 - Sound volume control and sound preview
+- End-of-game replay toggle
 - Reset settings action
 
 ## Tech Stack
@@ -68,7 +71,11 @@ apps/web/
   src/
     assets/      # Icons, note icons, sounds, and texture styles
     components/  # Shared UI and game-specific Vue components
-    modules/     # Game logic, data, stores, types, constants, and helpers
+    modules/
+      game/          # Gameplay engine, run recording, replay, and scoring
+      repositories/  # Persistent data adapters such as IndexedDB game records
+      stores/        # Pinia application state and settings
+      types/         # Web-local domain and UI types
     router/      # Vue Router configuration
     test/        # Test helpers
     views/       # Route-level screens
@@ -99,6 +106,17 @@ BoardCell
 
 Generic app UI can use unstyled Reka UI primitives for accessibility-heavy behavior such as dialogs and sliders. Board and cell gestures remain custom and engine-driven.
 
+Game records keep Pinia as the app-facing boundary:
+
+```text
+GameView / leaderboard UI
+  -> useGameRecordsStore
+  -> GameRecordRepository
+  -> native IndexedDB now, API or local-first sync later
+```
+
+The repository and Pinia store exist, but the current win flow does not save records yet. Continue from the Local Leaderboard section in [`docs/checklist.md`](../../docs/checklist.md) and the field-source table in [`docs/state.md`](../../docs/state.md#game-record-persistence-state).
+
 ## Commands
 
 Run these from the repository root:
@@ -128,4 +146,6 @@ bun run test:e2e
 - `QueenGame` tests cover initialization, per-run puzzle variants, queen marking, hint behavior, reset behavior, win detection, and game-over conditions
 - `BoardCell` tests cover cell-level state transitions
 - `GameBoard` tests cover pointer, keyboard, click, double-click, drag, and mobile gesture coordination
+- game record store tests mock the repository and cover load/save coordination
+- the game record Cypress spec uses a real browser IndexedDB implementation
 - Cypress covers a small set of browser-level player flows
