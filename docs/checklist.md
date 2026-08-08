@@ -60,7 +60,6 @@ Use this checklist for concrete unfinished work. Each checkbox should describe a
 
 ## Local Leaderboard
 
-- [ ] Add and persist a stable local user id for `GameRecord.user.uid`.
 - [ ] Define how each winning `GameRecord.uid` is generated.
 - [ ] Save a game record after a win.
 - [ ] Define and test how game record save failures affect the win result flow.

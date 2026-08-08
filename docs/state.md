@@ -416,6 +416,7 @@ Implementation:
 - [apps/web/src/modules/types/run.ts](../apps/web/src/modules/types/run.ts)
 - [apps/web/src/modules/repositories/gameRecords.ts](../apps/web/src/modules/repositories/gameRecords.ts)
 - [apps/web/src/modules/stores/gameRecords.ts](../apps/web/src/modules/stores/gameRecords.ts)
+- [apps/web/src/modules/stores/user.ts](../apps/web/src/modules/stores/user.ts)
 - [apps/web/src/modules/utils/leaderboardItems.ts](../apps/web/src/modules/utils/leaderboardItems.ts)
 
 ```text
@@ -445,7 +446,7 @@ The repository and Pinia store are implemented and tested, but neither `GameView
 | `startedAt` | `useGameRun.startedAt` | none |
 | `endedAt` | `useGameRun.endedAt` after `finishRun()` | guard against `null` before constructing the record |
 | `user.name` | `useUserStore.username` | ensure the user store is loaded |
-| `user.uid` | stable local user identity | no user id exists yet; only username is persisted |
+| `user.uid` | `useUserStore.uid` | generated once with `crypto.randomUUID()` and persisted independently from resettable user settings |
 | `score` | `QueenGameRunScorer.calculateScore(...)` | wire current time, hearts, and hint values into the scorer |
 
 Save only winning runs in the first local leaderboard phase. Call `finishRun()` before calculating the score or persisting the record, and save before the player can navigate away. The result flow still needs an explicit policy for whether an IndexedDB failure should delay replay/modal presentation or be reported without blocking the result.
