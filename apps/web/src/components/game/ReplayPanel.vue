@@ -36,6 +36,9 @@ const replayDurationMs = computed(() => {
 })
 
 const formattedReplayDuration = computed(() => formatRunTime(replayDurationMs.value))
+const formattedReplayRunTime = computed(() => {
+  return formatRunTime(Math.min(props.replayRunTimeMs, replayDurationMs.value))
+})
 
 const swatchStyle = computed(() => {
   const colors = pickDistributedColors(BOARD_SKINS[props.boardSkin], size.value) as string[]
@@ -68,7 +71,7 @@ const swatchStyle = computed(() => {
     />
 
     <div class="replay-scale">
-      <span class="replay-time">00:00.000</span>
+      <span class="replay-time">{{ formattedReplayRunTime }}</span>
       <div class="replay-swatch" :style="swatchStyle" aria-hidden="true">
         <div class="replay-track">
           <span

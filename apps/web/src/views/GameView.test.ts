@@ -270,7 +270,7 @@ describe('GameView', () => {
     wrapper.findComponent(GameRunReplayBoard).vm.$emit('timeUpdate', 500)
     await wrapper.vm.$nextTick()
     expect(wrapper.find('.replay-swatch').attributes('style')).toContain('--replay-translate: -25%')
-    expect(wrapper.find('.replay-scale').text()).toContain('00:00.000')
+    expect(wrapper.find('.replay-scale').text()).toContain('00:00.500')
     expect(wrapper.find('.replay-scale').text()).toContain('00:01.000')
     expect(wrapper.findAll('.replay-color')).toHaveLength(10)
     expect(openResultModal).not.toHaveBeenCalled()
