@@ -282,6 +282,17 @@ const handleReplayFinished = async () => {
   isHandlingResult.value = false
 }
 
+const handleReplaySkipped = async () => {
+  if (!pendingResult.value) return
+
+  const result = pendingResult.value
+  clearResultReplay()
+
+  await openResult(result)
+
+  isHandlingResult.value = false
+}
+
 watch(
   () => game.value.isGameOver(),
   async (gameOver) => {
@@ -371,6 +382,7 @@ watch(
         :board-texture-enabled="boardTextureEnabled"
         @time-update="handleReplayTimeUpdate"
         @finished="handleReplayFinished"
+        @skip="handleReplaySkipped"
       />
     </div>
   </div>

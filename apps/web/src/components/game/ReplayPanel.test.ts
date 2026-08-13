@@ -68,4 +68,12 @@ describe('ReplayPanel', () => {
       '00:06.500',
     ])
   })
+
+  it('emits skip from the replay control', async () => {
+    const wrapper = mountReplayPanel(1234)
+
+    await wrapper.get('button[aria-label="Skip replay"]').trigger('click')
+
+    expect(wrapper.emitted('skip')).toHaveLength(1)
+  })
 })

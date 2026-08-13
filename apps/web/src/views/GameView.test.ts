@@ -341,6 +341,32 @@ describe('GameView', () => {
     expect(wrapper.find('[data-test="result-replay-overlay"]').exists()).toBe(false)
   })
 
+  it('skips an active replay and opens the result modal', async () => {
+    openResultModal.mockResolvedValue('home')
+
+    const { wrapper } = mountTrackedGameView()
+    getActiveRunRecorder().getRecords.mockReturnValue(getReplayRecords())
+
+    for (const [row, column] of getQueenPositions(wrapper)) {
+      await findCell(wrapper, row, column)!.trigger('dblclick')
+    }
+    await wrapper.vm.$nextTick()
+    await Promise.resolve()
+
+    expect(wrapper.find('[data-test="result-replay-overlay"]').exists()).toBe(true)
+
+    await wrapper.get('button[aria-label="Skip replay"]').trigger('click')
+    await Promise.resolve()
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.find('[data-test="result-replay-overlay"]').exists()).toBe(false)
+    expect(openResultModal).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: 'Congratulations!',
+      }),
+    )
+  })
+
   it('skips the result replay when end replay is disabled', async () => {
     window.localStorage.setItem(END_REPLAY_ENABLED_STORAGE_KEY, 'false')
     openResultModal.mockResolvedValue('next')

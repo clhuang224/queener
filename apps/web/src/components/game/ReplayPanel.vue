@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { IconPlayerSkipForward } from '@tabler/icons-vue'
+import BaseButton from '@/components/common/BaseButton.vue'
 import BasePanel from '@/components/common/BasePanel.vue'
 import GameRunReplayBoard from '@/components/game/GameRunReplayBoard.vue'
 import { BOARD_SKINS } from '@/modules/constants/boardSkins'
@@ -20,6 +22,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'time-update', ms: number): void
   (e: 'finished'): void
+  (e: 'skip'): void
 }>()
 
 const size = computed(() => props.replayData?.puzzle.rules.size ?? 0)
@@ -57,6 +60,16 @@ const swatchStyle = computed(() => {
 
 <template>
   <BasePanel class="replay-panel">
+    <BaseButton
+      icon
+      variant="ghost"
+      class="replay-skip-button"
+      aria-label="Skip replay"
+      title="Skip replay"
+      @click="emit('skip')"
+    >
+      <IconPlayerSkipForward aria-hidden="true" />
+    </BaseButton>
     <h2 class="replay-title">Replay</h2>
     <GameRunReplayBoard
       :puzzle="replayData.puzzle"
@@ -91,6 +104,7 @@ const swatchStyle = computed(() => {
 .replay-panel {
   --panel-padding: 24px;
 
+  position: relative;
   width: 100%;
   height: 100%;
   min-height: 100dvh;
@@ -102,6 +116,14 @@ const swatchStyle = computed(() => {
   background: var(--color-surface);
   border: 0;
   border-radius: 0;
+}
+
+.replay-skip-button {
+  --icon-button-size: 42px;
+
+  position: absolute;
+  top: calc(16px + env(safe-area-inset-top));
+  right: calc(16px + env(safe-area-inset-right));
 }
 
 .replay-title {
