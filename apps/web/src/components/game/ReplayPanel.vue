@@ -60,16 +60,6 @@ const swatchStyle = computed(() => {
 
 <template>
   <BasePanel class="replay-panel">
-    <BaseButton
-      icon
-      variant="ghost"
-      class="replay-skip-button"
-      aria-label="Skip replay"
-      title="Skip replay"
-      @click="emit('skip')"
-    >
-      <IconPlayerSkipForward aria-hidden="true" />
-    </BaseButton>
     <h2 class="replay-title">Replay</h2>
     <GameRunReplayBoard
       :puzzle="replayData.puzzle"
@@ -97,6 +87,16 @@ const swatchStyle = computed(() => {
       </div>
       <span class="replay-time">{{ formattedReplayDuration }}</span>
     </div>
+    <BaseButton
+      icon
+      variant="ghost"
+      class="replay-skip-button"
+      aria-label="Skip replay"
+      title="Skip replay"
+      @click="emit('skip')"
+    >
+      <IconPlayerSkipForward aria-hidden="true" />
+    </BaseButton>
   </BasePanel>
 </template>
 
@@ -104,7 +104,6 @@ const swatchStyle = computed(() => {
 .replay-panel {
   --panel-padding: 24px;
 
-  position: relative;
   width: 100%;
   height: 100%;
   min-height: 100dvh;
@@ -120,10 +119,6 @@ const swatchStyle = computed(() => {
 
 .replay-skip-button {
   --icon-button-size: 42px;
-
-  position: absolute;
-  top: calc(16px + env(safe-area-inset-top));
-  right: calc(16px + env(safe-area-inset-right));
 }
 
 .replay-title {
