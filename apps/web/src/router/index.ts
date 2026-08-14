@@ -25,4 +25,13 @@ const router = createRouter({
   ],
 })
 
+router.afterEach((route) => {
+  if (route.name === 'game') {
+    document.title = `Level ${String(route.params.level)} - Queener`
+    return
+  }
+
+  document.title = route.name === 'setting' ? 'Settings - Queener' : 'Queener'
+})
+
 export default router
