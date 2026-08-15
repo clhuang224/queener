@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { installStorageMock } from '@/test/localStorage'
 import { createTestingPinia } from '@/test/pinia'
+import { useGameSessionStore } from '@/modules/stores/gameSession'
 import HomeView from './HomeView.vue'
 
 const push = vi.fn()
@@ -39,10 +40,11 @@ describe('HomeView', () => {
 
   it('allows selecting only unlocked levels and starts the selected level', async () => {
     window.localStorage.setItem('queen-game-highest-completed-level', '2')
+    const pinia = createTestingPinia()
 
     const wrapper = mount(HomeView, {
       global: {
-        plugins: [createTestingPinia()],
+        plugins: [pinia],
       },
     })
     const buttons = wrapper.findAll('button')
@@ -60,6 +62,7 @@ describe('HomeView', () => {
 
     await startButton!.trigger('click')
 
+    expect(useGameSessionStore(pinia).activeLevel).toBe(3)
     expect(push).toHaveBeenCalledWith({
       name: 'game',
       params: {

@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useGameSessionStore } from '@/modules/stores/gameSession'
 import HomeView from '../views/HomeView.vue'
 
 const router = createRouter({
@@ -25,7 +26,30 @@ const router = createRouter({
   ],
 })
 
-router.afterEach((route) => {
+const getRouteLevel = (value: unknown): number | null => {
+  const rawLevel = Array.isArray(value) ? value[0] : value
+  if (typeof rawLevel !== 'string') return null
+
+  const level = Number(rawLevel)
+  return Number.isInteger(level) && level > 0 ? level : null
+}
+
+router.beforeEach((route) => {
+  if (route.name !== 'game') return true
+
+  const gameSessionStore = useGameSessionStore()
+  const level = getRouteLevel(route.params.level)
+  if (level !== null && gameSessionStore.canEnterLevel(level)) return true
+
+  gameSessionStore.endSession()
+  return { name: 'home' }
+})
+
+router.afterEach((route, previousRoute, failure) => {
+  if (!failure && previousRoute.name === 'game' && route.name !== 'game') {
+    useGameSessionStore().endSession()
+  }
+
   if (route.name === 'game') {
     document.title = `Level ${String(route.params.level)} - Queener`
     return

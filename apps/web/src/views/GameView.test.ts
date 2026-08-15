@@ -15,6 +15,7 @@ import {
   END_REPLAY_ENABLED_STORAGE_KEY,
   QUEEN_HINT_SHORTCUT_STORAGE_KEY,
 } from '@/modules/stores/gameplay'
+import { useGameSessionStore } from '@/modules/stores/gameSession'
 import type { QueenGamePublic } from '@/modules/game/QueenGame'
 
 const runRecorderMock = vi.hoisted(() => {
@@ -79,13 +80,15 @@ vi.mock('@/modules/game/QueenGameRunRecorder', () => ({
 }))
 
 const mountGameView = () => {
+  const pinia = createTestingPinia()
+  useGameSessionStore(pinia).startSession(1)
   const wrapper = mount(GameView, {
     attachTo: document.body,
     props: {
       level: 1,
     },
     global: {
-      plugins: [createTestingPinia()],
+      plugins: [pinia],
     },
   })
   const [queenRow, queenColumn] = getQueenPositions(wrapper)[0]!
@@ -293,6 +296,7 @@ describe('GameView', () => {
         level: '2',
       },
     })
+    expect(useGameSessionStore().activeLevel).toBe(2)
   })
 
   it('waits for the win sound before showing the result modal', async () => {

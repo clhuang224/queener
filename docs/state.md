@@ -556,3 +556,32 @@ stateDiagram-v2
 - Hearts are stored as numbers on `QueenGame`; reachable values are bounded and discrete in normal gameplay.
 - `0 Hearts` is the value-level condition that drives the higher-level `Lost` derived state.
 - If the game later adds healing, extra lives, difficulty settings, or different heart caps, this section should be updated first.
+
+## 8. Game Route Session
+
+The game route is protected by a transient Pinia session. It tracks the exact level the current game flow may enter and is intentionally not persisted, so a page reload creates an inactive session.
+
+Implementation:
+
+- [apps/web/src/modules/stores/gameSession.ts](../apps/web/src/modules/stores/gameSession.ts)
+- [apps/web/src/router/index.ts](../apps/web/src/router/index.ts)
+- [apps/web/src/views/HomeView.vue](../apps/web/src/views/HomeView.vue)
+- [apps/web/src/views/GameView.vue](../apps/web/src/views/GameView.vue)
+
+### Transition Table
+
+| Current State | Event | Next State | Route Result |
+| --- | --- | --- | --- |
+| `Inactive` | start level `N` from the level picker | `Active(N)` | allow `/game/N` |
+| `Inactive` | open or reload any game URL | `Inactive` | redirect home |
+| `Active(N)` | enter `/game/N` | `Active(N)` | allow navigation |
+| `Active(N)` | enter another game level without an in-game transition | `Inactive` | redirect home and clear the session |
+| `Active(N)` | continue to level `M` from the result flow | `Active(M)` | allow `/game/M` |
+| `Active(N)` | retry level `N` | `Active(N)` | remain in the game flow |
+| `Active(N)` | leave the game route | `Inactive` | allow destination and clear the session |
+
+### Notes
+
+- The session controls route eligibility only; `QueenGame` remains responsible for gameplay rules.
+- Tracking the expected level prevents changing only the URL while a different level is active.
+- Browser back or forward navigation cannot restore a game after the session has been cleared.

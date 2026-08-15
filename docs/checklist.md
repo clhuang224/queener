@@ -7,13 +7,6 @@ Use this checklist for concrete unfinished work. Each checkbox should describe a
 - [ ] Add a short board success state before opening the win result modal.
 - [ ] Add a short board failure state before opening the loss result modal.
 
-## Game Session Routing
-
-- [ ] Add a transient Pinia game-session store that starts only from `LevelPicker` and remains active during in-game retry or next-level navigation.
-- [ ] Guard game routes so direct URL entry, page refresh, or browser return after leaving the game redirects to the home screen.
-- [ ] Clear the active game session when navigation leaves the game flow.
-- [ ] Add router tests for allowed level-picker entry and rejected direct, refreshed, or returned game routes.
-
 ## Tutorial Mode
 
 - [ ] Add tutorial puzzle definitions for teaching the basic Queener rules.

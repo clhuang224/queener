@@ -34,7 +34,7 @@ The current runtime architecture is intentionally simple:
 2. Components render UI and emit player intent.
 3. `QueenGame` applies gameplay rules.
 4. `BoardCell` instances expose the resulting cell state.
-5. Pinia stores hold app-level preferences, cross-view UI state, and game record state.
+5. Pinia stores hold app-level preferences, cross-view UI state, transient game-route session state, and game record state.
 6. Repositories isolate persistent data access from views and Pinia stores.
 
 The most important boundary is still:
@@ -124,9 +124,12 @@ Good fits:
 - audio preferences
 - global modal state
 - level progress
+- transient game-route session state
 - game record loading, saving, and in-memory records
 
 Core gameplay rules should not move into Pinia unless there is a stronger architectural reason.
+
+`useGameSessionStore` is deliberately not persisted. `HomeView` starts a session from the level picker, in-game next-level navigation updates its expected level, and the router clears it when navigation leaves the game flow. This lets the route guard reject direct URL entry, reloads, and browser returns without making Pinia responsible for puzzle rules.
 
 ### `apps/web/src/modules/repositories`
 

@@ -24,15 +24,16 @@ describe('board layout', () => {
     const level = index + 1
 
     it(`renders level ${level} as a visual ${size} x ${size} board`, () => {
-      cy.visit(`/game/${level}`, {
+      cy.visit('/', {
         onBeforeLoad(win) {
           win.__QUEENER_E2E_SKIP_PRELOAD__ = true
           win.localStorage.setItem(
             'queen-game-highest-completed-level',
-            String(HIGHEST_COMPLETED_LEVEL_TO_UNLOCK_ALL),
+            String(Math.min(level - 1, HIGHEST_COMPLETED_LEVEL_TO_UNLOCK_ALL)),
           )
         },
       })
+      cy.get('button[aria-label="Start level"]').click()
 
       cy.get('[data-test="game-board"]').should('be.visible')
       cy.get('.game-cell').should('have.length', size * size)

@@ -10,6 +10,7 @@ import ReplayPanel from '@/components/game/ReplayPanel.vue'
 import { TOTAL_LEVELS } from '@/modules/puzzles/simple'
 import { useSkinStore } from '@/modules/stores/skin'
 import { useGameplayStore } from '@/modules/stores/gameplay'
+import { useGameSessionStore } from '@/modules/stores/gameSession'
 import { useGlobalModalStore } from '@/modules/stores/globalModal'
 import { useLevelStore } from '@/modules/stores/level'
 import type { Position } from '@/modules/types/board'
@@ -27,6 +28,7 @@ const props = defineProps<{
 const router = useRouter()
 const skinStore = useSkinStore()
 const gameplayStore = useGameplayStore()
+const gameSessionStore = useGameSessionStore()
 const levelStore = useLevelStore()
 const { boardSkin, boardTextureEnabled, queenSkin } = storeToRefs(skinStore)
 const { endReplayEnabled, queenHintShortcut } = storeToRefs(gameplayStore)
@@ -178,10 +180,13 @@ const goHome = async () => {
 const goToNextLevel = async () => {
   if (!hasNextLevel.value) return
 
+  const nextLevel = activeLevel.value + 1
+  if (!gameSessionStore.continueToLevel(nextLevel)) return
+
   await router.push({
     name: 'game',
     params: {
-      level: String(activeLevel.value + 1),
+      level: String(nextLevel),
     },
   })
 }

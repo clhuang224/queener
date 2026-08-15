@@ -86,9 +86,11 @@ Board skin notes:
 
 ### `src/modules/stores`
 
-Pinia stores should hold app-level state such as settings, level progress, skin preferences, audio preferences, and global modal state.
+Pinia stores should hold app-level state such as settings, level progress, skin preferences, audio preferences, global modal state, and transient game-route session state.
 
 Do not move core puzzle rules into Pinia.
+
+Keep `useGameSessionStore` transient. The level picker starts a session, in-game next-level navigation updates the expected level, and the router clears it after leaving the game flow. Do not persist this store: a reload or direct game URL must return to the home screen.
 
 Game records are split across two layers:
 

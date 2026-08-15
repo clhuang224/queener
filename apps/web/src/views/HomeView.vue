@@ -3,6 +3,7 @@ import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import BaseButton from '@/components/common/BaseButton.vue'
 import LevelPicker from '@/components/home/LevelPicker.vue'
+import { useGameSessionStore } from '@/modules/stores/gameSession'
 import { useLevelStore } from '@/modules/stores/level'
 import { storeToRefs } from 'pinia'
 import QueenGame from '@/modules/game/QueenGame'
@@ -10,6 +11,7 @@ import { getPuzzleByLevel } from '@/modules/puzzles/simple'
 import { IconSettings } from '@tabler/icons-vue'
 
 const router = useRouter()
+const gameSessionStore = useGameSessionStore()
 const levelStore = useLevelStore()
 const { initializeSelectedLevel, selectPreviousLevel, selectNextLevel } = levelStore
 const { selectedLevel, highestUnlockedLevel } = storeToRefs(levelStore)
@@ -23,6 +25,8 @@ onMounted(() => {
 })
 
 const startLevel = async () => {
+  gameSessionStore.startSession(selectedLevel.value)
+
   await router.push({
     name: 'game',
     params: {
